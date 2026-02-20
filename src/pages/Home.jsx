@@ -11,7 +11,7 @@ import FloatingWhatsApp from '../components/FloatingWhatsApp';
 
 const Home = () => {
     return (
-        <div className="min-h-screen bg-[#e0e0e0] font-sans">
+        <div className="min-h-screen bg-[#D0D0DA] font-sans">
             <Navbar />
             <Hero />
             <Services />

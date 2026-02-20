@@ -2,19 +2,54 @@ import React from 'react';
 import { Image as ImageIcon, Phone } from 'lucide-react';
 
 const Compliance = () => {
-    return (
-        <section className="bg-[#e0e0e0] py-24 px-4 relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-full bg-[linear-gradient(135deg,#47544b_0%,transparent_100%)] opacity-20"></div>
-            <div className="max-w-6xl mx-auto bg-[#2d3830]/40 backdrop-blur-2xl border border-[#e0e0e0]/20 rounded-[3rem] p-12 md:p-16 shadow-2xl text-[#e0e0e0] relative z-10">
-                <div className="grid lg:grid-cols-2 gap-16 items-center">
-                    {/* Text Content */}
-                    <div>
-                        <h2 className="text-4xl md:text-6xl font-black mb-12">
-                            Cumplimiento <br />
-                            Tributario
-                        </h2>
+    const handleScrollToContact = () => {
+        const contactForm = document.getElementById('contacto-form');
+        if (contactForm) {
+            contactForm.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
 
-                        <div className="space-y-8 text-lg opacity-90">
+    return (
+        <>
+            <section className="bg-[#D0D0DA] text-[#233657] py-24 px-4 overflow-hidden relative">
+                <div className="max-w-7xl mx-auto flex flex-col items-center text-center relative z-10">
+                    <h2 className="text-4xl md:text-6xl font-black mb-8 leading-tight uppercase drop-shadow-sm">
+                        Cumplimiento <br />
+                        Tributario
+                    </h2>
+
+                    <p className="text-lg md:text-xl font-medium leading-relaxed max-w-3xl mb-12 opacity-90">
+                        Asesoría y gestión de cumplimiento tributario para asegurar el cumplimiento con las normativas legales vigentes.
+                    </p>
+
+                    <button
+                        onClick={handleScrollToContact}
+                        className="bg-[#0F4C82] hover:bg-[#233657] text-[#D0D0DA] font-bold py-3 px-8 rounded-full text-lg flex items-center gap-2 transition-all shadow-lg transform hover:scale-105 mb-16"
+                    >
+                        Solicita un presupuesto <span className="text-xl">›</span>
+                    </button>
+
+                    <div className="w-full max-w-6xl aspect-video bg-[#233657]/10 rounded-[2rem] relative flex items-center justify-center shadow-2xl overflow-hidden group border border-[#233657]/20 backdrop-blur-xl">
+                        <img
+                            src="https://images.unsplash.com/photo-1554224154-260327c00c19?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80"
+                            alt="Cumplimiento Tributario"
+                            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        />
+                    </div>
+                </div>
+            </section>
+
+            {/* New Info & Profile Section */}
+            {/* New Info & Profile Section */}
+            <section className="bg-[#233657] py-24 px-6 text-[#D0D0DA] min-h-[600px] flex items-center">
+                <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+
+                    {/* Left: Info */}
+                    <div>
+                        <h2 className="text-5xl md:text-6xl font-black mb-12 leading-tight">
+                            Cumplimiento <br /> Tributario
+                        </h2>
+                        <div className="text-lg md:text-xl font-light leading-relaxed space-y-8 opacity-90 article-content light-text text-[#D0D0DA]">
                             <p>
                                 Asesoría y gestión de cumplimiento tributario para asegurar el cumplimiento con las normativas
                                 legales vigentes.
@@ -29,28 +64,33 @@ const Compliance = () => {
                                 transparencia financiera.
                             </p>
                         </div>
-
-                        {/* Redundant button removed */}
                     </div>
 
-                    {/* Profile Card & Button */}
-                    <div className="flex flex-col items-center gap-8 lg:justify-end">
-                        <div className="bg-[#47544b] rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl relative">
-                            <div className="w-48 h-48 bg-gray-300 rounded-full mx-auto mb-6 overflow-hidden border-4 border-[#e0e0e0]/10 relative">
-                                {/* Placeholder for Joel's image */}
-                                <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=256&q=80" alt="Adrian Urrutia" className="absolute inset-0 w-full h-full object-cover" />
+                    {/* Right: Profile Card */}
+                    <div className="flex flex-col items-center lg:items-end gap-6">
+                        <div className="bg-[#0F4C82] rounded-[2.5rem] p-10 w-full max-w-[400px] text-center shadow-2xl relative">
+                            <div className="w-48 h-48 mx-auto rounded-full overflow-hidden mb-6 border-4 border-[#D0D0DA]/20 bg-gray-300">
+                                <img
+                                    src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                                    alt="Joel Urrutia"
+                                    className="w-full h-full object-cover"
+                                />
                             </div>
-                            <h3 className="text-2xl font-bold mb-1">Adrian Urrutia</h3>
-                            <p className="text-sm opacity-70 mb-4">Contador público</p>
+                            <h3 className="text-3xl font-bold mb-1 text-white">Joel Urrutia</h3>
+                            <p className="text-[#D0D0DA]/80 text-lg mb-0 font-medium">Contador público</p>
                         </div>
 
-                        <button className="bg-[#e0e0e0]/10 hover:bg-[#2d3830] text-[#e0e0e0] font-bold py-4 px-12 rounded-full uppercase text-xl flex items-center gap-3 transition-all shadow-lg w-full max-w-sm justify-center transform hover:scale-105 backdrop-blur-md border border-[#e0e0e0]/20">
-                            <Phone className="w-6 h-6 fill-current" /> Contáctame
+                        <button
+                            onClick={handleScrollToContact}
+                            className="bg-[#D0D0DA] hover:bg-white text-[#233657] font-bold py-4 px-12 rounded-full text-xl flex items-center justify-center gap-3 transition-all shadow-lg w-full max-w-[400px]"
+                        >
+                            <Phone className="w-6 h-6 fill-current" />
+                            Contáctame
                         </button>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </>
     );
 };
 

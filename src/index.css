@@ -4,7 +4,67 @@
 
 @layer base {
   body {
-    @apply antialiased text-gray-900 bg-[#e0e0e0] overflow-x-hidden;
+    @apply antialiased text-gray-900 bg-[#D0D0DA] overflow-x-hidden;
     font-feature-settings: "cv11", "ss01";
+  }
+}
+
+@layer components {
+  .article-content h3 {
+    @apply text-[#233657] font-extrabold text-2xl mb-4 mt-8 uppercase tracking-wide;
+  }
+
+  .article-content p {
+    @apply text-[#233657]/80 mb-4;
+  }
+
+  .article-content ul {
+    @apply list-outside ml-6 mb-6 text-[#233657]/80;
+    list-style-type: disc !important;
+  }
+
+  .article-content ul li::before {
+    content: none !important;
+  }
+
+  .article-content ol {
+    @apply list-outside ml-6 mb-6 text-[#233657]/80;
+    list-style-type: decimal !important;
+  }
+
+  .article-content ol li::before {
+    content: none !important;
+  }
+
+  .article-content li {
+    @apply mb-2 pl-1;
+    display: list-item;
+  }
+
+  .article-content strong {
+    @apply text-[#233657] font-bold;
+  }
+
+  .service-detail-content ul,
+  .service-detail-content ol {
+    display: inline-block;
+    text-align: left;
+    margin-left: 0;
+    margin-right: 0;
+    max-width: 100%;
+  }
+
+  .article-content.light-text h3 {
+    @apply text-white;
+  }
+
+  .article-content.light-text p,
+  .article-content.light-text ul,
+  .article-content.light-text ol {
+    @apply text-[#D0D0DA];
+  }
+
+  .article-content.light-text strong {
+    @apply text-white;
   }
 }
