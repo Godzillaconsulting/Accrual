@@ -5,7 +5,7 @@ import Footer from '../components/Footer';
 import FloatingWhatsApp from '../components/FloatingWhatsApp';
 import ContactScheduler from '../components/ContactScheduler';
 import { Phone } from 'lucide-react';
-import urrutiaImg from '../assets/Urrutia.jpg';
+import urrutiaImg from '../assets/Urrutia-optimized.jpg';
 
 const servicesData = {
     "consultoria": {

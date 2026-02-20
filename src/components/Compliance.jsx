@@ -1,6 +1,6 @@
 import React from 'react';
 import { Image as ImageIcon, Phone } from 'lucide-react';
-import urrutiaImg from '../assets/Urrutia.jpg';
+import urrutiaImg from '../assets/Urrutia-optimized.jpg';
 
 const Compliance = () => {
     const handleScrollToContact = () => {
