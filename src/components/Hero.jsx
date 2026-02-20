@@ -48,8 +48,16 @@ const Hero = () => {
                         </p>
 
                         <div className="flex flex-row gap-6">
-                            <button className="bg-[#D0D0DA]/10 hover:bg-[#0F4C82] text-[#D0D0DA] font-bold py-4 px-10 rounded-full text-sm uppercase tracking-widest shadow-lg transition-all transform hover:scale-105 backdrop-blur-md border border-[#D0D0DA]/20">
-                                Solicitar Auditoría <br className="hidden sm:block" /> de Blindaje
+                            <button
+                                onClick={() => {
+                                    const element = document.getElementById('pricing-section');
+                                    if (element) {
+                                        element.scrollIntoView({ behavior: 'smooth' });
+                                    }
+                                }}
+                                className="bg-[#D0D0DA]/10 hover:bg-[#0F4C82] text-[#D0D0DA] font-bold py-4 px-10 rounded-full text-sm uppercase tracking-widest shadow-lg transition-all transform hover:scale-105 backdrop-blur-md border border-[#D0D0DA]/20"
+                            >
+                                Ver <br className="hidden sm:block" /> Planes
                             </button>
                             <button className="bg-[#D0D0DA]/10 hover:bg-[#0F4C82] text-[#D0D0DA] font-bold py-4 px-10 rounded-full text-sm uppercase tracking-widest shadow-lg transition-all transform hover:scale-105 backdrop-blur-md border border-[#D0D0DA]/20">
                                 Ver <br className="hidden sm:block" /> Servicios

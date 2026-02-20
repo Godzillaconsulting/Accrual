@@ -3,7 +3,7 @@ import { Check } from 'lucide-react';
 
 const Services = () => {
     return (
-        <section className="bg-[#D0D0DA] py-24 px-4 relative overflow-hidden font-sans">
+        <section id="pricing-section" className="bg-[#D0D0DA] py-24 px-4 relative overflow-hidden font-sans">
             {/* Background Decoration */}
             <div className="absolute inset-0 opacity-10 pointer-events-none">
                 <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,#233657_0%,transparent_70%)]"></div>
