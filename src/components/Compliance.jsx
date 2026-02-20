@@ -1,5 +1,6 @@
 import React from 'react';
 import { Image as ImageIcon, Phone } from 'lucide-react';
+import urrutiaImg from '../assets/Urrutia.jpg';
 
 const Compliance = () => {
     const handleScrollToContact = () => {
@@ -71,7 +72,7 @@ const Compliance = () => {
                         <div className="bg-[#0F4C82] rounded-[2.5rem] p-10 w-full max-w-[400px] text-center shadow-2xl relative">
                             <div className="w-48 h-48 mx-auto rounded-full overflow-hidden mb-6 border-4 border-[#D0D0DA]/20 bg-gray-300">
                                 <img
-                                    src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                                    src={urrutiaImg}
                                     alt="Joel Urrutia"
                                     className="w-full h-full object-cover"
                                 />
