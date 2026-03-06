@@ -97,7 +97,7 @@ const Testimonials = () => {
     return (
         <section className="bg-[#D0D0DA] py-24 px-4 overflow-hidden select-none">
             <div className="max-w-7xl mx-auto text-center">
-                <h2 className="text-[#233657] text-3xl md:text-5xl font-black mb-16 tracking-tight uppercase">
+                <h2 className="text-[#233657] text-3xl md:text-5xl font-black mb-20 md:mb-28 tracking-tight uppercase">
                     Lo que opinan nuestros clientes
                 </h2>
 
@@ -112,7 +112,7 @@ const Testimonials = () => {
 
                     <div
                         ref={sliderRef}
-                        className="w-full overflow-hidden cursor-grab active:cursor-grabbing px-4 md:px-6 py-10"
+                        className="w-full overflow-hidden cursor-grab active:cursor-grabbing px-4 md:px-6 py-20"
                         onMouseDown={handleDragStart}
                         onMouseMove={handleDragMove}
                         onMouseUp={handleDragEnd}
