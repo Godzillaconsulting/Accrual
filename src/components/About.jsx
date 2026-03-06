@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Image as ImageIcon } from 'lucide-react';
 
 const About = () => {
@@ -31,14 +32,16 @@ const About = () => {
                             nuestro compromiso con la excelencia con el maximo profesionalismo.
                         </p>
 
-                        <button className="mt-8 bg-[#233657]/10 hover:bg-[#0F4C82] text-[#233657] hover:text-[#D0D0DA] font-bold py-3 px-8 rounded-full uppercase text-sm transition-all transform hover:scale-105 shadow-md backdrop-blur-xl border border-[#233657]/20">
-                            Conoce nuestros servicios
-                        </button>
+                        <Link to="/servicios">
+                            <button className="mt-8 bg-[#233657]/10 hover:bg-[#0F4C82] text-[#233657] hover:text-[#D0D0DA] font-bold py-3 px-8 rounded-full uppercase text-sm transition-all transform hover:scale-105 shadow-md backdrop-blur-xl border border-[#233657]/20">
+                                Conoce nuestros servicios
+                            </button>
+                        </Link>
                     </div>
 
                     {/* Image Placeholder */}
-                    <div className="bg-[#233657] rounded-3xl aspect-[4/3] flex items-center justify-center overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Office" className="w-full h-full object-cover" />
+                    <div className="bg-[#233657] rounded-3xl aspect-[4/3] flex items-center justify-center overflow-hidden shadow-xl transition-all duration-500 hover:-translate-y-4 hover:shadow-2xl">
+                        <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Office" className="w-full h-full object-cover animate-subtle-zoom transform" />
                     </div>
                 </div>
             </div>

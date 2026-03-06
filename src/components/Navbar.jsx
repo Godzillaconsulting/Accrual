@@ -66,18 +66,29 @@ const Navbar = () => {
 
                 {/* Desktop Menu */}
                 <div className="hidden lg:flex items-center gap-8 text-sm font-medium tracking-wide">
-                    <Link to="/" className="hover:text-[#0F4C82] transition-colors">INICIO</Link>
-                    <Link to="/quienes-somos" className="hover:text-[#0F4C82] transition-colors whitespace-nowrap">QUIÉNES SOMOS</Link>
+                    <Link to="/" className="hover:text-[#0F4C82] transition-colors nav-link">INICIO</Link>
+                    <Link to="/quienes-somos" className="hover:text-[#0F4C82] transition-colors whitespace-nowrap nav-link">QUIÉNES SOMOS</Link>
 
                     {/* Services Dropdown */}
                     <div className="relative group services-dropdown">
-                        <button
-                            className="flex items-center gap-1 hover:text-[#0F4C82] transition-colors uppercase"
-                            onClick={() => setIsServicesOpen(!isServicesOpen)}
-                        >
-                            SERVICIOS
-                            <ChevronDown className="w-4 h-4" />
-                        </button>
+                        <div className="flex items-center gap-1">
+                            <Link
+                                to="/servicios"
+                                className="hover:text-[#0F4C82] transition-colors uppercase nav-link"
+                                onClick={() => setIsMobileMenuOpen(false)}
+                            >
+                                SERVICIOS
+                            </Link>
+                            <button
+                                className="hover:text-[#0F4C82] p-1 flex items-center transition-all duration-300 hover:-translate-y-[2px]"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    setIsServicesOpen(!isServicesOpen);
+                                }}
+                            >
+                                <ChevronDown className="w-4 h-4 -ml-1" />
+                            </button>
+                        </div>
                         {/* Dropdown Menu */}
                         <div
                             onClick={(e) => {
@@ -117,8 +128,8 @@ const Navbar = () => {
                         </div>
                     </div>
 
-                    <Link to="/articulos" className="hover:text-[#0F4C82] transition-colors">ARTÍCULOS</Link>
-                    <a href="#" className="hover:text-[#0F4C82] transition-colors">RECURSOS</a>
+                    <Link to="/articulos" className="hover:text-[#0F4C82] transition-colors nav-link">ARTÍCULOS</Link>
+                    <a href="#" className="hover:text-[#0F4C82] transition-colors nav-link">RECURSOS</a>
                     <Link to="/contacto" className="!bg-[#233657] !text-[#D0D0DA] px-8 py-3 rounded-full font-black hover:!bg-[#0F4C82] hover:!text-[#D0D0DA] transition-all transform hover:scale-105 shadow-2xl block">
                         CONTACTO
                     </Link>

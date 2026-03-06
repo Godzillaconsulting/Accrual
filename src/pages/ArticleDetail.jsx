@@ -309,6 +309,14 @@ const ArticleDetail = () => {
                         dangerouslySetInnerHTML={{ __html: article.content }}
                     />
 
+                    {/* CTA Button */}
+                    <div className="flex justify-center mt-16 mb-8">
+                        <Link to="/contacto">
+                            <button className="bg-[#233657] hover:bg-[#0F4C82] text-white font-bold py-4 px-10 rounded-full uppercase text-lg shadow-xl transition-all transform hover:scale-105">
+                                Quiero más información
+                            </button>
+                        </Link>
+                    </div>
 
                 </article>
 

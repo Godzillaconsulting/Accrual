@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import backgroundVideo from '../assets/Prompt_cinematic_highend_1080p_2026011.mp4';
 
 const AuditCTA = () => {
@@ -44,9 +45,11 @@ const AuditCTA = () => {
 
 
                     <div className="pt-4 flex flex-col items-center md:items-end gap-4">
-                        <button className="bg-[#233657] hover:bg-[#0F4C82] text-white font-bold py-4 px-10 rounded-full uppercase text-lg shadow-xl transition-all transform hover:scale-105">
-                            Quiero mi Auditoría Rayos X
-                        </button>
+                        <Link to="/contacto">
+                            <button className="bg-[#233657] hover:bg-[#0F4C82] text-white font-bold py-4 px-10 rounded-full uppercase text-lg shadow-xl transition-all transform hover:scale-105">
+                                Quiero mi Auditoría Rayos X
+                            </button>
+                        </Link>
                         <p className="text-xs font-semibold opacity-60 max-w-xs text-center md:text-right">
                             Si no encontramos áreas de mejora, te devolvemos tu dinero.
                         </p>

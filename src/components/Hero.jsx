@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Play, MessageCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import heroVideo from '../assets/AdobeStock_468157733.mov';
 
@@ -59,9 +60,11 @@ const Hero = () => {
                             >
                                 Ver <br className="hidden sm:block" /> Planes
                             </button>
-                            <button className="bg-[#D0D0DA]/10 hover:bg-[#0F4C82] text-[#D0D0DA] font-bold py-4 px-10 rounded-full text-sm uppercase tracking-widest shadow-lg transition-all transform hover:scale-105 backdrop-blur-md border border-[#D0D0DA]/20">
-                                Ver <br className="hidden sm:block" /> Servicios
-                            </button>
+                            <Link to="/servicios">
+                                <button className="bg-[#D0D0DA]/10 hover:bg-[#0F4C82] text-[#D0D0DA] font-bold py-4 px-10 rounded-full text-sm uppercase tracking-widest shadow-lg transition-all transform hover:scale-105 backdrop-blur-md border border-[#D0D0DA]/20">
+                                    Ver <br className="hidden sm:block" /> Servicios
+                                </button>
+                            </Link>
                         </div>
                     </div>
                 ) : (

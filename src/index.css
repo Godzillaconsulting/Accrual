@@ -7,6 +7,42 @@
     @apply antialiased text-gray-900 bg-[#D0D0DA] overflow-x-hidden;
     font-feature-settings: "cv11", "ss01";
   }
+
+  @keyframes subtle-zoom {
+    0% {
+      transform: scale(1) translate(0, 0);
+    }
+
+    50% {
+      transform: scale(1.1) translate(-2%, -2%);
+    }
+
+    100% {
+      transform: scale(1) translate(0, 0);
+    }
+  }
+
+  .animate-subtle-zoom {
+    animation: subtle-zoom 20s ease-in-out infinite;
+  }
+
+  .nav-link {
+    @apply relative inline-block pb-1 transition-transform duration-300;
+    /* Add bottom padding to give space for underline */
+  }
+
+  .nav-link:hover {
+    @apply -translate-y-[2px];
+  }
+
+  .nav-link::after {
+    content: '';
+    @apply absolute w-full scale-x-0 h-0.5 bottom-0 left-0 bg-[#0F4C82] origin-bottom-right transition-transform duration-300;
+  }
+
+  .nav-link:hover::after {
+    @apply scale-x-100 origin-bottom-left;
+  }
 }
 
 @layer components {
