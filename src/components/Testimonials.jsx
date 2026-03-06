@@ -19,6 +19,24 @@ const testimonials = [
         role: "Fundadora de StartUp",
         content: "Excelente servicio de contabilidad y facturación. El equipo es muy profesional y siempre están disponibles para resolver dudas.",
         avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+    },
+    {
+        name: "Carlos Méndez",
+        role: "Director de Logística",
+        content: "La implementación de estrategias de cumplimiento tributario nos ahorró tiempo y recursos valiosos. Altamente recomendados.",
+        avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+    },
+    {
+        name: "Elena Gómez",
+        role: "Consultora de Negocios",
+        content: "Su enfoque en la planeación avanzada es lo que los distingue. Realmente se preocupan por el crecimiento patrimonial de sus clientes.",
+        avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+    },
+    {
+        name: "Javier Ortiz",
+        role: "Dueño de Restaurante",
+        content: "Tener orden en mis impuestos y nómina me dio la paz mental que necesitaba para enfocarme en mi negocio. Gracias, Accrual.",
+        avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
     }
 ];
 
@@ -36,8 +54,8 @@ const Testimonials = () => {
     return (
         <section className="bg-[#D0D0DA] py-24 px-4 overflow-hidden">
             <div className="max-w-6xl mx-auto text-center">
-                <h2 className="text-[#233657] text-3xl md:text-5xl font-black mb-16 tracking-tight">
-                    Lo que nuestra comunidad dice...
+                <h2 className="text-[#233657] text-3xl md:text-5xl font-black mb-16 tracking-tight uppercase">
+                    Lo que opinan nuestros clientes
                 </h2>
 
                 <div className="relative flex items-center justify-center gap-4">
