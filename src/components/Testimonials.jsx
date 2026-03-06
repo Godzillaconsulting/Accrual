@@ -45,14 +45,29 @@ const Testimonials = () => {
     const [isDragging, setIsDragging] = useState(false);
     const [startX, setStartX] = useState(0);
     const [scrollLeft, setScrollLeft] = useState(0);
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     const sliderRef = useRef(null);
 
+    // Update isMobile on resize
+    React.useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    const itemsPerView = isMobile ? 1 : 3;
+    const maxIndex = Math.max(0, testimonials.length - itemsPerView);
+
     const next = () => {
-        setActiveIndex((prev) => (prev + 1) % testimonials.length);
+        if (activeIndex < maxIndex) {
+            setActiveIndex((prev) => prev + 1);
+        }
     };
 
     const prev = () => {
-        setActiveIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+        if (activeIndex > 0) {
+            setActiveIndex((prev) => prev - 1);
+        }
     };
 
     // Drag handling
@@ -90,7 +105,7 @@ const Testimonials = () => {
                     {/* Left Button */}
                     <button
                         onClick={prev}
-                        className="hidden md:flex flex-shrink-0 z-20 p-4 rounded-full bg-white text-[#233657] shadow-xl hover:bg-[#233657] hover:text-white transition-all transform hover:scale-110 border-2 border-transparent"
+                        className={`hidden md:flex flex-shrink-0 z-20 p-4 rounded-full bg-white text-[#233657] shadow-xl hover:bg-[#233657] hover:text-white transition-all duration-300 transform hover:scale-110 border-2 border-transparent ${activeIndex === 0 ? 'opacity-0 invisible' : 'opacity-100 visible'}`}
                     >
                         <ChevronLeft className="w-8 h-8" />
                     </button>
@@ -109,7 +124,7 @@ const Testimonials = () => {
                         <div
                             className="flex transition-transform duration-500 ease-out gap-6"
                             style={{
-                                transform: `translateX(calc(-${activeIndex * (100 / (window.innerWidth < 768 ? 1 : 3))}%))`
+                                transform: `translateX(calc(-${activeIndex * (100 / itemsPerView)}%))`
                             }}
                         >
                             {testimonials.map((testimonial, index) => (
@@ -149,7 +164,7 @@ const Testimonials = () => {
                     {/* Right Button */}
                     <button
                         onClick={next}
-                        className="hidden md:flex flex-shrink-0 z-20 p-4 rounded-full bg-white text-[#233657] shadow-xl hover:bg-[#233657] hover:text-white transition-all transform hover:scale-110 border-2 border-transparent"
+                        className={`hidden md:flex flex-shrink-0 z-20 p-4 rounded-full bg-white text-[#233657] shadow-xl hover:bg-[#233657] hover:text-white transition-all duration-300 transform hover:scale-110 border-2 border-transparent ${activeIndex >= maxIndex ? 'opacity-0 invisible' : 'opacity-100 visible'}`}
                     >
                         <ChevronRight className="w-8 h-8" />
                     </button>
