@@ -3,7 +3,7 @@ import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import Services from '../components/Services';
 import AuditCTA from '../components/AuditCTA';
-import TalkClear from '../components/TalkClear';
+import Testimonials from '../components/Testimonials';
 import LeadMagnet from '../components/LeadMagnet';
 import ContactScheduler from '../components/ContactScheduler';
 import Footer from '../components/Footer';
@@ -16,7 +16,7 @@ const Home = () => {
             <Hero />
             <Services />
             <AuditCTA />
-            <TalkClear />
+            <Testimonials />
             <LeadMagnet />
             <ContactScheduler />
             <Footer />
