@@ -101,7 +101,7 @@ const Testimonials = () => {
                     Lo que opinan nuestros clientes
                 </h2>
 
-                <div className="relative flex items-center justify-center gap-4">
+                <div className="relative flex items-center justify-center gap-2">
                     {/* Left Button */}
                     <button
                         onClick={prev}
@@ -112,7 +112,7 @@ const Testimonials = () => {
 
                     <div
                         ref={sliderRef}
-                        className="w-full overflow-hidden cursor-grab active:cursor-grabbing px-4"
+                        className="w-full overflow-hidden cursor-grab active:cursor-grabbing px-4 md:px-6 py-10"
                         onMouseDown={handleDragStart}
                         onMouseMove={handleDragMove}
                         onMouseUp={handleDragEnd}
@@ -122,17 +122,17 @@ const Testimonials = () => {
                         onTouchEnd={handleDragEnd}
                     >
                         <div
-                            className="flex transition-transform duration-500 ease-out gap-6"
+                            className="flex transition-transform duration-500 ease-out gap-8"
                             style={{
-                                transform: `translateX(calc(-${activeIndex * (100 / itemsPerView)}%))`
+                                transform: `translateX(calc(-${activeIndex} * (${100 / itemsPerView}% + ${32 / itemsPerView}px)))`
                             }}
                         >
                             {testimonials.map((testimonial, index) => (
                                 <div
                                     key={index}
-                                    className="w-full md:w-[calc(33.333%-1rem)] flex-shrink-0 group"
+                                    className="w-full md:w-[calc(33.333%-1.35rem)] flex-shrink-0 group"
                                 >
-                                    <div className="h-full bg-white rounded-3xl p-10 shadow-[0_20px_50px_rgba(0,0,0,0.05)] relative flex flex-col justify-between transition-all duration-500 hover:shadow-[0_30px_60px_rgba(0,0,0,0.15)] hover:scale-[1.03] hover:z-10 border-b-[10px] border-transparent hover:border-[#233657] mt-20 mb-10">
+                                    <div className="h-full bg-white rounded-[2.5rem] p-10 shadow-[0_20px_50px_rgba(0,0,0,0.05)] relative flex flex-col justify-between transition-all duration-500 hover:shadow-[0_40px_80px_rgba(0,0,0,0.12)] hover:scale-[1.03] hover:z-10 border-b-[12px] border-transparent hover:border-[#233657] mt-16">
                                         <div className="flex flex-col items-center">
                                             {/* Avatar with Shadow Ring */}
                                             <div className="w-28 h-28 rounded-full border-8 border-white shadow-2xl overflow-hidden -mt-24 mb-6 group-hover:scale-110 transition-transform duration-500">
