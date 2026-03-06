@@ -78,10 +78,10 @@ const Testimonials = () => {
                             return (
                                 <div
                                     key={index}
-                                    className={`transition-all duration-700 transform flex-shrink-0 w-full md:w-[30%] lg:w-[32%]
-                                        ${isActive ? 'opacity-100 scale-100 z-10' : 'opacity-60 scale-90 md:opacity-80'}`}
+                                    className={`transition-all duration-700 transform flex-shrink-0 w-full md:w-[30%] lg:w-[32%] group
+                                        ${isActive ? 'opacity-100 scale-100 z-10' : 'opacity-60 scale-90 md:opacity-80 hover:opacity-100 hover:scale-100 hover:z-20'}`}
                                 >
-                                    <div className={`bg-white rounded-3xl p-10 shadow-[0_20px_50px_rgba(0,0,0,0.1)] relative h-full flex flex-col justify-between transition-all duration-500 hover:shadow-[0_30px_60px_rgba(0,0,0,0.15)] ${isActive ? 'border-b-[10px] border-[#233657]' : 'border-b-[10px] border-transparent'}`}>
+                                    <div className={`bg-white rounded-3xl p-10 shadow-[0_20px_50px_rgba(0,0,0,0.1)] relative h-full flex flex-col justify-between transition-all duration-500 hover:shadow-[0_30px_60px_rgba(0,0,0,0.15)] ${isActive ? 'border-b-[10px] border-[#233657]' : 'border-b-[10px] border-transparent group-hover:border-[#233657]'}`}>
                                         <div className="flex flex-col items-center">
                                             {/* Avatar with Shadow Ring */}
                                             <div className="w-28 h-28 rounded-full border-8 border-white shadow-2xl overflow-hidden -mt-20 mb-6 group-hover:scale-105 transition-transform">
