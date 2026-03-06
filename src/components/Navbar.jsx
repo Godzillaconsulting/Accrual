@@ -35,21 +35,13 @@ const Navbar = () => {
                 <div className="flex items-center gap-3">
                     <Link
                         to="/"
-                        className={`relative group flex items-center justify-center transition-all duration-300 transform hover:scale-105 ${isScrolled ? 'h-6' : 'h-8'}`}
+                        className={`relative group flex items-center justify-center transition-all duration-300 transform hover:scale-105 ${isScrolled ? 'h-10' : 'h-14'}`}
                     >
-                        {/* Default Logo (Inverted to Black) - Controls Width */}
+                        {/* Main Logo - Shown as is for maximum quality */}
                         <img
                             src={accrualLogo}
                             alt="Accrual Logo"
-                            className="h-full w-auto object-contain transition-opacity duration-300 opacity-100 group-hover:opacity-0"
-                            style={{ filter: 'invert(1)' }}
-                        />
-                        {/* Hover Logo (Blue via Filter) - Absolute Overlay */}
-                        <img
-                            src={accrualLogo}
-                            alt="Accrual Logo Hover"
-                            className="absolute top-0 left-0 h-full w-auto object-contain transition-opacity duration-300 opacity-0 group-hover:opacity-100"
-                            style={{ filter: 'invert(24%) sepia(87%) saturate(1915%) hue-rotate(195deg) brightness(96%) contrast(92%)' }}
+                            className="h-full w-auto object-contain transition-all duration-300"
                         />
                     </Link>
                 </div>
