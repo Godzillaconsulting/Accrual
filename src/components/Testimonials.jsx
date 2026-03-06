@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { ChevronLeft, ChevronRight, Quote } from 'lucide-react';
 
 const testimonials = [
@@ -41,7 +41,11 @@ const testimonials = [
 ];
 
 const Testimonials = () => {
-    const [activeIndex, setActiveIndex] = useState(1);
+    const [activeIndex, setActiveIndex] = useState(0);
+    const [isDragging, setIsDragging] = useState(false);
+    const [startX, setStartX] = useState(0);
+    const [scrollLeft, setScrollLeft] = useState(0);
+    const sliderRef = useRef(null);
 
     const next = () => {
         setActiveIndex((prev) => (prev + 1) % testimonials.length);
@@ -51,9 +55,33 @@ const Testimonials = () => {
         setActiveIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
     };
 
+    // Drag handling
+    const handleDragStart = (e) => {
+        setIsDragging(true);
+        setStartX((e.pageX || e.touches[0].pageX) - sliderRef.current.offsetLeft);
+        setScrollLeft(activeIndex);
+    };
+
+    const handleDragMove = (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        const x = (e.pageX || e.touches[0].pageX) - sliderRef.current.offsetLeft;
+        const walk = (x - startX) / 200; // Sensibilidad del arrastre
+
+        if (Math.abs(walk) > 0.5) {
+            if (walk > 0) prev();
+            else next();
+            setIsDragging(false); // Detener drag tras cambio
+        }
+    };
+
+    const handleDragEnd = () => {
+        setIsDragging(false);
+    };
+
     return (
-        <section className="bg-[#D0D0DA] py-24 px-4 overflow-hidden">
-            <div className="max-w-6xl mx-auto text-center">
+        <section className="bg-[#D0D0DA] py-24 px-4 overflow-hidden select-none">
+            <div className="max-w-7xl mx-auto text-center">
                 <h2 className="text-[#233657] text-3xl md:text-5xl font-black mb-16 tracking-tight uppercase">
                     Lo que opinan nuestros clientes
                 </h2>
@@ -62,29 +90,37 @@ const Testimonials = () => {
                     {/* Left Button */}
                     <button
                         onClick={prev}
-                        className="absolute left-0 md:static z-20 p-3 rounded-full bg-white text-[#233657] shadow-xl hover:bg-[#233657] hover:text-white transition-all transform hover:scale-110 border-2 border-transparent"
+                        className="hidden md:flex flex-shrink-0 z-20 p-4 rounded-full bg-white text-[#233657] shadow-xl hover:bg-[#233657] hover:text-white transition-all transform hover:scale-110 border-2 border-transparent"
                     >
-                        <ChevronLeft className="w-6 h-6" />
+                        <ChevronLeft className="w-8 h-8" />
                     </button>
 
-                    <div className="flex items-center justify-center gap-8 w-full max-w-4xl px-4">
-                        {testimonials.map((testimonial, index) => {
-                            const isActive = index === activeIndex;
-                            const isSide = index === (activeIndex - 1 + testimonials.length) % testimonials.length ||
-                                index === (activeIndex + 1) % testimonials.length;
-
-                            if (!isActive && !isSide) return null;
-
-                            return (
+                    <div
+                        ref={sliderRef}
+                        className="w-full overflow-hidden cursor-grab active:cursor-grabbing px-4"
+                        onMouseDown={handleDragStart}
+                        onMouseMove={handleDragMove}
+                        onMouseUp={handleDragEnd}
+                        onMouseLeave={handleDragEnd}
+                        onTouchStart={handleDragStart}
+                        onTouchMove={handleDragMove}
+                        onTouchEnd={handleDragEnd}
+                    >
+                        <div
+                            className="flex transition-transform duration-500 ease-out gap-6"
+                            style={{
+                                transform: `translateX(calc(-${activeIndex * (100 / (window.innerWidth < 768 ? 1 : 3))}%))`
+                            }}
+                        >
+                            {testimonials.map((testimonial, index) => (
                                 <div
                                     key={index}
-                                    className={`transition-all duration-700 transform flex-shrink-0 w-full md:w-[30%] lg:w-[32%] group
-                                        ${isActive ? 'opacity-100 scale-100 z-10' : 'opacity-60 scale-90 md:opacity-80 hover:opacity-100 hover:scale-100 hover:z-20'}`}
+                                    className="w-full md:w-[calc(33.333%-1rem)] flex-shrink-0 group"
                                 >
-                                    <div className={`bg-white rounded-3xl p-10 shadow-[0_20px_50px_rgba(0,0,0,0.1)] relative h-full flex flex-col justify-between transition-all duration-500 hover:shadow-[0_30px_60px_rgba(0,0,0,0.15)] ${isActive ? 'border-b-[10px] border-[#233657]' : 'border-b-[10px] border-transparent group-hover:border-[#233657]'}`}>
+                                    <div className="h-full bg-white rounded-3xl p-10 shadow-[0_20px_50px_rgba(0,0,0,0.05)] relative flex flex-col justify-between transition-all duration-500 hover:shadow-[0_30px_60px_rgba(0,0,0,0.15)] hover:scale-[1.03] hover:z-10 border-b-[10px] border-transparent hover:border-[#233657] mt-20 mb-10">
                                         <div className="flex flex-col items-center">
                                             {/* Avatar with Shadow Ring */}
-                                            <div className="w-28 h-28 rounded-full border-8 border-white shadow-2xl overflow-hidden -mt-20 mb-6 group-hover:scale-105 transition-transform">
+                                            <div className="w-28 h-28 rounded-full border-8 border-white shadow-2xl overflow-hidden -mt-24 mb-6 group-hover:scale-110 transition-transform duration-500">
                                                 <img
                                                     src={testimonial.avatar}
                                                     alt={testimonial.name}
@@ -93,7 +129,7 @@ const Testimonials = () => {
                                             </div>
 
                                             {/* Name & Role */}
-                                            <h3 className={`text-[#233657] font-black text-2xl mb-2 tracking-tight ${isActive ? '' : 'text-[#233657]/80'}`}>{testimonial.name}</h3>
+                                            <h3 className="text-[#233657] font-black text-2xl mb-2 tracking-tight">{testimonial.name}</h3>
                                             <p className="text-[#233657]/50 text-xs font-black uppercase tracking-[0.2em] mb-8">{testimonial.role}</p>
 
                                             {/* Content with Decorative Quotes */}
@@ -106,17 +142,28 @@ const Testimonials = () => {
                                         </div>
                                     </div>
                                 </div>
-                            );
-                        })}
+                            ))}
+                        </div>
                     </div>
 
                     {/* Right Button */}
                     <button
                         onClick={next}
-                        className="absolute right-0 md:static z-20 p-3 rounded-full bg-white text-[#233657] shadow-xl hover:bg-[#233657] hover:text-white transition-all transform hover:scale-110 border-2 border-transparent"
+                        className="hidden md:flex flex-shrink-0 z-20 p-4 rounded-full bg-white text-[#233657] shadow-xl hover:bg-[#233657] hover:text-white transition-all transform hover:scale-110 border-2 border-transparent"
                     >
-                        <ChevronRight className="w-6 h-6" />
+                        <ChevronRight className="w-8 h-8" />
                     </button>
+                </div>
+
+                {/* Pagination Dots (Optional for better UX with swipe) */}
+                <div className="mt-12 flex justify-center gap-3">
+                    {testimonials.map((_, i) => (
+                        <button
+                            key={i}
+                            onClick={() => setActiveIndex(i)}
+                            className={`h-2 rounded-full transition-all duration-300 ${activeIndex === i ? 'w-8 bg-[#233657]' : 'w-2 bg-[#233657]/20'}`}
+                        />
+                    ))}
                 </div>
             </div>
         </section>
