@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Play, MessageCircle, ChevronLeft, ChevronRight } from 'lucide-react';
-import heroVideo from '../assets/AdobeStock_468157733.mov';
+import heroVideo from '../assets/AccrualLPVideo_AM_060325.mp4';
 
 const Hero = () => {
     const [currentSlide, setCurrentSlide] = useState('fiscal');
@@ -25,7 +25,6 @@ const Hero = () => {
                     playsInline
                     className="w-full h-full object-cover opacity-60"
                 >
-                    <source src={heroVideo} type="video/quicktime" />
                     <source src={heroVideo} type="video/mp4" />
                 </video>
                 {/* Overlay for readability */}
