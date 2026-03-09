@@ -16,9 +16,11 @@ const Services = () => {
                     <h3 className="text-xl font-semibold mb-2">Emprendedores</h3>
                     <div className="mb-6">
                         <div className="text-sm text-gray-500 font-medium mb-1">menos de</div>
-                        <span className="text-4xl lg:text-5xl font-black tracking-tight">$10,000</span>
-                        <span className="text-xl font-bold text-gray-400 ml-1">mxn</span>
-                        <span className="text-sm text-gray-500 font-medium ml-2">/ Facturación mensual</span>
+                        <div>
+                            <span className="text-4xl lg:text-5xl font-black tracking-tight">$10,000</span>
+                            <span className="text-xl font-bold text-gray-400 ml-1">mxn</span>
+                        </div>
+                        <div className="text-sm text-gray-500 font-medium mt-1">/ Facturación mensual</div>
                     </div>
 
                     <p className="text-sm text-gray-600 mb-8 h-auto font-medium">
@@ -46,9 +48,11 @@ const Services = () => {
                     <h3 className="text-xl font-semibold mb-2">Pymes y Negocios</h3>
                     <div className="mb-6">
                         <div className="text-sm text-gray-500 font-medium mb-1">entre</div>
-                        <span className="text-2xl lg:text-3xl xl:text-4xl font-black tracking-tight">$10,000 - $100,000</span>
-                        <span className="text-xl font-bold text-gray-400 ml-1">mxn</span>
-                        <span className="text-sm text-gray-500 font-medium ml-2 block mt-1">/ Facturación mensual</span>
+                        <div>
+                            <span className="text-2xl lg:text-3xl xl:text-4xl font-black tracking-tight">$10,000 - $100,000</span>
+                            <span className="text-xl font-bold text-gray-400 ml-1">mxn</span>
+                        </div>
+                        <div className="text-sm text-gray-500 font-medium mt-1">/ Facturación mensual</div>
                     </div>
 
                     <p className="text-sm text-gray-600 mb-8 h-auto font-medium">
@@ -83,9 +87,11 @@ const Services = () => {
                     <h3 className="text-xl font-semibold mb-2 relative z-10 text-gray-300">Corporativo Global</h3>
                     <div className="mb-6 relative z-10">
                         <div className="text-sm text-gray-400 font-medium mb-1">más de</div>
-                        <span className="text-4xl lg:text-5xl font-black tracking-tight text-white">$100,000</span>
-                        <span className="text-xl font-bold text-gray-400 ml-1">mxn</span>
-                        <span className="text-sm text-gray-400 font-medium ml-2 block mt-1">/ Facturación mensual + Ops USA</span>
+                        <div>
+                            <span className="text-4xl lg:text-5xl font-black tracking-tight text-white">$100,000</span>
+                            <span className="text-xl font-bold text-gray-400 ml-1">mxn</span>
+                        </div>
+                        <div className="text-sm text-gray-400 font-medium mt-1">/ Facturación mensual + Ops USA</div>
                     </div>
 
                     <p className="text-sm text-gray-400 mb-8 h-auto relative z-10 font-medium">
