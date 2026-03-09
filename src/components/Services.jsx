@@ -16,12 +16,12 @@ const Services = () => {
                     <h3 className="text-xl font-semibold mb-2">Emprendedores</h3>
                     <div className="mb-6">
                         <div className="text-sm text-gray-500 font-medium mb-1">menos de</div>
-                        <span className="text-5xl font-black tracking-tight">$10M</span>
+                        <span className="text-4xl lg:text-5xl font-black tracking-tight">$10,000</span>
                         <span className="text-sm text-gray-500 font-medium ml-2">/ Facturación mensual</span>
                     </div>
 
                     <p className="text-sm text-gray-600 mb-8 h-auto font-medium">
-                        ¿Estás facturando menos de $10,000,000 al mes? Que el SAT no te quite el sueño, simplifica tu vida y paga lo justo
+                        ¿Estás facturando menos de $10,000 al mes? Que el SAT no te quite el sueño, simplifica tu vida y paga lo justo
                     </p>
 
                     <button className="w-full bg-transparent text-[#233657] font-bold py-3 rounded-full mb-10 hover:bg-gray-50 transition-all border border-gray-300 shadow-sm">
@@ -45,12 +45,12 @@ const Services = () => {
                     <h3 className="text-xl font-semibold mb-2">Pymes y Negocios</h3>
                     <div className="mb-6">
                         <div className="text-sm text-gray-500 font-medium mb-1">entre</div>
-                        <span className="text-4xl font-black tracking-tight">$10M - $100M</span>
+                        <span className="text-2xl lg:text-3xl xl:text-4xl font-black tracking-tight">$10,000 - $100,000</span>
                         <span className="text-sm text-gray-500 font-medium ml-2 block mt-1">/ Facturación mensual</span>
                     </div>
 
                     <p className="text-sm text-gray-600 mb-8 h-auto font-medium">
-                        ¿Estás facturando entre $10,000,000 y $100,000,000 al mes? ¿Nómina alta y poco margen? Activa los estímulos fronterizos.
+                        ¿Estás facturando entre $10,000 y $100,000 al mes? ¿Nómina alta y poco margen? Activa los estímulos fronterizos.
                     </p>
 
                     <button className="w-full bg-transparent text-[#233657] font-bold py-3 rounded-full mb-10 hover:bg-gray-50 transition-all border border-gray-300 shadow-sm">
@@ -81,12 +81,12 @@ const Services = () => {
                     <h3 className="text-xl font-semibold mb-2 relative z-10 text-gray-300">Corporativo Global</h3>
                     <div className="mb-6 relative z-10">
                         <div className="text-sm text-gray-400 font-medium mb-1">más de</div>
-                        <span className="text-5xl font-black tracking-tight text-white">$100M</span>
+                        <span className="text-4xl lg:text-5xl font-black tracking-tight text-white">$100,000</span>
                         <span className="text-sm text-gray-400 font-medium ml-2 block mt-1">/ Facturación mensual + Ops USA</span>
                     </div>
 
                     <p className="text-sm text-gray-400 mb-8 h-auto relative z-10 font-medium">
-                        ¿Estás facturando más de $100,000,000 al mes? Estrategia Binacional, Precios de Transferencia y Compliance.
+                        ¿Estás facturando más de $100,000 al mes? Estrategia Binacional, Precios de Transferencia y Compliance.
                     </p>
 
                     <button className="w-full bg-[#0F4C82] text-white font-bold py-3 rounded-full mb-10 hover:bg-[#1565C0] transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(15,76,130,0.5)] border border-transparent relative z-10">
