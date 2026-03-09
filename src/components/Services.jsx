@@ -12,108 +12,111 @@ const Services = () => {
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10 items-stretch">
 
                 {/* Card 1: Emprendedores */}
-                <div className="bg-[#233657] text-[#D0D0DA] rounded-3xl p-8 flex flex-col shadow-2xl border border-[#D0D0DA]/30 min-h-[500px] transition-all duration-300 hover:border-[#0F4C82] hover:shadow-[0_0_30px_rgba(15,76,130,0.6)] hover:-translate-y-4">
-                    <h3 className="text-xl font-medium mb-2">Emprendedores</h3>
+                <div className="bg-white text-[#233657] rounded-[2rem] p-8 flex flex-col shadow-xl border border-gray-200 min-h-[500px] transition-all duration-300 hover:border-gray-300 hover:shadow-2xl hover:-translate-y-2 mt-4 md:mt-0">
+                    <h3 className="text-xl font-semibold mb-2">Emprendedores</h3>
                     <div className="mb-6">
-                        <div className="text-sm opacity-60">menos de</div>
-                        <span className="text-4xl font-bold tracking-tight">$10M</span>
-                        <span className="text-sm opacity-60 ml-2">/ Facturación</span>
+                        <div className="text-sm text-gray-500 font-medium mb-1">menos de</div>
+                        <span className="text-5xl font-black tracking-tight">$10M</span>
+                        <span className="text-sm text-gray-500 font-medium ml-2">/ Facturación</span>
                     </div>
 
-                    <p className="text-sm opacity-80 mb-8 h-auto">
+                    <p className="text-sm text-gray-600 mb-8 h-auto font-medium">
                         ¿Estás facturando menos de $10,000,000 al mes? Que el SAT no te quite el sueño, simplifica tu vida y paga lo justo
                     </p>
 
-                    <button className="w-full bg-[#D0D0DA] text-[#233657] font-bold py-3 rounded-full mb-10 hover:bg-[#0F4C82] hover:text-[#D0D0DA] transition-all transform hover:scale-105 border border-transparent hover:border-[#D0D0DA] shadow-lg">
+                    <button className="w-full bg-transparent text-[#233657] font-bold py-3 rounded-full mb-10 hover:bg-gray-50 transition-all border border-gray-300 shadow-sm">
                         Ver Solución Emprendedor
                     </button>
 
                     <ul className="space-y-4 text-sm flex-grow">
                         <li className="flex items-start gap-3">
-                            <Check className="w-5 h-5 text-[#233657] shrink-0 bg-[#D0D0DA] rounded-full p-1" />
-                            <span>Para: Facturación &lt; $10M</span>
+                            <Check className="w-5 h-5 text-gray-400 shrink-0" strokeWidth={3} />
+                            <span className="text-gray-600 font-medium">Para: Facturación &lt; $10M</span>
                         </li>
                         <li className="flex items-start gap-3">
-                            <Check className="w-5 h-5 text-[#233657] shrink-0 bg-[#D0D0DA] rounded-full p-1" />
-                            <span>Simplifica tu vida fiscal</span>
+                            <Check className="w-5 h-5 text-gray-400 shrink-0" strokeWidth={3} />
+                            <span className="text-gray-600 font-medium">Simplifica tu vida fiscal</span>
                         </li>
                         <li className="flex items-start gap-3">
-                            <Check className="w-5 h-5 text-[#233657] shrink-0 bg-[#D0D0DA] rounded-full p-1" />
-                            <span>Servicio Clave: RESICO</span>
+                            <Check className="w-5 h-5 text-gray-400 shrink-0" strokeWidth={3} />
+                            <span className="text-gray-600 font-medium">Servicio Clave: RESICO</span>
                         </li>
                     </ul>
                 </div>
 
-                {/* Card 2: Pymes/Negocios (Highlighted) */}
-                <div className="bg-[#233657] text-[#D0D0DA] rounded-3xl p-8 flex flex-col shadow-2xl border border-[#D0D0DA]/30 min-h-[500px] transition-all duration-300 hover:border-[#0F4C82] hover:shadow-[0_0_30px_rgba(15,76,130,0.6)] hover:-translate-y-4">
-
-                    <h3 className="text-xl font-medium mb-2">Pymes y Negocios</h3>
+                {/* Card 2: Pymes/Negocios */}
+                <div className="bg-white text-[#233657] rounded-[2rem] p-8 flex flex-col shadow-xl border border-gray-200 min-h-[500px] transition-all duration-300 hover:border-gray-300 hover:shadow-2xl hover:-translate-y-2 mt-4 md:mt-0">
+                    <h3 className="text-xl font-semibold mb-2">Pymes y Negocios</h3>
                     <div className="mb-6">
-                        <span className="text-4xl font-bold tracking-tight">$10M - $100M</span>
-                        <span className="text-sm opacity-60 ml-2">/ Facturación</span>
+                        <div className="text-sm text-gray-500 font-medium mb-1">entre</div>
+                        <span className="text-4xl font-black tracking-tight">$10M - $100M</span>
+                        <span className="text-sm text-gray-500 font-medium ml-2 block mt-1">/ Facturación</span>
                     </div>
 
-                    <p className="text-sm opacity-80 mb-8 h-auto">
+                    <p className="text-sm text-gray-600 mb-8 h-auto font-medium">
                         ¿Estás facturando entre $10,000,000 y $100,000,000 al mes? ¿Nómina alta y poco margen? Activa los estímulos fronterizos.
                     </p>
 
-                    <button className="w-full bg-[#D0D0DA] text-[#233657] font-bold py-3 rounded-full mb-10 hover:bg-[#0F4C82] hover:text-[#D0D0DA] transition-all transform hover:scale-105 border border-transparent hover:border-[#D0D0DA] shadow-lg">
+                    <button className="w-full bg-transparent text-[#233657] font-bold py-3 rounded-full mb-10 hover:bg-gray-50 transition-all border border-gray-300 shadow-sm">
                         Ver Solución Negocio
                     </button>
 
                     <ul className="space-y-4 text-sm flex-grow">
                         <li className="flex items-start gap-3">
-                            <Check className="w-5 h-5 text-[#233657] shrink-0 bg-[#D0D0DA] rounded-full p-1" />
-                            <span>Para: Facturación $10M - $100M</span>
+                            <Check className="w-5 h-5 text-gray-400 shrink-0" strokeWidth={3} />
+                            <span className="text-gray-600 font-medium">Para: Facturación $10M - $100M</span>
                         </li>
                         <li className="flex items-start gap-3">
-                            <Check className="w-5 h-5 text-[#233657] shrink-0 bg-[#D0D0DA] rounded-full p-1" />
-                            <span>Estímulos fronterizos</span>
+                            <Check className="w-5 h-5 text-gray-400 shrink-0" strokeWidth={3} />
+                            <span className="text-gray-600 font-medium">Estímulos fronterizos</span>
                         </li>
                         <li className="flex items-start gap-3">
-                            <Check className="w-5 h-5 text-[#233657] shrink-0 bg-[#D0D0DA] rounded-full p-1" />
-                            <span>Servicio Clave: Regularización</span>
+                            <Check className="w-5 h-5 text-gray-400 shrink-0" strokeWidth={3} />
+                            <span className="text-gray-600 font-medium">Servicio Clave: Regularización</span>
                         </li>
                         <li className="flex items-start gap-3">
-                            <Check className="w-5 h-5 text-[#233657] shrink-0 bg-[#D0D0DA] rounded-full p-1" />
-                            <span>Optimización de Nómina</span>
+                            <Check className="w-5 h-5 text-gray-400 shrink-0" strokeWidth={3} />
+                            <span className="text-gray-600 font-medium">Optimización de Nómina</span>
                         </li>
                     </ul>
                 </div>
 
-                {/* Card 3: Corporativo */}
-                <div className="bg-[#233657] text-[#D0D0DA] rounded-3xl p-8 flex flex-col shadow-2xl border border-[#D0D0DA]/30 min-h-[500px] transition-all duration-300 hover:border-[#0F4C82] hover:shadow-[0_0_30px_rgba(15,76,130,0.6)] hover:-translate-y-4">
-                    <h3 className="text-xl font-medium mb-2">Corporativo Global</h3>
-                    <div className="mb-6">
-                        <div className="text-sm opacity-60">más de</div>
-                        <span className="text-3xl font-bold tracking-tight">$100M</span>
-                        <span className="text-sm opacity-60 ml-2">/ + Ops USA</span>
+                {/* Card 3: Corporativo (Highlighted) */}
+                <div className="bg-[#111827] text-white rounded-[2rem] p-8 flex flex-col shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-gray-800 min-h-[500px] transition-all duration-300 hover:shadow-[0_20px_60px_rgba(15,76,130,0.4)] md:-mt-4 relative overflow-hidden z-20">
+                    {/* Subtle glow effect behind */}
+                    <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-[#0F4C82] rounded-full blur-[80px] opacity-40 pointer-events-none"></div>
+
+                    <h3 className="text-xl font-semibold mb-2 relative z-10 text-gray-300">Corporativo Global</h3>
+                    <div className="mb-6 relative z-10">
+                        <div className="text-sm text-gray-400 font-medium mb-1">más de</div>
+                        <span className="text-5xl font-black tracking-tight text-white">$100M</span>
+                        <span className="text-sm text-gray-400 font-medium ml-2 block mt-1">/ + Ops USA</span>
                     </div>
 
-                    <p className="text-sm opacity-80 mb-8 h-auto">
+                    <p className="text-sm text-gray-400 mb-8 h-auto relative z-10 font-medium">
                         ¿Estás facturando más de $100,000,000 al mes? Estrategia Binacional, Precios de Transferencia y Compliance.
                     </p>
 
-                    <button className="w-full bg-[#D0D0DA] text-[#233657] font-bold py-3 rounded-full mb-10 hover:bg-[#0F4C82] hover:text-[#D0D0DA] transition-all transform hover:scale-105 border border-transparent hover:border-[#D0D0DA] shadow-lg">
+                    <button className="w-full bg-[#0F4C82] text-white font-bold py-3 rounded-full mb-10 hover:bg-[#1565C0] transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(15,76,130,0.5)] border border-transparent relative z-10">
                         Ver Solución Corporativo
                     </button>
 
-                    <ul className="space-y-4 text-sm flex-grow">
+                    <ul className="space-y-4 text-sm flex-grow relative z-10">
                         <li className="flex items-start gap-3">
-                            <Check className="w-5 h-5 text-[#233657] shrink-0 bg-[#D0D0DA] rounded-full p-1" />
-                            <span>Para: Facturación &gt; $100M</span>
+                            <Check className="w-5 h-5 text-gray-500 shrink-0" strokeWidth={3} />
+                            <span className="text-gray-300 font-medium">Para: Facturación &gt; $100M</span>
                         </li>
                         <li className="flex items-start gap-3">
-                            <Check className="w-5 h-5 text-[#233657] shrink-0 bg-[#D0D0DA] rounded-full p-1" />
-                            <span>Estrategia Binacional</span>
+                            <Check className="w-5 h-5 text-gray-500 shrink-0" strokeWidth={3} />
+                            <span className="text-gray-300 font-medium">Estrategia Binacional</span>
                         </li>
                         <li className="flex items-start gap-3">
-                            <Check className="w-5 h-5 text-[#233657] shrink-0 bg-[#D0D0DA] rounded-full p-1" />
-                            <span>Precios de Transferencia</span>
+                            <Check className="w-5 h-5 text-gray-500 shrink-0" strokeWidth={3} />
+                            <span className="text-gray-300 font-medium">Precios de Transferencia</span>
                         </li>
                         <li className="flex items-start gap-3">
-                            <Check className="w-5 h-5 text-[#233657] shrink-0 bg-[#D0D0DA] rounded-full p-1" />
-                            <span>Auditoria & Compliance</span>
+                            <Check className="w-5 h-5 text-gray-500 shrink-0" strokeWidth={3} />
+                            <span className="text-gray-300 font-medium">Auditoria & Compliance</span>
                         </li>
                     </ul>
                 </div>
