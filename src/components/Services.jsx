@@ -17,7 +17,7 @@ const Services = () => {
                     <div className="mb-6">
                         <div className="text-sm text-gray-500 font-medium mb-1">menos de</div>
                         <span className="text-5xl font-black tracking-tight">$10M</span>
-                        <span className="text-sm text-gray-500 font-medium ml-2">/ Facturación</span>
+                        <span className="text-sm text-gray-500 font-medium ml-2">/ Facturación mensual</span>
                     </div>
 
                     <p className="text-sm text-gray-600 mb-8 h-auto font-medium">
@@ -29,10 +29,6 @@ const Services = () => {
                     </button>
 
                     <ul className="space-y-4 text-sm flex-grow">
-                        <li className="flex items-start gap-3">
-                            <Check className="w-5 h-5 text-gray-400 shrink-0" strokeWidth={3} />
-                            <span className="text-gray-600 font-medium">Para: Facturación &lt; $10M</span>
-                        </li>
                         <li className="flex items-start gap-3">
                             <Check className="w-5 h-5 text-gray-400 shrink-0" strokeWidth={3} />
                             <span className="text-gray-600 font-medium">Simplifica tu vida fiscal</span>
@@ -50,7 +46,7 @@ const Services = () => {
                     <div className="mb-6">
                         <div className="text-sm text-gray-500 font-medium mb-1">entre</div>
                         <span className="text-4xl font-black tracking-tight">$10M - $100M</span>
-                        <span className="text-sm text-gray-500 font-medium ml-2 block mt-1">/ Facturación</span>
+                        <span className="text-sm text-gray-500 font-medium ml-2 block mt-1">/ Facturación mensual</span>
                     </div>
 
                     <p className="text-sm text-gray-600 mb-8 h-auto font-medium">
@@ -62,10 +58,6 @@ const Services = () => {
                     </button>
 
                     <ul className="space-y-4 text-sm flex-grow">
-                        <li className="flex items-start gap-3">
-                            <Check className="w-5 h-5 text-gray-400 shrink-0" strokeWidth={3} />
-                            <span className="text-gray-600 font-medium">Para: Facturación $10M - $100M</span>
-                        </li>
                         <li className="flex items-start gap-3">
                             <Check className="w-5 h-5 text-gray-400 shrink-0" strokeWidth={3} />
                             <span className="text-gray-600 font-medium">Estímulos fronterizos</span>
@@ -90,7 +82,7 @@ const Services = () => {
                     <div className="mb-6 relative z-10">
                         <div className="text-sm text-gray-400 font-medium mb-1">más de</div>
                         <span className="text-5xl font-black tracking-tight text-white">$100M</span>
-                        <span className="text-sm text-gray-400 font-medium ml-2 block mt-1">/ + Ops USA</span>
+                        <span className="text-sm text-gray-400 font-medium ml-2 block mt-1">/ Facturación mensual + Ops USA</span>
                     </div>
 
                     <p className="text-sm text-gray-400 mb-8 h-auto relative z-10 font-medium">
@@ -102,10 +94,6 @@ const Services = () => {
                     </button>
 
                     <ul className="space-y-4 text-sm flex-grow relative z-10">
-                        <li className="flex items-start gap-3">
-                            <Check className="w-5 h-5 text-gray-500 shrink-0" strokeWidth={3} />
-                            <span className="text-gray-300 font-medium">Para: Facturación &gt; $100M</span>
-                        </li>
                         <li className="flex items-start gap-3">
                             <Check className="w-5 h-5 text-gray-500 shrink-0" strokeWidth={3} />
                             <span className="text-gray-300 font-medium">Estrategia Binacional</span>
