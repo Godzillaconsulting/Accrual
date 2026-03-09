@@ -4,7 +4,6 @@ import Hero from '../components/Hero';
 import Services from '../components/Services';
 import AuditCTA from '../components/AuditCTA';
 import Testimonials from '../components/Testimonials';
-import LeadMagnet from '../components/LeadMagnet';
 import ContactScheduler from '../components/ContactScheduler';
 import Footer from '../components/Footer';
 import FloatingWhatsApp from '../components/FloatingWhatsApp';
@@ -17,7 +16,6 @@ const Home = () => {
             <Services />
             <AuditCTA />
             <Testimonials />
-            <LeadMagnet />
             <ContactScheduler />
             <Footer />
             <FloatingWhatsApp />
