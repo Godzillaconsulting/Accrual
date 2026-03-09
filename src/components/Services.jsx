@@ -27,7 +27,7 @@ const Services = () => {
                         ¿Estás facturando menos de $10,000 al mes? Que el SAT no te quite el sueño, simplifica tu vida y paga lo justo
                     </p>
 
-                    <button className="w-full bg-transparent text-[#233657] font-bold py-3 rounded-full mb-10 hover:bg-gray-50 transition-all border border-gray-300 shadow-sm">
+                    <button className="w-full bg-transparent text-[#233657] font-bold py-3 rounded-full mb-10 hover:bg-gray-50 transition-all border border-gray-300 shadow-sm transform hover:scale-105 hover:shadow-md">
                         Ver Solución Emprendedor
                     </button>
 
@@ -59,7 +59,7 @@ const Services = () => {
                         ¿Estás facturando entre $10,000 y $100,000 al mes? ¿Nómina alta y poco margen? Activa los estímulos fronterizos.
                     </p>
 
-                    <button className="w-full bg-transparent text-[#233657] font-bold py-3 rounded-full mb-10 hover:bg-gray-50 transition-all border border-gray-300 shadow-sm">
+                    <button className="w-full bg-transparent text-[#233657] font-bold py-3 rounded-full mb-10 hover:bg-gray-50 transition-all border border-gray-300 shadow-sm transform hover:scale-105 hover:shadow-md">
                         Ver Solución Negocio
                     </button>
 
@@ -80,7 +80,7 @@ const Services = () => {
                 </div>
 
                 {/* Card 3: Corporativo (Highlighted) */}
-                <div className="bg-[#111827] text-white rounded-[2rem] p-8 flex flex-col shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-gray-800 min-h-[500px] transition-all duration-300 hover:shadow-[0_20px_60px_rgba(15,76,130,0.4)] md:-mt-4 relative overflow-hidden z-20">
+                <div className="bg-[#111827] text-white rounded-[2rem] p-8 flex flex-col shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-gray-800 min-h-[500px] transition-all duration-300 hover:shadow-[0_20px_60px_rgba(15,76,130,0.4)] hover:-translate-y-2 md:-mt-4 relative overflow-hidden z-20">
                     {/* Subtle glow effect behind */}
                     <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-[#0F4C82] rounded-full blur-[80px] opacity-40 pointer-events-none"></div>
 
