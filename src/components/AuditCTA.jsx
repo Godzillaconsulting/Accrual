@@ -36,7 +36,7 @@ const AuditCTA = () => {
 
                     <div className="max-w-lg ml-auto mr-auto md:mr-0">
                         <p className="font-semibold text-base md:text-lg opacity-80">
-                            Obtén nuestra Auditoría de Diagnóstico "Rayos X". Revisamos tu situación
+                            Obtén nuestra auditoría de diagnóstico "Rayos X". Revisamos tu situación
                             fiscal actual, detectamos discrepancias y te entregamos un plan de corrección
                             antes de tu declaración anual.
                         </p>
