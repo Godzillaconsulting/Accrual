@@ -93,7 +93,7 @@ const servicesData = {
     },
     "cumplimiento-tributario-servicio": {
         title: "Cumplimiento Tributario",
-        image: "https://images.unsplash.com/photo-1554224154-260327c00c19?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
+        image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
         description: "Asesoría y gestión de cumplimiento tributario para asegurar el cumplimiento con las normativas legales vigentes.",
         content: `
             <p>Ofrecemos auditorías financieras integrales para evaluar la exactitud y conformidad de sus estados financieros.</p>

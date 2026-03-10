@@ -32,7 +32,7 @@ const Compliance = () => {
 
                     <div className="w-full max-w-6xl aspect-video bg-[#233657]/10 rounded-[2rem] relative flex items-center justify-center shadow-2xl overflow-hidden group border border-[#233657]/20 backdrop-blur-xl">
                         <img
-                            src="https://images.unsplash.com/photo-1554224154-260327c00c19?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80"
+                            src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80"
                             alt="Cumplimiento Tributario"
                             className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         />
