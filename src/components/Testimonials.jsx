@@ -98,7 +98,8 @@ const Testimonials = () => {
         <section className="bg-[#D0D0DA] py-24 px-4 overflow-hidden select-none">
             <div className="max-w-7xl mx-auto text-center">
                 <h2 className="text-[#233657] text-3xl md:text-5xl font-black mb-20 md:mb-28 tracking-tight uppercase">
-                    lo que opinan nuestros clientes de Accrual
+                    <span className="block">lo que opinan nuestros clientes</span>
+                    <span className="block">de Accrual</span>
                 </h2>
 
                 <div className="relative flex items-center justify-center gap-2">
