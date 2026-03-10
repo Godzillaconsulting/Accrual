@@ -4,10 +4,51 @@ import { Link } from 'react-router-dom';
 import accrualLogo from '../assets/Accrual logo.png';
 import logoBlue from '../assets/logo-completo-azul.svg';
 
+const searchIndex = [
+    { title: 'Inicio', path: '/', keywords: 'home principal accrual' },
+    { title: 'Quiénes Somos', path: '/quienes-somos', keywords: 'nosotros empresa equipo about experiencia' },
+    { title: 'Servicios Generales', path: '/servicios', keywords: 'servicios portafolio catalogo' },
+    { title: 'Consultoría', path: '/servicios/consultoria', keywords: 'consultoria asesoría estrategia' },
+    { title: 'Planificación fiscal avanzada', path: '/servicios/planificacion-fiscal-avanzada', keywords: 'planificacion fiscal impuestos patrimonial' },
+    { title: 'Declaración de impuestos', path: '/servicios/declaracion-de-impuestos', keywords: 'declaracion impuestos sat anual mensual' },
+    { title: 'IMSS e Infonavit', path: '/servicios/imss-e-infonavit', keywords: 'imss infonavit seguridad social cuotas' },
+    { title: 'REPSE', path: '/servicios/repse', keywords: 'repse subcontratacion especializada stps' },
+    { title: 'Administración de nómina', path: '/servicios/administracion-de-nomina', keywords: 'nomina empleados recursos humanos rrhh recibos' },
+    { title: 'Contabilidad', path: '/servicios/contabilidad', keywords: 'contabilidad contadores registros financieros' },
+    { title: 'Asesoría en planificación fiscal', path: '/servicios/asesoria-en-planificacion-fiscal', keywords: 'asesoria planificación fiscal' },
+    { title: 'Cumplimiento tributario', path: '/servicios/cumplimiento-tributario-servicio', keywords: 'cumplimiento tributario sat obligaciones' },
+    { title: 'Cumplimiento en seguridad social', path: '/servicios/cumplimiento-en-seguridad-social', keywords: 'seguridad social imss infonavit' },
+    { title: 'Consultoría financiera', path: '/servicios/consultoria-financiera', keywords: 'consultoría financiera finanzas negocios' },
+    { title: 'Auditoría financiera', path: '/servicios/auditoria-financiera', keywords: 'auditoría financiera estados financieros' },
+    { title: 'Asesoría contable', path: '/servicios/asesoria-contable', keywords: 'asesoría contable contadores' },
+    { title: 'Facturación', path: '/servicios/facturacion', keywords: 'facturación cfdi facturas ingresos' },
+    { title: 'Capacitación', path: '/servicios/capacitacion', keywords: 'capacitación cursos talleres entrenamiento' },
+    { title: 'LFPIORPI (Antilavado)', path: '/servicios/lfpiorpi', keywords: 'lfpiorpi antilavado prevencion lavado dinero' },
+    { title: 'Artículos y Blog', path: '/articulos', keywords: 'blog articulos noticias novedades' },
+    { title: 'Contacto', path: '/contacto', keywords: 'contacto telefono correo mensaje ubicación formulario' },
+];
+
 const Navbar = () => {
     const [isServicesOpen, setIsServicesOpen] = React.useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
     const [isScrolled, setIsScrolled] = React.useState(false);
+    const [searchQuery, setSearchQuery] = React.useState('');
+    const [searchResults, setSearchResults] = React.useState([]);
+    const [isSearchFocused, setIsSearchFocused] = React.useState(false);
+
+    const handleSearch = (e) => {
+        const query = e.target.value;
+        setSearchQuery(query);
+        if (query.length > 0) {
+            const results = searchIndex.filter(item => 
+                item.title.toLowerCase().includes(query.toLowerCase()) || 
+                item.keywords.toLowerCase().includes(query.toLowerCase())
+            );
+            setSearchResults(results.slice(0, 6)); // Limit to 6 results
+        } else {
+            setSearchResults([]);
+        }
+    };
 
 
     React.useEffect(() => {
@@ -47,13 +88,49 @@ const Navbar = () => {
                 </div>
 
                 {/* Search Bar */}
-                <div className="hidden lg:flex items-center !bg-white/10 rounded-full px-4 py-2 w-1/3 max-w-xl mx-8 shadow-inner border border-white/10">
+                <div className="hidden lg:flex relative items-center !bg-white/10 rounded-full px-4 py-2 w-1/3 max-w-xl mx-8 shadow-inner border border-white/10 z-50">
                     <input
                         type="text"
                         placeholder="¿Cómo podemos ayudarte?"
                         className="bg-transparent border-none outline-none w-full text-white placeholder-white/50 font-medium"
+                        value={searchQuery}
+                        onChange={handleSearch}
+                        onFocus={() => setIsSearchFocused(true)}
+                        onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
                     />
                     <Search className="w-5 h-5 text-white" />
+
+                    {/* Search Results Dropdown */}
+                    {isSearchFocused && searchQuery.length > 0 && (
+                        <div className="absolute top-full left-0 right-0 mt-3 bg-[#233657]/95 backdrop-blur-xl rounded-2xl shadow-2xl py-2 border border-white/10 z-[60] overflow-hidden">
+                            {searchResults.length > 0 ? (
+                                <div className="flex flex-col">
+                                    <div className="px-4 py-2 text-xs font-semibold text-white/50 uppercase tracking-wider border-b border-white/5 mb-1">
+                                        Sugerencias
+                                    </div>
+                                    {searchResults.map((result, idx) => (
+                                        <Link
+                                            key={idx}
+                                            to={result.path}
+                                            className="flex items-center px-4 py-3 text-[#D0D0DA] hover:bg-white/10 hover:text-white transition-colors"
+                                            onClick={() => {
+                                                setSearchQuery('');
+                                                setIsSearchFocused(false);
+                                            }}
+                                        >
+                                            <Search className="w-4 h-4 mr-3 opacity-50" />
+                                            <span className="text-sm font-medium">{result.title}</span>
+                                        </Link>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="px-4 py-6 text-center text-[#D0D0DA] text-sm flex flex-col items-center justify-center gap-2">
+                                    <Search className="w-6 h-6 opacity-30" />
+                                    <span>No encontramos resultados para "<span className="text-white font-medium">{searchQuery}</span>"</span>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 {/* Desktop Menu */}
