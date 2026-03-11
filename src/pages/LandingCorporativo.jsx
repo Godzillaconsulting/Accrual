@@ -57,7 +57,7 @@ const LandingCorporativo = () => {
                     </h1>
                     
                     <p className="text-xl md:text-2xl font-light leading-relaxed max-w-4xl mb-12 opacity-90 text-gray-400">
-                        "Protege tu patrimonio transfronterizo. <strong className="text-white font-medium">Eliminamos riesgos de Precios de Transferencia y garantizamos el cumplimiento total ante el SAT e IRS</strong> con ingeniería fiscal de alto nivel".
+                        Protege tu patrimonio transfronterizo. <strong className="text-white font-medium">Eliminamos riesgos de Precios de Transferencia y garantizamos el cumplimiento total ante el SAT e IRS</strong> con ingeniería fiscal de alto nivel.
                     </p>
                     
                     <button 
