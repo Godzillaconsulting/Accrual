@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Briefcase } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import FloatingWhatsApp from '../components/FloatingWhatsApp';
@@ -71,6 +72,7 @@ const LandingEmprendedores = () => {
             <section className="bg-white py-24 px-6 relative">
                 <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
                     <div>
+                        <Briefcase className="w-16 h-16 text-[#233657] mb-8" />
                         <h2 className="text-3xl md:text-5xl font-black text-[#233657] mb-6 leading-tight">
                             El paso clave <br/>para transformar tu operación
                         </h2>

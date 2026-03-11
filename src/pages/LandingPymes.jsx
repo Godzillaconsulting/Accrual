@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { TrendingUp } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import FloatingWhatsApp from '../components/FloatingWhatsApp';
@@ -79,6 +80,7 @@ const LandingPymes = () => {
                         />
                     </div>
                     <div className="order-1 md:order-2">
+                        <TrendingUp className="w-16 h-16 text-[#233657] mb-8" />
                         <h2 className="text-3xl md:text-5xl font-black text-[#233657] mb-6 leading-tight">
                             Dinero con Descuento:<br/> Su nuevo activo operativo
                         </h2>
