@@ -97,6 +97,7 @@ const Footer = () => {
                         <div className="w-full max-w-xs flex justify-center">
                             <Link
                                 to="/"
+                                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                                 className="relative h-16 flex items-center justify-center transition-all duration-300 transform hover:scale-105"
                                 onMouseEnter={() => setIsLogoHovered(true)}
                                 onMouseLeave={() => setIsLogoHovered(false)}

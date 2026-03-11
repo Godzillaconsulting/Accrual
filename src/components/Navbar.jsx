@@ -76,6 +76,7 @@ const Navbar = () => {
                 <div className="flex items-center gap-3">
                     <Link
                         to="/"
+                        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                         className={`relative group flex items-center justify-center transition-all duration-300 transform hover:scale-105 ${isScrolled ? 'h-10' : 'h-14'}`}
                     >
                         {/* Main Logo - Shown as is for maximum quality */}
