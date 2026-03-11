@@ -1,7 +1,7 @@
 import React from 'react';
 import { Search, Menu, ChevronDown, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import accrualLogo from '../assets/Accrual logo.png';
+import accrualLogo from '../assets/Accrual logo (sin slogan).png';
 import logoBlue from '../assets/logo-completo-azul.svg';
 
 const searchIndex = [
