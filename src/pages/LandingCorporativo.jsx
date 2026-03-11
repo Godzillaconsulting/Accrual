@@ -34,9 +34,9 @@ const LandingCorporativo = () => {
                     loop
                     muted
                     playsInline
-                    className="absolute inset-0 w-full h-full object-cover z-0 opacity-50 mix-blend-overlay"
+                    className="absolute inset-0 w-full h-full object-cover z-0"
                 >
-                    <source src={CorporativoVideo} type="video/quicktime" />
+                    <source src={CorporativoVideo} />
                     Tu navegador no soporta videos HTML5.
                 </video>
                 <div className="absolute inset-0 bg-[#111827]/70 pointer-events-none z-0"></div>

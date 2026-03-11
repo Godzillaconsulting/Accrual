@@ -33,12 +33,12 @@ const LandingPymes = () => {
                     loop
                     muted
                     playsInline
-                    className="absolute inset-0 w-full h-full object-cover z-0 opacity-40 mix-blend-overlay"
+                    className="absolute inset-0 w-full h-full object-cover z-0"
                 >
-                    <source src={PymesVideo} type="video/quicktime" />
+                    <source src={PymesVideo} />
                     Tu navegador no soporta videos HTML5.
                 </video>
-                <div className="absolute inset-0 bg-[#233657]/60 pointer-events-none z-0"></div>
+                <div className="absolute inset-0 bg-[#233657]/70 pointer-events-none z-0"></div>
 
                 {/* Background Decoration */}
                 <div className="absolute inset-0 opacity-20 pointer-events-none z-0">
