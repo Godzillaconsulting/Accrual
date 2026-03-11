@@ -5,6 +5,8 @@ import Footer from '../components/Footer';
 import FloatingWhatsApp from '../components/FloatingWhatsApp';
 import ContactScheduler from '../components/ContactScheduler';
 
+import CorporativoVideo from '../assets/Corporativo_video.mov';
+
 const LandingCorporativo = () => {
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -25,8 +27,22 @@ const LandingCorporativo = () => {
             
             {/* Hero Section */}
             <section className="relative bg-[#111827] text-white py-32 px-6 overflow-hidden min-h-[85vh] flex items-center">
+                
+                {/* Background Video */}
+                <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="absolute inset-0 w-full h-full object-cover z-0 opacity-50 mix-blend-overlay"
+                >
+                    <source src={CorporativoVideo} type="video/quicktime" />
+                    Tu navegador no soporta videos HTML5.
+                </video>
+                <div className="absolute inset-0 bg-[#111827]/70 pointer-events-none z-0"></div>
+
                 {/* Background Decoration */}
-                <div className="absolute inset-0 opacity-30 pointer-events-none">
+                <div className="absolute inset-0 opacity-30 pointer-events-none z-0">
                     <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-[radial-gradient(circle_at_50%_50%,#0F4C82_0%,transparent_50%)]"></div>
                 </div>
 

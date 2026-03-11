@@ -4,6 +4,8 @@ import Footer from '../components/Footer';
 import FloatingWhatsApp from '../components/FloatingWhatsApp';
 import ContactScheduler from '../components/ContactScheduler';
 
+import PymesVideo from '../assets/Pymes_video.mov';
+
 const LandingPymes = () => {
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -24,8 +26,22 @@ const LandingPymes = () => {
             
             {/* Hero Section */}
             <section className="relative bg-[#233657] text-[#D0D0DA] py-32 px-6 overflow-hidden min-h-[85vh] flex items-center">
+                
+                {/* Background Video */}
+                <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="absolute inset-0 w-full h-full object-cover z-0 opacity-40 mix-blend-overlay"
+                >
+                    <source src={PymesVideo} type="video/quicktime" />
+                    Tu navegador no soporta videos HTML5.
+                </video>
+                <div className="absolute inset-0 bg-[#233657]/60 pointer-events-none z-0"></div>
+
                 {/* Background Decoration */}
-                <div className="absolute inset-0 opacity-20 pointer-events-none">
+                <div className="absolute inset-0 opacity-20 pointer-events-none z-0">
                     <div className="absolute top-[0%] left-[0%] w-[100%] h-[150%] bg-[radial-gradient(circle_at_0%_100%,#0F4C82_0%,transparent_70%)]"></div>
                 </div>
 
