@@ -89,11 +89,11 @@ const Navbar = () => {
                 </div>
 
                 {/* Search Bar */}
-                <div className="hidden lg:flex relative items-center !bg-white/10 rounded-full px-4 py-2 w-1/3 max-w-xl mx-8 shadow-inner border border-white/10 z-50">
+                <div className="hidden lg:flex relative items-center !bg-white/10 rounded-full px-4 h-11 w-1/3 max-w-xl mx-8 shadow-inner border border-white/10 z-50">
                     <input
                         type="text"
                         placeholder="¿Cómo podemos ayudarte?"
-                        className="bg-transparent border-none outline-none w-full text-white placeholder-white/50 font-medium"
+                        className="bg-transparent border-none outline-none w-full h-full text-white placeholder-white/50 font-medium"
                         value={searchQuery}
                         onChange={handleSearch}
                         onFocus={() => setIsSearchFocused(true)}
@@ -136,15 +136,15 @@ const Navbar = () => {
 
                 {/* Desktop Menu */}
                 <div className="hidden lg:flex items-center gap-8 text-sm font-medium tracking-wide">
-                    <Link to="/" className="text-[#D0D0DA] hover:text-white transition-colors nav-link">INICIO</Link>
-                    <Link to="/quienes-somos" className="text-[#D0D0DA] hover:text-white transition-colors whitespace-nowrap nav-link">QUIÉNES SOMOS</Link>
+                    <Link to="/" className="text-[#D0D0DA] hover:text-white transition-colors nav-link flex items-center h-11">INICIO</Link>
+                    <Link to="/quienes-somos" className="text-[#D0D0DA] hover:text-white transition-colors whitespace-nowrap nav-link flex items-center h-11">QUIÉNES SOMOS</Link>
 
                     {/* Services Dropdown */}
-                    <div className="relative group services-dropdown">
+                    <div className="relative group services-dropdown flex items-center h-11">
                         <div className="flex items-center gap-1">
                             <Link
                                 to="/servicios"
-                                className="text-[#D0D0DA] hover:text-white transition-colors uppercase nav-link"
+                                className="text-[#D0D0DA] hover:text-white transition-colors uppercase nav-link flex items-center h-11"
                                 onClick={() => setIsMobileMenuOpen(false)}
                             >
                                 SERVICIOS
@@ -198,9 +198,9 @@ const Navbar = () => {
                         </div>
                     </div>
 
-                    <Link to="/articulos" className="text-[#D0D0DA] hover:text-white transition-colors nav-link">ARTÍCULOS</Link>
-                    <a href="#" className="text-[#D0D0DA] hover:text-white transition-colors nav-link">RECURSOS</a>
-                    <Link to="/contacto" className="!bg-[#D0D0DA] !text-[#233657] px-8 py-3 rounded-full font-black hover:!bg-white hover:!scale-105 transition-all transform shadow-2xl block">
+                    <Link to="/articulos" className="text-[#D0D0DA] hover:text-white transition-colors nav-link flex items-center h-11">ARTÍCULOS</Link>
+                    <a href="#" className="text-[#D0D0DA] hover:text-white transition-colors nav-link flex items-center h-11">RECURSOS</a>
+                    <Link to="/contacto" className="!bg-[#D0D0DA] !text-[#233657] px-8 h-11 rounded-full font-black hover:!bg-white hover:!scale-105 transition-all transform shadow-2xl flex items-center justify-center">
                         CONTACTO
                     </Link>
                 </div>
