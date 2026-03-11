@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { ShieldCheck, TrendingUp, Anchor } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import FloatingWhatsApp from '../components/FloatingWhatsApp';
@@ -45,9 +44,9 @@ const LandingEmprendedores = () => {
                     
                     <button 
                         onClick={handleScrollToContact}
-                        className="bg-white hover:bg-gray-100 text-[#233657] font-black py-5 px-10 rounded-full text-xl md:text-2xl transition-all shadow-[0_0_30px_rgba(255,255,255,0.3)] transform hover:scale-105 hover:shadow-[0_0_50px_rgba(255,255,255,0.5)] flex items-center gap-3 decoration-none"
+                        className="bg-white hover:bg-gray-100 text-[#233657] font-black py-5 px-10 rounded-full text-xl md:text-2xl transition-all shadow-[0_0_30px_rgba(255,255,255,0.3)] transform hover:scale-105 hover:shadow-[0_0_50px_rgba(255,255,255,0.5)] decoration-none"
                     >
-                        Blindar mi Crecimiento <TrendingUp className="w-6 h-6" />
+                        Blindar mi Crecimiento
                     </button>
                 </div>
             </section>
