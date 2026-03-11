@@ -16,6 +16,11 @@ import ServicesOverview from './pages/ServicesOverview';
 import ServiceDetail from './pages/ServiceDetail';
 import Payment from './pages/Payment';
 
+// Landings Integración
+import LandingEmprendedores from './pages/LandingEmprendedores';
+import LandingPymes from './pages/LandingPymes';
+import LandingCorporativo from './pages/LandingCorporativo';
+
 function App() {
     return (
         <>
@@ -33,6 +38,11 @@ function App() {
                 <Route path="/terminos-y-condiciones" element={<TermsAndConditions />} />
                 <Route path="/aviso-de-privacidad" element={<PrivacyPolicy />} />
                 <Route path="/pago" element={<Payment />} />
+                
+                {/* Soluciones / Paquetes */}
+                <Route path="/soluciones/emprendedor" element={<LandingEmprendedores />} />
+                <Route path="/soluciones/negocio" element={<LandingPymes />} />
+                <Route path="/soluciones/corporativo" element={<LandingCorporativo />} />
             </Routes>
         </>
     );

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Check } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Services = () => {
     return (
@@ -27,9 +28,9 @@ const Services = () => {
                         ¿Estás facturando menos de $3,500,000 al mes? Que el SAT no te quite el sueño, simplifica tu vida y paga lo justo
                     </p>
 
-                    <button className="w-full bg-transparent text-[#233657] font-bold py-3 rounded-full mb-10 hover:bg-gray-50 transition-all border border-gray-300 shadow-sm transform hover:scale-105 hover:shadow-md">
+                    <Link to="/soluciones/emprendedor" className="w-full bg-transparent text-[#233657] font-bold py-3 rounded-full mb-10 hover:bg-gray-50 transition-all border border-gray-300 shadow-sm transform hover:scale-105 hover:shadow-md text-center block">
                         Ver Solución Emprendedor
-                    </button>
+                    </Link>
 
                     <ul className="space-y-4 text-sm flex-grow">
                         <li className="flex items-start gap-3">
@@ -59,9 +60,9 @@ const Services = () => {
                         ¿Estás facturando entre $3,500,000 y $30,000,000 al mes? ¿Nómina alta y poco margen? Activa los estímulos fronterizos.
                     </p>
 
-                    <button className="w-full bg-transparent text-[#233657] font-bold py-3 rounded-full mb-10 hover:bg-gray-50 transition-all border border-gray-300 shadow-sm transform hover:scale-105 hover:shadow-md">
+                    <Link to="/soluciones/negocio" className="w-full bg-transparent text-[#233657] font-bold py-3 rounded-full mb-10 hover:bg-gray-50 transition-all border border-gray-300 shadow-sm transform hover:scale-105 hover:shadow-md text-center block">
                         Ver Solución Negocio
-                    </button>
+                    </Link>
 
                     <ul className="space-y-4 text-sm flex-grow">
                         <li className="flex items-start gap-3">
@@ -98,9 +99,9 @@ const Services = () => {
                         ¿Estás facturando más de $30,000,000 al mes? Estrategia Binacional, Precios de Transferencia y Compliance.
                     </p>
 
-                    <button className="w-full bg-[#0F4C82] text-white font-bold py-3 rounded-full mb-10 hover:bg-[#1565C0] transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(15,76,130,0.5)] border border-transparent relative z-10">
+                    <Link to="/soluciones/corporativo" className="w-full bg-[#0F4C82] text-white font-bold py-3 rounded-full mb-10 hover:bg-[#1565C0] transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(15,76,130,0.5)] border border-transparent relative z-10 text-center block">
                         Ver Solución Corporativo
-                    </button>
+                    </Link>
 
                     <ul className="space-y-4 text-sm flex-grow relative z-10">
                         <li className="flex items-start gap-3">
