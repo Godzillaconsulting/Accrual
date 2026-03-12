@@ -30,7 +30,7 @@ const Services = () => {
                         </p>
                     </div>
 
-                    <Link to="/soluciones/emprendedor" className="w-full bg-transparent text-[#233657] font-bold py-3 rounded-full mb-10 hover:bg-gray-50 transition-all border border-gray-300 shadow-sm transform hover:scale-105 hover:shadow-md text-center block">
+                    <Link to="/soluciones/emprendedor" className="w-full bg-transparent text-[#233657] font-bold py-3 rounded-full mb-10 hover:bg-[#233657] hover:text-white transition-all border border-gray-300 hover:border-[#233657] shadow-sm transform hover:scale-105 hover:shadow-md text-center block">
                         Ver Solución Emprendedor
                     </Link>
 
@@ -64,7 +64,7 @@ const Services = () => {
                         </p>
                     </div>
 
-                    <Link to="/soluciones/negocio" className="w-full bg-transparent text-[#233657] font-bold py-3 rounded-full mb-10 hover:bg-gray-50 transition-all border border-gray-300 shadow-sm transform hover:scale-105 hover:shadow-md text-center block">
+                    <Link to="/soluciones/negocio" className="w-full bg-transparent text-[#233657] font-bold py-3 rounded-full mb-10 hover:bg-[#233657] hover:text-white transition-all border border-gray-300 hover:border-[#233657] shadow-sm transform hover:scale-105 hover:shadow-md text-center block">
                         Ver Solución Negocio
                     </Link>
 
@@ -105,7 +105,7 @@ const Services = () => {
                         </p>
                     </div>
 
-                    <Link to="/soluciones/corporativo" className="w-full bg-[#0F4C82] text-white font-bold py-3 rounded-full mb-10 hover:bg-[#1565C0] transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(15,76,130,0.5)] border border-transparent relative z-10 text-center block">
+                    <Link to="/soluciones/corporativo" className="w-full bg-[#0F4C82] text-white font-bold py-3 rounded-full mb-10 hover:bg-white hover:text-[#0F4C82] transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(15,76,130,0.5)] border border-transparent relative z-10 text-center block">
                         Ver Solución Corporativo
                     </Link>
 
