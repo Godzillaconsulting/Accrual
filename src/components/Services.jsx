@@ -26,7 +26,9 @@ const Services = () => {
                         </div>
 
                         <p className="text-sm text-gray-600 mb-8 h-auto font-medium">
-                            ¿Estás facturando menos de $3,500,000 al mes? Que el SAT no te quite el sueño, simplifica tu vida y paga lo justo
+                            ¿Estás facturando menos de $3,500,000 al mes?
+                            <br /><br />
+                            Deja de perder tiempo en trámites y enfócate en lo que genera dinero. Construimos la estructura fiscal que soporta tu primer millón sin riesgos ante el SAT
                         </p>
                     </div>
 
