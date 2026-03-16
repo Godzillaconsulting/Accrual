@@ -133,9 +133,7 @@ const Services = () => {
 
             </div>
 
-            <p className="text-center text-[#233657] opacity-60 text-sm mt-12 relative z-10 font-medium tracking-wide">
-                Los precios mostrados están en pesos mexicanos
-            </p>
+
         </section>
     );
 };

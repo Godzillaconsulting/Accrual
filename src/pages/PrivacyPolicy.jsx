@@ -53,7 +53,7 @@ const PrivacyPolicy = () => {
                                 Usted tiene derecho a conocer qué datos personales tenemos de usted, para qué los utilizamos y las condiciones del uso que les damos (Acceso). Asimismo, es su derecho solicitar la corrección de su información personal en caso de que esté desactualizada, sea inexacta o incompleta (Rectificación); que la eliminemos de nuestros registros o bases de datos cuando considere que la misma no está siendo utilizada adecuadamente (Cancelación); así como oponerse al uso de sus datos personales para fines específicos (Oposición). Estos derechos se conocen como derechos ARCO.
                             </p>
                             <p className="mb-4">
-                                Para el ejercicio de cualquiera de los derechos ARCO, debe enviar una petición vía correo electrónico a <a href="mailto:contacto@accrual.com.mx" className="text-[#0F4C82] font-bold hover:underline">contacto@accrual.com.mx</a> y deberá contener:
+                                Para el ejercicio de cualquiera de los derechos ARCO, debe enviar una petición vía correo electrónico a <a href="mailto:servicios@accrual.com.mx" className="text-[#0F4C82] font-bold hover:underline">servicios@accrual.com.mx</a> y deberá contener:
                             </p>
                             <ul className="list-disc pl-5 space-y-2 mb-4">
                                 <li>Nombre completo del titular.</li>

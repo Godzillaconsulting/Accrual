@@ -186,8 +186,8 @@ const ContactScheduler = ({ showHeader = false, showMap = true }) => {
                                 <div className="bg-white p-2 rounded-full shadow-md">
                                     <Mail className="w-5 h-5 text-[#233657]" />
                                 </div>
-                                <a href="mailto:contacto@accrual.com.mx" className="underline hover:text-white transition-colors">
-                                    contacto@accrual.com.mx
+                                <a href="mailto:servicios@accrual.com.mx" className="underline hover:text-white transition-colors">
+                                    servicios@accrual.com.mx
                                 </a>
                             </div>
                             <div className="flex items-center gap-3">

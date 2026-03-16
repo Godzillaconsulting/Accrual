@@ -34,7 +34,7 @@ const Footer = () => {
                             </li>
                             <li className="flex items-center gap-2">
                                 <img src={emailIcon} alt="Email" className="w-5 h-5 object-contain filter invert" />
-                                <a href="mailto:contacto@accrual.com.mx" className="hover:text-[#0F4C82] transition-colors">contacto@accrual.com.mx</a>
+                                <a href="mailto:servicios@accrual.com.mx" className="hover:text-[#0F4C82] transition-colors">servicios@accrual.com.mx</a>
                             </li>
                             <li>
                                 <a
