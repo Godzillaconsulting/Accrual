@@ -23,10 +23,10 @@ const AuditCTA = () => {
 
                 {/* Right Column: Content */}
                 <div className="text-center md:text-right space-y-8 text-[#233657]">
-                    <h2 className="text-5xl md:text-7xl font-black uppercase leading-none tracking-tight">
-                        <span className="block">Tu Cierre</span>
-                        <span className="block">Fiscal 2025</span>
-                        <span className="block">Está en Riesgo.</span>
+                    <h2 className="uppercase flex flex-col text-center md:text-right">
+                        <span className="text-4xl md:text-5xl font-extrabold text-[#233657] leading-tight tracking-tight block">Tu Cierre</span>
+                        <span className="text-7xl md:text-[7rem] font-black text-[#233657] leading-[0.9] tracking-tighter block py-1 md:py-2">Fiscal</span>
+                        <span className="text-4xl md:text-6xl font-black text-[#233657] leading-tight tracking-tight block">Está en Riesgo.</span>
                     </h2>
 
                     <p className="text-lg md:text-xl font-medium opacity-80 max-w-lg ml-auto mr-auto md:mr-0">

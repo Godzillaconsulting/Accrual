@@ -13,8 +13,8 @@ const Home = () => {
         <div className="min-h-screen bg-[#D0D0DA] font-sans">
             <Navbar />
             <Hero />
-            <Services />
             <AuditCTA />
+            <Services />
             <Testimonials />
             <ContactScheduler />
             <Footer />

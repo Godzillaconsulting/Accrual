@@ -26,7 +26,9 @@ const Services = () => {
                         </div>
 
                         <p className="text-sm text-gray-600 mb-8 h-auto font-medium">
-                            ¿Estás facturando menos de $3,500,000 al mes? Que el SAT no te quite el sueño, simplifica tu vida y paga lo justo
+                            ¿Estás facturando menos de $3,500,000 al mes?
+                            <br /><br />
+                            Deja de perder tiempo en trámites y enfócate en lo que genera dinero. Construimos la estructura fiscal que soporta tu primer millón sin riesgos ante el SAT
                         </p>
                     </div>
 
@@ -60,7 +62,9 @@ const Services = () => {
                         </div>
 
                         <p className="text-sm text-gray-600 mb-8 h-auto font-medium">
-                            ¿Estás facturando entre $3,500,000 y $30,000,000 al mes? ¿Nómina alta y poco margen? Activa los estímulos fronterizos.
+                            ¿Estás facturando entre $3,500,000 y $30,000,000 al mes?
+                            <br /><br />
+                            ¿Tu nómina y el SAT se están comiendo tu flujo de caja? Activamos los estímulos fronterizos y optimizamos tu carga laboral para inyectar capital inmediato a tu operación.
                         </p>
                     </div>
 
@@ -101,7 +105,9 @@ const Services = () => {
                         </div>
 
                         <p className="text-sm text-gray-400 mb-8 h-auto font-medium">
-                            ¿Estás facturando más de $30,000,000 al mes? Estrategia Binacional, Precios de Transferencia y Compliance.
+                            ¿Estás facturando más de $30,000,000 al mes?
+                            <br /><br />
+                            Proteja su patrimonio transfronterizo. Sincronizamos su operación México-USA mediante ingeniería fiscal avanzada, precios de transferencia y blindaje legal preventivo
                         </p>
                     </div>
 
@@ -127,9 +133,7 @@ const Services = () => {
 
             </div>
 
-            <p className="text-center text-[#233657] opacity-60 text-sm mt-12 relative z-10 font-medium tracking-wide">
-                Los precios mostrados están en pesos mexicanos
-            </p>
+
         </section>
     );
 };
