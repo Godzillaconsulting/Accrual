@@ -10,6 +10,7 @@ const ContactScheduler = ({ showHeader = false, showMap = true }) => {
         apellidos: '',
         email: '',
         telefono: '',
+        servicio: '',
         mensaje: ''
     });
 
@@ -21,6 +22,11 @@ const ContactScheduler = ({ showHeader = false, showMap = true }) => {
 
     const [errors, setErrors] = useState({});
     const [showSuccess, setShowSuccess] = useState(false);
+
+    // Dynamic Availability State
+    const [bookedSlots, setBookedSlots] = useState([]);
+    const [isLoadingSlots, setIsLoadingSlots] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Calendar Navigation State
     const [currentDate, setCurrentDate] = useState(new Date()); // Initialize to Current Date
@@ -42,6 +48,49 @@ const ContactScheduler = ({ showHeader = false, showMap = true }) => {
         }
     }, [currentDate, selectedDate]);
 
+    // Fetch available slots from backend
+    useEffect(() => {
+        const fetchBookedSlots = async () => {
+            if (!selectedDate) return;
+            setIsLoadingSlots(true);
+            try {
+                // Ensure correct date string format 'YYYY-MM-DD'
+                const offset = selectedDate.getTimezoneOffset();
+                const localDate = new Date(selectedDate.getTime() - (offset * 60 * 1000));
+                const dateStr = localDate.toISOString().split('T')[0];
+                
+                const response = await fetch(`/api/appointments?date=${dateStr}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    const unavailable = [];
+                    data.forEach(appointment => {
+                        unavailable.push(appointment.hora);
+                        if (appointment.duracion === '60min') {
+                            const timeSlotsArr = [
+                                "09:00 am", "09:30 am", "10:00 am",
+                                "10:30 am", "11:00 am", "11:30 am",
+                                "12:00 pm", "12:30 pm", "01:00 pm",
+                                "03:00 pm", "03:30 pm", "04:00 pm",
+                                "04:30 pm", "05:00 pm", "05:30 pm"
+                            ];
+                            const idx = timeSlotsArr.indexOf(appointment.hora);
+                            if (idx !== -1 && idx + 1 < timeSlotsArr.length) {
+                                unavailable.push(timeSlotsArr[idx + 1]);
+                            }
+                        }
+                    });
+                    setBookedSlots(unavailable);
+                }
+            } catch (error) {
+                console.error("Failed to fetch slots", error);
+            } finally {
+                setIsLoadingSlots(false);
+            }
+        };
+        fetchBookedSlots();
+    }, [selectedDate]);
+
     const validate = () => {
         const newErrors = {};
         if (!formData.nombre.trim()) newErrors.nombre = 'Por favor, escribe tu nombre';
@@ -60,6 +109,7 @@ const ContactScheduler = ({ showHeader = false, showMap = true }) => {
             newErrors.telefono = 'El número debe tener 10 dígitos';
         }
 
+        if (!formData.servicio.trim()) newErrors.servicio = 'Por favor, selecciona un servicio de interés';
         if (!formData.mensaje.trim()) newErrors.mensaje = 'Por favor, escribe tu asunto';
 
         setErrors(newErrors);
@@ -76,6 +126,7 @@ const ContactScheduler = ({ showHeader = false, showMap = true }) => {
                 apellidos: '',
                 email: '',
                 telefono: '',
+                servicio: '',
                 mensaje: ''
             });
             setErrors({});
@@ -204,7 +255,7 @@ const ContactScheduler = ({ showHeader = false, showMap = true }) => {
             {/* Top Section: Google Map */}
             {showMap && (
                 <div className="w-full h-[500px] bg-gray-300 relative z-0">
-                    <iframe
+                    <iframe loading="lazy" 
                         width="100%"
                         height="100%"
                         frameBorder="0"
@@ -312,7 +363,35 @@ const ContactScheduler = ({ showHeader = false, showMap = true }) => {
                             </div>
 
                             <div className="flex flex-col group mt-4">
-                                <label className="text-sm font-bold uppercase tracking-widest mb-2 opacity-70 group-focus-within:text-[#233657] transition-colors">Mensaje *</label>
+                                <label className="text-sm font-bold uppercase tracking-widest mb-2 opacity-70 group-focus-within:text-[#233657] transition-colors">Servicio de Interés *</label>
+                                <select
+                                    name="servicio"
+                                    value={formData.servicio}
+                                    onChange={handleChange}
+                                    className={`bg-transparent border-b border-gray-300 outline-none py-2 transition-colors text-lg text-[#233657] cursor-pointer ${errors.servicio ? 'border-red-500' : 'focus:border-[#233657]'}`}
+                                >
+                                    <option value="" disabled className="text-gray-400">Selecciona una opción</option>
+                                    <option value="Consultoría General">Consultoría General</option>
+                                    <option value="Planificación Fiscal Avanzada">Planificación Fiscal Avanzada</option>
+                                    <option value="Declaración de Impuestos">Declaración de Impuestos</option>
+                                    <option value="IMSS e Infonavit">IMSS e Infonavit</option>
+                                    <option value="Registro REPSE">Registro REPSE</option>
+                                    <option value="Administración de Nómina">Administración de Nómina</option>
+                                    <option value="Contabilidad General">Contabilidad General</option>
+                                    <option value="Facturación (CFDI)">Facturación (CFDI)</option>
+                                    <option value="Prevención de Lavado (LFPIORPI)">Prevención de Lavado (LFPIORPI)</option>
+                                    <option value="Otro">Otro servicio</option>
+                                </select>
+                                {errors.servicio && (
+                                    <div className="flex items-center gap-2 text-red-500 text-xs mt-2 font-bold italic">
+                                        <AlertCircle className="w-3 h-3" />
+                                        {errors.servicio}
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="flex flex-col group mt-4">
+                                <label className="text-sm font-bold uppercase tracking-widest mb-2 opacity-70 group-focus-within:text-[#233657] transition-colors">Mensaje u Observaciones *</label>
                                 <textarea
                                     rows="2"
                                     name="mensaje"
@@ -432,26 +511,50 @@ const ContactScheduler = ({ showHeader = false, showMap = true }) => {
 
                             {/* Time Slots Grid */}
                             <div className="flex-1 overflow-y-auto pr-1 custom-scrollbar">
-                                <div className="grid grid-cols-3 gap-3">
-                                    {[
-                                        "09:00 am", "09:30 am", "10:00 am",
-                                        "10:30 am", "11:00 am", "11:30 am",
-                                        "12:00 pm", "12:30 pm", "01:00 pm",
-                                        "03:00 pm", "03:30 pm", "04:00 pm",
-                                        "04:30 pm", "05:00 pm", "05:30 pm"
-                                    ].map((time) => (
-                                        <button
-                                            key={time}
-                                            onClick={() => setSelectedTime(time)}
-                                            className={`py-2 px-1 rounded-lg text-xs font-bold transition-all duration-200 border ${selectedTime === time
-                                                ? 'bg-[#0F4C82] border-[#0F4C82] text-white shadow-[0_0_15px_rgba(15,76,130,0.5)] transform scale-105'
-                                                : 'bg-transparent border-[#D0D0DA]/20 text-[#D0D0DA] hover:border-[#0F4C82] hover:shadow-[0_0_10px_rgba(15,76,130,0.4)] hover:bg-[#0F4C82]/10'
-                                                }`}
-                                        >
-                                            {time}
-                                        </button>
-                                    ))}
-                                </div>
+                                {isLoadingSlots ? (
+                                    <div className="flex justify-center items-center h-full text-white/50 text-sm italic font-bold">
+                                        Cargando disponibilidad...
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-3 gap-3">
+                                        {[
+                                            "09:00 am", "09:30 am", "10:00 am",
+                                            "10:30 am", "11:00 am", "11:30 am",
+                                            "12:00 pm", "12:30 pm", "01:00 pm",
+                                            "03:00 pm", "03:30 pm", "04:00 pm",
+                                            "04:30 pm", "05:00 pm", "05:30 pm"
+                                        ].map((time, idx, arr) => {
+                                            const isCurrentlyBooked = bookedSlots.includes(time);
+                                            let isBooked = isCurrentlyBooked;
+                                            
+                                            // Enforce consecutive slots for 60min
+                                            if (!isBooked && duration === '60min') {
+                                                if (idx === 8 || idx === arr.length - 1) {
+                                                    isBooked = true; // 1:00 pm and 5:30 pm cannot be 60 mins
+                                                } else {
+                                                    isBooked = bookedSlots.includes(arr[idx + 1]);
+                                                }
+                                            }
+
+                                            return (
+                                                <button
+                                                    key={time}
+                                                    disabled={isBooked}
+                                                    onClick={() => !isBooked && setSelectedTime(time)}
+                                                    className={`py-2 px-1 rounded-lg text-xs font-bold transition-all duration-200 border ${
+                                                        isBooked
+                                                            ? 'bg-transparent border-red-500/20 text-red-400 opacity-50 cursor-not-allowed line-through'
+                                                            : selectedTime === time
+                                                                ? 'bg-[#0F4C82] border-[#0F4C82] text-white shadow-[0_0_15px_rgba(15,76,130,0.5)] transform scale-105'
+                                                                : 'bg-transparent border-[#D0D0DA]/20 text-[#D0D0DA] hover:border-[#0F4C82] hover:shadow-[0_0_10px_rgba(15,76,130,0.4)] hover:bg-[#0F4C82]/10'
+                                                    }`}
+                                                >
+                                                    {time}
+                                                </button>
+                                            )
+                                        })}
+                                    </div>
+                                )}
                             </div>
 
                             <div className="mt-4 pt-4 border-t border-white/10">
@@ -466,7 +569,16 @@ const ContactScheduler = ({ showHeader = false, showMap = true }) => {
                                         Media hora
                                     </button>
                                     <button
-                                        onClick={() => setDuration('60min')}
+                                        onClick={() => {
+                                            setDuration('60min');
+                                            if (selectedTime) {
+                                                const arr = ["09:00 am", "09:30 am", "10:00 am", "10:30 am", "11:00 am", "11:30 am", "12:00 pm", "12:30 pm", "01:00 pm", "03:00 pm", "03:30 pm", "04:00 pm", "04:30 pm", "05:00 pm", "05:30 pm"];
+                                                const idx = arr.indexOf(selectedTime);
+                                                if (idx === 8 || idx === arr.length - 1 || bookedSlots.includes(arr[idx + 1])) {
+                                                    setSelectedTime(null);
+                                                }
+                                            }
+                                        }}
                                         className={`py-2 rounded-lg text-xs font-bold transition-all duration-300 border ${duration === '60min'
                                             ? 'bg-[#D0D0DA] text-[#233657] border-[#D0D0DA] shadow-[0_0_15px_rgba(208,208,218,0.4)]'
                                             : 'bg-transparent text-[#D0D0DA] border-[#D0D0DA]/30 hover:border-[#D0D0DA] hover:shadow-[0_0_10px_rgba(208,208,218,0.3)] hover:bg-[#D0D0DA]/5'}`}
@@ -476,17 +588,57 @@ const ContactScheduler = ({ showHeader = false, showMap = true }) => {
                                 </div>
 
                                 <button
-                                    onClick={() => {
+                                    onClick={async () => {
                                         if (!selectedTime) {
                                             alert('Por favor selecciona una hora para tu asesoría.');
                                             return;
                                         }
-                                        const price = duration === '30min' ? 600 : 1000;
-                                        navigate('/pago', { state: { bookingType, selectedDate, selectedTime, duration, price } });
+                                        if (!validate()) {
+                                            alert('Por favor completa todos los campos obligatorios del formulario a la izquierda.');
+                                            // Scroll to form to show errors smoothly if possible
+                                            document.getElementById('contacto-form')?.scrollIntoView({ behavior: 'smooth' });
+                                            return;
+                                        }
+                                        
+                                        setIsSubmitting(true);
+                                        try {
+                                            const offset = selectedDate.getTimezoneOffset();
+                                            const localDate = new Date(selectedDate.getTime() - (offset * 60 * 1000));
+                                            const dateStr = localDate.toISOString().split('T')[0];
+
+                                            const payload = {
+                                                firstName: formData.nombre,
+                                                lastName: formData.apellidos,
+                                                email: formData.email,
+                                                phone: formData.telefono,
+                                                date: dateStr,
+                                                time: selectedTime,
+                                                modality: bookingType,
+                                                service: formData.servicio,
+                                                duration: duration
+                                            };
+                                            
+                                            const res = await fetch('/api/appointments', {
+                                                method: 'POST',
+                                                headers: { 'Content-Type': 'application/json' },
+                                                body: JSON.stringify(payload)
+                                            });
+
+                                            const data = await res.json();
+                                            if (!res.ok) throw new Error(data.error || 'Error al agendar cita');
+
+                                            const price = duration === '30min' ? 600 : 1000;
+                                            navigate('/pago', { state: { appointmentId: data.appointmentId, bookingType, selectedDate, selectedTime, duration, price, formData } });
+                                        } catch (error) {
+                                            alert(error.message);
+                                        } finally {
+                                            setIsSubmitting(false);
+                                        }
                                     }}
-                                    className={`w-full py-3 rounded-xl font-bold uppercase tracking-widest text-[#233657] shadow-lg transition-all duration-300 transform hover:scale-[1.02] ${selectedTime ? 'bg-[#D0D0DA] hover:bg-white' : 'bg-[#D0D0DA]/50 cursor-not-allowed opacity-70'}`}
+                                    disabled={isSubmitting}
+                                    className={`w-full py-3 rounded-xl font-bold uppercase tracking-widest text-[#233657] shadow-lg transition-all duration-300 transform hover:scale-[1.02] ${selectedTime && !isSubmitting ? 'bg-[#D0D0DA] hover:bg-white' : 'bg-[#D0D0DA]/50 cursor-not-allowed opacity-70'}`}
                                 >
-                                    Agendar Asesoría
+                                    {isSubmitting ? 'Reservando...' : 'Agendar Asesoría'}
                                 </button>
                             </div>
                         </div>

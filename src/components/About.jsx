@@ -41,7 +41,7 @@ const About = () => {
 
                     {/* Image Placeholder */}
                     <div className="bg-[#233657] rounded-3xl aspect-[4/3] flex items-center justify-center overflow-hidden shadow-xl transition-all duration-500 hover:-translate-y-4 hover:shadow-2xl">
-                        <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Office" className="w-full h-full object-cover animate-subtle-zoom transform" />
+                        <img loading="lazy"  src="https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Office" className="w-full h-full object-cover animate-subtle-zoom transform" />
                     </div>
                 </div>
             </div>

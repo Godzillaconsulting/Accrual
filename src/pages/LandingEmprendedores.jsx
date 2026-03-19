@@ -86,7 +86,7 @@ const LandingEmprendedores = () => {
                     </div>
                     <div className="relative group">
                         <div className="absolute inset-0 bg-[#0F4C82] rounded-[3rem] transform translate-x-4 translate-y-4 transition-transform group-hover:translate-x-6 group-hover:translate-y-6 opacity-20"></div>
-                        <img 
+                        <img loading="lazy"  
                             src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80" 
                             alt="Emprendedores Transformación" 
                             className="rounded-[3rem] relative z-10 w-full h-full object-cover shadow-2xl transition-transform transform group-hover:-translate-y-2"

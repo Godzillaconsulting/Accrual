@@ -11,7 +11,7 @@ const FloatingWhatsApp = () => {
             aria-label="Contact on WhatsApp"
         >
             <div className="absolute top-0 right-0 w-5 h-5 bg-red-600 rounded-full transform translate-x-1 -translate-y-1"></div>
-            <img src={whatsappLogo} alt="WhatsApp" className="w-full h-full object-contain" />
+            <img loading="lazy"  src={whatsappLogo} alt="WhatsApp" className="w-full h-full object-contain" />
         </a>
     );
 };

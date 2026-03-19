@@ -34,7 +34,7 @@ const ArticleErrors = () => {
 
                     {/* Featured Image */}
                     <div className="w-full h-[400px] md:h-[500px] rounded-[2rem] overflow-hidden shadow-lg mb-16">
-                        <img
+                        <img loading="lazy" 
                             src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80"
                             alt="Análisis de documentos fiscales"
                             className="w-full h-full object-cover"
@@ -147,7 +147,7 @@ const ArticleErrors = () => {
                         {/* Article 2 */}
                         <div className="relative group cursor-pointer">
                             <div className="h-64 rounded-3xl overflow-hidden mb-6 shadow-md">
-                                <img
+                                <img loading="lazy" 
                                     src="https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                                     alt="Beneficios de contratar un asesor fiscal profesional"
                                     className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
@@ -164,7 +164,7 @@ const ArticleErrors = () => {
                         {/* Article 3 */}
                         <div className="relative group cursor-pointer">
                             <div className="h-64 rounded-3xl overflow-hidden mb-6 shadow-md">
-                                <img
+                                <img loading="lazy" 
                                     src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                                     alt="Beneficios del compliance fiscal"
                                     className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
@@ -181,7 +181,7 @@ const ArticleErrors = () => {
                         {/* Article 4 */}
                         <div className="relative group cursor-pointer">
                             <div className="h-64 rounded-3xl overflow-hidden mb-6 shadow-md">
-                                <img
+                                <img loading="lazy" 
                                     src="https://images.unsplash.com/photo-1563986768609-322da13575f3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                                     alt="Importancia del presupuesto para la toma de decisiones"
                                     className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"

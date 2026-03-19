@@ -73,7 +73,7 @@ const LandingPymes = () => {
                 <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center flex-row-reverse md:flex-row">
                     <div className="order-2 md:order-1 relative group">
                         <div className="absolute inset-0 bg-[#233657] rounded-[3rem] transform -translate-x-4 translate-y-4 transition-transform group-hover:-translate-x-6 group-hover:translate-y-6 opacity-20"></div>
-                        <img 
+                        <img loading="lazy"  
                             src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80" 
                             alt="Estrategia Flujo de Caja" 
                             className="rounded-[3rem] relative z-10 w-full h-full object-cover shadow-2xl transition-transform transform group-hover:-translate-y-2"

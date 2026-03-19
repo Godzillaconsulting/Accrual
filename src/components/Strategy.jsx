@@ -22,7 +22,7 @@ const Strategy = () => {
 
                 {/* Video Placeholder */}
                 <div className="w-full max-w-6xl aspect-video bg-[#233657]/10 rounded-[2rem] relative flex items-center justify-center shadow-2xl overflow-hidden group border border-[#233657]/20 backdrop-blur-xl">
-                    <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Video thumbnail" className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700" />
+                    <img loading="lazy"  src="https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Video thumbnail" className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700" />
                     <div className="w-24 h-24 md:w-32 md:h-32 bg-[#0F4C82]/80 rounded-full flex items-center justify-center pl-2 md:pl-3 cursor-pointer hover:scale-110 transition-transform shadow-xl z-10 backdrop-blur-xl border border-[#D0D0DA]/30 group-hover:bg-[#233657]">
                         <Play className="w-12 h-12 md:w-16 md:h-16 text-[#D0D0DA] fill-[#D0D0DA]" />
                     </div>

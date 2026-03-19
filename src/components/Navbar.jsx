@@ -1,34 +1,12 @@
 import React from 'react';
 import { Search, Menu, ChevronDown, ChevronRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import accrualLogo from '../assets/Accrual logo (sin slogan).png';
 import logoBlue from '../assets/logo-completo-azul.svg';
-
-const searchIndex = [
-    { title: 'Inicio', path: '/', keywords: 'home principal accrual' },
-    { title: 'Quiénes Somos', path: '/quienes-somos', keywords: 'nosotros empresa equipo about experiencia' },
-    { title: 'Servicios Generales', path: '/servicios', keywords: 'servicios portafolio catalogo' },
-    { title: 'Consultoría', path: '/servicios/consultoria', keywords: 'consultoria asesoría estrategia' },
-    { title: 'Planificación fiscal avanzada', path: '/servicios/planificacion-fiscal-avanzada', keywords: 'planificacion fiscal impuestos patrimonial' },
-    { title: 'Declaración de impuestos', path: '/servicios/declaracion-de-impuestos', keywords: 'declaracion impuestos sat anual mensual' },
-    { title: 'IMSS e Infonavit', path: '/servicios/imss-e-infonavit', keywords: 'imss infonavit seguridad social cuotas' },
-    { title: 'REPSE', path: '/servicios/repse', keywords: 'repse subcontratacion especializada stps' },
-    { title: 'Administración de nómina', path: '/servicios/administracion-de-nomina', keywords: 'nomina empleados recursos humanos rrhh recibos' },
-    { title: 'Contabilidad', path: '/servicios/contabilidad', keywords: 'contabilidad contadores registros financieros' },
-    { title: 'Asesoría en planificación fiscal', path: '/servicios/asesoria-en-planificacion-fiscal', keywords: 'asesoria planificación fiscal' },
-    { title: 'Cumplimiento tributario', path: '/servicios/cumplimiento-tributario-servicio', keywords: 'cumplimiento tributario sat obligaciones' },
-    { title: 'Cumplimiento en seguridad social', path: '/servicios/cumplimiento-en-seguridad-social', keywords: 'seguridad social imss infonavit' },
-    { title: 'Consultoría financiera', path: '/servicios/consultoria-financiera', keywords: 'consultoría financiera finanzas negocios' },
-    { title: 'Auditoría financiera', path: '/servicios/auditoria-financiera', keywords: 'auditoría financiera estados financieros' },
-    { title: 'Asesoría contable', path: '/servicios/asesoria-contable', keywords: 'asesoría contable contadores' },
-    { title: 'Facturación', path: '/servicios/facturacion', keywords: 'facturación cfdi facturas ingresos' },
-    { title: 'Capacitación', path: '/servicios/capacitacion', keywords: 'capacitación cursos talleres entrenamiento' },
-    { title: 'LFPIORPI (Antilavado)', path: '/servicios/lfpiorpi', keywords: 'lfpiorpi antilavado prevencion lavado dinero' },
-    { title: 'Artículos y Blog', path: '/articulos', keywords: 'blog articulos noticias novedades' },
-    { title: 'Contacto', path: '/contacto', keywords: 'contacto telefono correo mensaje ubicación formulario' },
-];
+import { searchIndex } from '../data/searchIndex';
 
 const Navbar = () => {
+    const navigate = useNavigate();
     const [isServicesOpen, setIsServicesOpen] = React.useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
     const [isScrolled, setIsScrolled] = React.useState(false);
@@ -39,11 +17,12 @@ const Navbar = () => {
     const handleSearch = (e) => {
         const query = e.target.value;
         setSearchQuery(query);
-        if (query.length > 0) {
-            const results = searchIndex.filter(item => 
-                item.title.toLowerCase().includes(query.toLowerCase()) || 
-                item.keywords.toLowerCase().includes(query.toLowerCase())
-            );
+        if (query.trim().length > 0) {
+            const queryWords = query.toLowerCase().split(' ').filter(w => w.length > 0);
+            const results = searchIndex.filter(item => {
+                const textToSearch = (item.title + ' ' + item.keywords).toLowerCase();
+                return queryWords.every(word => textToSearch.includes(word));
+            });
             setSearchResults(results.slice(0, 6)); // Limit to 6 results
         } else {
             setSearchResults([]);
@@ -96,6 +75,12 @@ const Navbar = () => {
                         className="bg-transparent border-none outline-none w-full h-full text-white placeholder-white/50 font-medium"
                         value={searchQuery}
                         onChange={handleSearch}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' && searchQuery.trim().length > 0) {
+                                setIsSearchFocused(false);
+                                navigate(`/buscar?q=${encodeURIComponent(searchQuery)}`);
+                            }
+                        }}
                         onFocus={() => setIsSearchFocused(true)}
                         onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
                     />
@@ -123,6 +108,15 @@ const Navbar = () => {
                                             <span className="text-sm font-medium">{result.title}</span>
                                         </Link>
                                     ))}
+                                    <button 
+                                        onClick={() => {
+                                            setIsSearchFocused(false);
+                                            navigate(`/buscar?q=${encodeURIComponent(searchQuery)}`);
+                                        }}
+                                        className="w-full text-center px-4 py-3 mt-1 text-xs font-bold text-[#D0D0DA] hover:text-white bg-white/5 hover:bg-white/10 transition-colors uppercase tracking-wider border-t border-white/5"
+                                    >
+                                        Ver todos los resultados
+                                    </button>
                                 </div>
                             ) : (
                                 <div className="px-4 py-6 text-center text-[#D0D0DA] text-sm flex flex-col items-center justify-center gap-2">

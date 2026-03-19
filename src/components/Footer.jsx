@@ -28,12 +28,12 @@ const Footer = () => {
                         <ul className="space-y-4 opacity-80 font-light">
                             <li>
                                 <a href="https://wa.me/526563049604" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-[#0F4C82] transition-colors">
-                                    <img src={phoneIcon} alt="Phone" className="w-5 h-5 object-contain filter invert" />
+                                    <img loading="lazy"  src={phoneIcon} alt="Phone" className="w-5 h-5 object-contain filter invert" />
                                     <span>+52 656 304 9604</span>
                                 </a>
                             </li>
                             <li className="flex items-center gap-2">
-                                <img src={emailIcon} alt="Email" className="w-5 h-5 object-contain filter invert" />
+                                <img loading="lazy"  src={emailIcon} alt="Email" className="w-5 h-5 object-contain filter invert" />
                                 <a href="mailto:contacto@accrual.com.mx" className="hover:text-[#0F4C82] transition-colors">contacto@accrual.com.mx</a>
                             </li>
                             <li>
@@ -43,7 +43,7 @@ const Footer = () => {
                                     rel="noopener noreferrer"
                                     className="flex items-center gap-2 leading-relaxed hover:text-[#0F4C82] transition-colors"
                                 >
-                                    <img src={mapsIcon} alt="Location" className="w-5 h-5 object-contain" />
+                                    <img loading="lazy"  src={mapsIcon} alt="Location" className="w-5 h-5 object-contain" />
                                     <span>Calle Minerva 1174. Col. Olimpia</span>
                                 </a>
                             </li>
@@ -55,7 +55,7 @@ const Footer = () => {
                                     <Facebook className="w-6 h-6 cursor-pointer hover:text-[#0F4C82] transition-colors" />
                                 </a>
                                 <a href="https://wa.me/526563049604" target="_blank" rel="noopener noreferrer">
-                                    <img src={whatsappLogoFooter} alt="WhatsApp" className="w-6 h-6 object-contain cursor-pointer hover:brightness-0 hover:invert-[0.2] transition-all duration-300" />
+                                    <img loading="lazy"  src={whatsappLogoFooter} alt="WhatsApp" className="w-6 h-6 object-contain cursor-pointer hover:brightness-0 hover:invert-[0.2] transition-all duration-300" />
                                 </a>
                             </li>
                         </ul>
@@ -103,13 +103,13 @@ const Footer = () => {
                                 onMouseLeave={() => setIsLogoHovered(false)}
                             >
                                 {/* Default Symbol (White) */}
-                                <img
+                                <img loading="lazy" 
                                     src={accrualSymbol}
                                     alt="Accrual Symbol"
                                     className={`h-full w-auto object-contain transition-opacity duration-300 ${isLogoHovered ? 'opacity-0' : 'opacity-100'}`}
                                 />
                                 {/* Hover Symbol (Blue via Filter) - Absolute Overlay */}
-                                <img
+                                <img loading="lazy" 
                                     src={accrualSymbol}
                                     alt="Accrual Symbol Blue"
                                     className={`absolute top-0 left-0 h-full w-auto object-contain transition-opacity duration-300 ${isLogoHovered ? 'opacity-100' : 'opacity-0'}`}
@@ -129,7 +129,7 @@ const Footer = () => {
                         <span className="hidden md:inline">|</span>
                         <Link to="/terminos-y-condiciones" className="hover:text-[#0F4C82] transition-colors">TÉRMINOS Y CONDICIONES</Link>
                         <span className="hidden md:inline">|</span>
-                        <a href="#" className="hover:text-[#0F4C82] transition-colors">POLÍTICA DE COOKIES</a>
+                        <Link to="/politica-de-cookies" className="hover:text-[#0F4C82] transition-colors">POLÍTICA DE COOKIES</Link>
                     </div>
                     <p className="text-[10px] tracking-widest opacity-60">Copyright © 2026 Todos los derechos reservados</p>
                 </div>

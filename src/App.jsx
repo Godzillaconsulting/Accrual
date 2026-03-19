@@ -8,6 +8,8 @@ import TaxCompliancePage from './pages/TaxCompliancePage';
 
 import TermsAndConditions from './pages/TermsAndConditions';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import CookiesPolicy from './pages/CookiesPolicy';
+import SearchResults from './pages/SearchResults';
 
 import Articles from './pages/Articles';
 import ArticleErrors from './pages/ArticleErrors';
@@ -37,6 +39,8 @@ function App() {
                 <Route path="/servicios/:slug" element={<ServiceDetail />} />
                 <Route path="/terminos-y-condiciones" element={<TermsAndConditions />} />
                 <Route path="/aviso-de-privacidad" element={<PrivacyPolicy />} />
+                <Route path="/politica-de-cookies" element={<CookiesPolicy />} />
+                <Route path="/buscar" element={<SearchResults />} />
                 <Route path="/pago" element={<Payment />} />
                 
                 {/* Soluciones / Paquetes */}

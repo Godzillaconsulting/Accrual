@@ -206,7 +206,7 @@ const ServiceDetail = () => {
                     </button>
 
                     <div className="w-full max-w-6xl aspect-video bg-[#233657]/10 rounded-[2rem] relative flex items-center justify-center shadow-2xl overflow-hidden group border border-[#233657]/20 backdrop-blur-xl">
-                        <img
+                        <img loading="lazy" 
                             src={service.image}
                             alt={service.title}
                             className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
@@ -234,7 +234,7 @@ const ServiceDetail = () => {
                     <div className="flex flex-col items-center lg:items-end gap-6">
                         <div className="bg-[#0F4C82] rounded-[2.5rem] p-10 w-full max-w-[400px] text-center shadow-2xl relative">
                             <div className="w-48 h-48 mx-auto rounded-full overflow-hidden mb-6 border-4 border-[#D0D0DA]/20 bg-gray-300">
-                                <img
+                                <img loading="lazy" 
                                     src={adrianImg}
                                     alt="Joel Urrutia"
                                     className="w-full h-full object-cover"

@@ -137,7 +137,7 @@ const Testimonials = () => {
                                         <div className="flex flex-col items-center">
                                             {/* Avatar with Shadow Ring */}
                                             <div className="w-28 h-28 rounded-full border-8 border-white shadow-2xl overflow-hidden -mt-24 mb-6 group-hover:scale-110 transition-transform duration-500">
-                                                <img
+                                                <img loading="lazy" 
                                                     src={testimonial.avatar}
                                                     alt={testimonial.name}
                                                     className="w-full h-full object-cover"

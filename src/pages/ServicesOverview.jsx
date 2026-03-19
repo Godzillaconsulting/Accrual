@@ -50,7 +50,7 @@ const ServicesOverview = () => {
                             <div key={index} className="bg-[#233657] relative h-[350px] rounded-[2rem] overflow-hidden shadow-xl group cursor-pointer border border-[#233657]/10 hover:border-[#0F4C82] transition-all duration-300 hover:-translate-y-2">
 
                                 {/* Full Background Image */}
-                                <img
+                                <img loading="lazy" 
                                     src={service.image}
                                     alt={service.title}
                                     className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-in-out"

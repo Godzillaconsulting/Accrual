@@ -71,3 +71,4 @@ Thumbs.db
 preview_site.bat
 Screenshots
 .vercel
+.env*.local

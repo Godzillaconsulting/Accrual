@@ -21,7 +21,7 @@ const TalkClear = () => {
                 {/* Image Placeholder */}
                 <div className="flex-1 w-full">
                     <div className="bg-[#233657] rounded-3xl aspect-video md:aspect-square flex items-center justify-center relative overflow-hidden group">
-                        <img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Meeting" className="absolute inset-0 w-full h-full object-cover opacity-80" />
+                        <img loading="lazy"  src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Meeting" className="absolute inset-0 w-full h-full object-cover opacity-80" />
                     </div>
                 </div>
             </div>
