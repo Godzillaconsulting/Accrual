@@ -1,5 +1,7 @@
 import { sql } from './db.js';
 
+const rateLimitMap = new Map();
+
 export default async function handler(req, res) {
     if (req.method === 'GET') {
         try {
@@ -29,10 +31,47 @@ export default async function handler(req, res) {
     } 
     else if (req.method === 'POST') {
         try {
-            const { firstName, lastName, email, phone, message, date, time, modality, service, duration, price } = req.body || {};
+            // Security: XSS Sanitization
+            const sanitize = (str) => {
+                if (typeof str !== 'string') return '';
+                return str.replace(/</g, "&lt;").replace(/>/g, "&gt;").trim();
+            };
+
+            const raw = req.body || {};
+            const firstName = sanitize(raw.firstName);
+            const lastName = sanitize(raw.lastName);
+            const email = sanitize(raw.email);
+            const phone = sanitize(raw.phone);
+            const message = sanitize(raw.message);
+            const date = sanitize(raw.date);
+            const time = sanitize(raw.time);
+            const modality = sanitize(raw.modality);
+            const service = sanitize(raw.service);
+            const duration = sanitize(raw.duration);
+            const price = raw.price;
+
+            // Security: In-memory Rate Limiting
+            const ip = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown';
+            const now = Date.now();
+            const record = rateLimitMap.get(ip) || { count: 0, start: now };
+            if (now - record.start > 600000) { record.count = 0; record.start = now; } // Reset after 10 mins
+            record.count += 1;
+            rateLimitMap.set(ip, record);
+
+            if (record.count > 10) {
+                return res.status(429).json({ error: 'Demasiadas peticiones. Intenta más tarde.' });
+            }
 
             if (!firstName || !lastName || !email || !phone || !date || !time || !modality) {
                 return res.status(400).json({ error: 'Faltan campos obligatorios' });
+            }
+
+            // Security: Strict Payload Length Limits (DoS Mitigation)
+            if (firstName.length > 100 || lastName.length > 100 || email.length > 255 || phone.length > 50) {
+                return res.status(400).json({ error: 'Payload excesivo en campos de contacto' });
+            }
+            if (message.length > 2000) {
+                return res.status(400).json({ error: 'El mensaje no puede exceder los 2000 caracteres' });
             }
 
             const calculatedPrice = price || (duration === '60min' ? 1000 : 600);
