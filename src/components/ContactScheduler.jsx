@@ -55,9 +55,12 @@ const ContactScheduler = ({ showHeader = false, showMap = true }) => {
             setIsLoadingSlots(true);
             try {
                 // Ensure correct date string format 'YYYY-MM-DD'
-                const offset = selectedDate.getTimezoneOffset();
-                const localDate = new Date(selectedDate.getTime() - (offset * 60 * 1000));
-                const dateStr = localDate.toISOString().split('T')[0];
+                const dateStr = new Intl.DateTimeFormat('en-CA', { 
+                    timeZone: 'America/Ciudad_Juarez', 
+                    year: 'numeric', 
+                    month: '2-digit', 
+                    day: '2-digit' 
+                }).format(selectedDate);
                 
                 const response = await fetch(`/api/appointments?date=${dateStr}`);
                 if (response.ok) {
@@ -412,7 +415,7 @@ const ContactScheduler = ({ showHeader = false, showMap = true }) => {
                                 <p className="text-xs italic opacity-50">*Campos obligatorios</p>
                                 <button
                                     type="submit"
-                                    className="bg-[#233657] text-white font-bold py-4 px-10 rounded-full uppercase transition-all shadow-lg text-sm tracking-widest hover:bg-[#0F4C82] transform hover:scale-105"
+                                    className="hidden"
                                 >
                                     Enviar Mensaje
                                 </button>
@@ -486,18 +489,28 @@ const ContactScheduler = ({ showHeader = false, showMap = true }) => {
                                             const dayName = date.toLocaleDateString('es-ES', { weekday: 'short' }).replace('.', '');
                                             const isSelected = selectedDate && selectedDate.getDate() === i && selectedDate.getMonth() === currentDate.getMonth();
 
+                                            const today = new Date();
+                                            today.setHours(0, 0, 0, 0);
+                                            const isPast = date < today;
+
                                             days.push(
                                                 <button
                                                     key={i}
                                                     id={isSelected ? 'selected-day-scroll-item' : undefined}
+                                                    disabled={isPast}
                                                     onClick={() => {
-                                                        setSelectedDate(new Date(currentDate.getFullYear(), currentDate.getMonth(), i));
-                                                        setSelectedTime(null); // Reset time when day changes
+                                                        if (!isPast) {
+                                                            setSelectedDate(new Date(currentDate.getFullYear(), currentDate.getMonth(), i));
+                                                            setSelectedTime(null);
+                                                        }
                                                     }}
-                                                    className={`flex flex-col items-center justify-center min-w-[4.5rem] p-3 rounded-2xl border transition-all duration-300 ${isSelected
-                                                        ? 'bg-[#D0D0DA] border-[#D0D0DA] text-[#233657] shadow-lg scale-105'
-                                                        : 'bg-[#1a2844] border-white/10 text-[#D0D0DA]/70 hover:border-[#D0D0DA]/30 hover:bg-[#1a2844]/80'
-                                                        }`}
+                                                    className={`flex flex-col items-center justify-center min-w-[4.5rem] p-3 rounded-2xl border transition-all duration-300 ${
+                                                        isPast 
+                                                            ? 'bg-transparent border-red-500/20 text-red-400 opacity-40 cursor-not-allowed line-through'
+                                                            : isSelected
+                                                                ? 'bg-[#D0D0DA] border-[#D0D0DA] text-[#233657] shadow-lg scale-105'
+                                                                : 'bg-[#1a2844] border-white/10 text-[#D0D0DA]/70 hover:border-[#D0D0DA]/30 hover:bg-[#1a2844]/80'
+                                                    }`}
                                                 >
                                                     <span className="text-xs uppercase font-bold tracking-wider mb-1">{dayName}</span>
                                                     <span className="text-xl font-black">{i}</span>
@@ -602,15 +615,19 @@ const ContactScheduler = ({ showHeader = false, showMap = true }) => {
                                         
                                         setIsSubmitting(true);
                                         try {
-                                            const offset = selectedDate.getTimezoneOffset();
-                                            const localDate = new Date(selectedDate.getTime() - (offset * 60 * 1000));
-                                            const dateStr = localDate.toISOString().split('T')[0];
+                                            const dateStr = new Intl.DateTimeFormat('en-CA', { 
+                                                timeZone: 'America/Ciudad_Juarez', 
+                                                year: 'numeric', 
+                                                month: '2-digit', 
+                                                day: '2-digit' 
+                                            }).format(selectedDate);
 
                                             const payload = {
                                                 firstName: formData.nombre,
                                                 lastName: formData.apellidos,
                                                 email: formData.email,
                                                 phone: formData.telefono,
+                                                message: formData.mensaje,
                                                 date: dateStr,
                                                 time: selectedTime,
                                                 modality: bookingType,

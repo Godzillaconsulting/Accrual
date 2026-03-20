@@ -11,16 +11,16 @@ export default async function handler(req, res) {
             }
 
             const bookedAppointments = await sql`
-                SELECT appointment_time, duration
+                SELECT hora, duracion
                 FROM appointments 
-                WHERE appointment_date = ${date} 
+                WHERE fecha = ${date} 
                 AND status != 'cancelled'
             `;
 
             // Return objects with both time and duration
             const bookedData = bookedAppointments.map(a => ({
-                hora: a.appointment_time,
-                duracion: a.duration || '30min'
+                hora: a.hora,
+                duracion: a.duracion || '30min'
             }));
             return res.status(200).json(bookedData);
         } catch (error) {
@@ -29,16 +29,18 @@ export default async function handler(req, res) {
     } 
     else if (req.method === 'POST') {
         try {
-            const { firstName, lastName, email, phone, company, date, time, modality, service, duration } = req.body || {};
+            const { firstName, lastName, email, phone, message, date, time, modality, service, duration, price } = req.body || {};
 
             if (!firstName || !lastName || !email || !phone || !date || !time || !modality) {
                 return res.status(400).json({ error: 'Faltan campos obligatorios' });
             }
 
+            const calculatedPrice = price || (duration === '60min' ? 1000 : 600);
+
             // Insert ensuring it catches double bookings via the UNIQUE constraint
             const result = await sql`
-                INSERT INTO appointments (first_name, last_name, email, phone, company, appointment_date, appointment_time, modality, duration, service_requested) 
-                VALUES (${firstName}, ${lastName}, ${email}, ${phone}, ${company || ''}, ${date}, ${time}, ${modality}, ${duration || '30min'}, ${service || 'No especificado'})
+                INSERT INTO appointments (nombre, apellidos, email, telefono, mensaje, fecha, hora, modalidad, duracion, service_requested, precio) 
+                VALUES (${firstName}, ${lastName}, ${email}, ${phone}, ${message || ''}, ${date}, ${time}, ${modality}, ${duration || '30min'}, ${service || 'No especificado'}, ${calculatedPrice})
                 RETURNING id
             `;
 
