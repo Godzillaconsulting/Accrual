@@ -76,7 +76,7 @@ export const data2 = [
             <p>El plan BEPS consta de 15 acciones que fueron recomendadas por la OCDE para ser implementadas por los países miembros y que abordan diversas prácticas de evasión fiscal. A continuación, te menciono algunas de las más importantes:</p>
             <ul>
                 <li><strong>Acción 1: Economía Digital.</strong> Aborda los desafíos fiscales derivados de la economía digital, como la prestación de servicios en línea, la transferencia de datos y la venta de bienes intangibles.</li>
-                <li><strong>Acción 2: Hidratación de la Base Imponible y Atribución de Beneficios (Híbridos).</strong> Se enfoca en prevenir el uso de estructuras fiscales híbridas, que aprovechan las diferencias entre las legislaciones fiscales nacionales para reducir la base imponible.</li>
+                <li><strong>Acción 2: Erosión de la Base Imponible y Atribución de Beneficios (Híbridos).</strong> Se enfoca en prevenir el uso de estructuras fiscales híbridas, que aprovechan las diferencias entre las legislaciones fiscales nacionales para reducir la base imponible.</li>
                 <li><strong>Acción 3: Diseño de Reglas de Precios de Transferencia.</strong> Refuerza y mejora las normas sobre precios de transferencia entre entidades relacionadas, buscando garantizar que las transacciones entre empresas del mismo grupo se realicen a precios de mercado.</li>
             </ul>
 
