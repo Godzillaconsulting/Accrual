@@ -30,7 +30,7 @@ const AdminLayout = () => {
                     </h1>
                 </div>
 
-                <nav className="flex-1 py-6 px-4 space-y-2 overflow-y-auto" ref={sidebarRef}>
+                <nav className="flex-1 py-6 px-4 space-y-2 overflow-y-auto">
                     {navItems.map((item) => (
                         <NavLink
                             key={item.name}
