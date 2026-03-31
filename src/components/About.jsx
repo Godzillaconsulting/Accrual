@@ -20,12 +20,14 @@ const About = () => {
                             mediante servicios de vanguardia, profesionalismo y veracidad.
                         </p>
 
+                        <h3 className="text-3xl font-bold mt-8 mb-4 uppercase text-[#0F4C82]">Visión</h3>
                         <p className="leading-relaxed">
                             Con la visión de ser líderes en ofrecer servicios financieros y fiscales a nivel nacional
                             e internacional, ofrecemos soluciones innovadoras en planeacion, diseño,
                             capacitacion y consultoría fiscal, contable y financiera.
                         </p>
 
+                        <h3 className="text-3xl font-bold mt-8 mb-4 uppercase text-[#0F4C82]">Misión</h3>
                         <p className="leading-relaxed">
                             Nuestra misión es impulsar el éxito y la eficiencia de nuestros clientes, fortaleciendo
                             los pilares financieros. A través de nuestra trayectoria, hemos logrado demostrar

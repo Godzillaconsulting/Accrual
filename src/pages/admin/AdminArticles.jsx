@@ -12,7 +12,10 @@ const AdminArticles = () => {
         <div className="space-y-8 animate-fade-in-up">
             <div className="flex justify-between items-center border-b pb-4 mb-8">
                 <h2 className="text-2xl font-bold text-[#233657]">Administrar Artículos</h2>
-                <button className="bg-[#00D0B0] hover:bg-[#00b096] text-[#233657] px-6 py-3 rounded-lg font-bold flex items-center gap-2 shadow-lg transition-all transform hover:-translate-y-1">
+                <button 
+                    onClick={() => alert('¡Listo para redactar un nuevo artículo!')}
+                    className="bg-[#00D0B0] hover:bg-[#00b096] text-[#233657] px-6 py-3 rounded-lg font-bold flex items-center gap-2 shadow-lg transition-all transform hover:-translate-y-1"
+                >
                     <Plus className="w-5 h-5" /> Nuevo Artículo
                 </button>
             </div>
@@ -47,13 +50,13 @@ const AdminArticles = () => {
                                 </td>
                                 <td className="px-6 py-4">
                                     <div className="flex items-center justify-center gap-3">
-                                        <button className="p-2 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 transition-colors" title="Editar">
+                                        <button onClick={() => alert('Abriendo editor de artículo...')} className="p-2 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 transition-colors" title="Editar">
                                             <Edit2 className="w-4 h-4" />
                                         </button>
-                                        <button className="p-2 bg-gray-50 text-gray-600 rounded hover:bg-gray-200 transition-colors" title="Ver en el sitio">
+                                        <button onClick={() => alert('Redirigiendo a la vista pública del artículo...')} className="p-2 bg-gray-50 text-gray-600 rounded hover:bg-gray-200 transition-colors" title="Ver en el sitio">
                                             <ExternalLink className="w-4 h-4" />
                                         </button>
-                                        <button className="p-2 bg-red-50 text-red-600 rounded hover:bg-red-100 transition-colors" title="Eliminar">
+                                        <button onClick={() => { if(window.confirm('¿Desea mover este artículo a la papelera?')) alert('Artículo eliminado.'); }} className="p-2 bg-red-50 text-red-600 rounded hover:bg-red-100 transition-colors" title="Eliminar">
                                             <Trash2 className="w-4 h-4" />
                                         </button>
                                     </div>

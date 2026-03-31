@@ -113,6 +113,7 @@ const AdminHomepage = () => {
                 
                 <div className="mt-8 flex justify-end">
                     <button 
+                        onClick={() => alert('¡Llamado a la acción (CTA) actualizado!')}
                         className="bg-[#233657] hover:bg-[#1a2842] text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
                     >
                         <Save className="w-5 h-5" />

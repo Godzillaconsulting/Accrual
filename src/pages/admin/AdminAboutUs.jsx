@@ -36,7 +36,10 @@ const AdminAboutUs = () => {
                 </div>
 
                 <div className="mt-8 flex justify-end">
-                    <button className="bg-[#233657] hover:bg-[#1a2842] text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 shadow-lg transition-all transform hover:-translate-y-1">
+                    <button 
+                        onClick={() => alert('¡Textos actualizados exitosamente!')}
+                        className="bg-[#233657] hover:bg-[#1a2842] text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 shadow-lg transition-all transform hover:-translate-y-1"
+                    >
                         <Save className="w-5 h-5" />
                         Guardar Textos
                     </button>
@@ -46,7 +49,10 @@ const AdminAboutUs = () => {
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="text-xl font-bold text-[#233657]">Nuestro Equipo</h3>
-                    <button className="bg-[#00D0B0] hover:bg-[#00b096] text-[#233657] border border-[#233657]/10 px-4 py-2 rounded-lg font-bold flex items-center gap-2 shadow-md transition-all transform hover:-translate-y-1">
+                    <button 
+                        onClick={() => alert('¡Módulo de nuevo miembro habilitado!')}
+                        className="bg-[#00D0B0] hover:bg-[#00b096] text-[#233657] border border-[#233657]/10 px-4 py-2 rounded-lg font-bold flex items-center gap-2 shadow-md transition-all transform hover:-translate-y-1"
+                    >
                         <Plus className="w-4 h-4" /> Agregar Miembro
                     </button>
                 </div>
