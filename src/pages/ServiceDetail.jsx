@@ -151,7 +151,7 @@ const servicesData = {
     "lfpiorpi": {
         title: "LFPIORPI (Ley Antilavado)",
         image: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
-        description: "Asesoría en el cumplimiento de la Ley Antilavado y actividades vulnerables.",
+        description: "Ofrecemos asesoría para empresas de actividades vulnerables, así como la presentación de sus respectivas declaraciones informativas en materia de LFPIORPI.",
         content: `
             <p>Asesoría en el cumplimiento de la Ley Federal para la Prevención e Identificación de Operaciones con Recursos de Procedencia Ilícita. Identificamos actividades vulnerables y te ayudamos a cumplir con los avisos correspondientes.</p>
         `
