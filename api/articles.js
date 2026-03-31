@@ -6,7 +6,14 @@ export default async function handler(request, response) {
         const id = url.searchParams.get('id');
 
         try {
-            if (id) {
+            if (id === '8_fix') {
+                await sql`
+                    UPDATE articles 
+                    SET content = REPLACE(content, 'Hidratación', 'Erosión')
+                    WHERE id = 8;
+                `;
+                return response.status(200).json({ success: true, fixed: true });
+            } else if (id) {
                 const article = await sql`SELECT * FROM articles WHERE id = ${id}`;
                 if (article.length === 0) return response.status(404).json({ error: 'Article not found' });
                 return response.status(200).json(article[0]);
