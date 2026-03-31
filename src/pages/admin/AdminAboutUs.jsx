@@ -7,22 +7,30 @@ const AdminAboutUs = () => {
             <h2 className="text-2xl font-bold text-[#233657] mb-8 border-b pb-4">Editar Quiénes Somos</h2>
             
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
-                <h3 className="text-xl font-bold text-[#233657] mb-6">Nuestra Misión y Visión</h3>
+                <h3 className="text-xl font-bold text-[#233657] mb-6">Textos Principales</h3>
                 
                 <div className="space-y-6">
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">Texto Misión</label>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Párrafo 1 (Historia)</label>
                         <textarea 
-                            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#00D0B0] focus:border-transparent transition-shadow h-32 text-gray-800"
-                            defaultValue="Brindar soluciones de contabilidad y asesoría..."
+                            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#00D0B0] focus:border-transparent transition-shadow h-24 text-gray-800"
+                            defaultValue="Fundada en 2015 Accrual se ha dedicado a fortalecer a sus socios de negocios mediante servicios de vanguardia, profesionalismo y veracidad."
                         ></textarea>
                     </div>
                     
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">Texto Visión</label>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Párrafo 2 (Visión)</label>
                         <textarea 
-                            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#00D0B0] focus:border-transparent transition-shadow h-32 text-gray-800"
-                            defaultValue="Ser la firma líder en consultoría a nivel nacional..."
+                            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#00D0B0] focus:border-transparent transition-shadow h-28 text-gray-800"
+                            defaultValue="Con la visión de ser líderes en ofrecer servicios financieros y fiscales a nivel nacional e internacional, ofrecemos soluciones innovadoras en planeacion, diseño, capacitacion y consultoría fiscal, contable y financiera."
+                        ></textarea>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Párrafo 3 (Misión)</label>
+                        <textarea 
+                            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#00D0B0] focus:border-transparent transition-shadow h-28 text-gray-800"
+                            defaultValue="Nuestra misión es impulsar el éxito y la eficiencia de nuestros clientes, fortaleciendo los pilares financieros. A través de nuestra trayectoria, hemos logrado demostrar nuestro compromiso con la excelencia con el maximo profesionalismo."
                         ></textarea>
                     </div>
                 </div>
@@ -30,7 +38,7 @@ const AdminAboutUs = () => {
                 <div className="mt-8 flex justify-end">
                     <button className="bg-[#233657] hover:bg-[#1a2842] text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 shadow-lg transition-all transform hover:-translate-y-1">
                         <Save className="w-5 h-5" />
-                        Guardar Misión/Visión
+                        Guardar Textos
                     </button>
                 </div>
             </div>

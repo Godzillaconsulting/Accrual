@@ -2,8 +2,13 @@ import React, { useState } from 'react';
 import { Save, Image as ImageIcon } from 'lucide-react';
 
 const AdminHomepage = () => {
-    const [heroTitle, setHeroTitle] = useState('Construimos el futuro de tu negocio con soluciones integrales');
-    const [heroSubtitle, setHeroSubtitle] = useState('Protegemos y hacemos crecer el patrimonio de tu empresa con asesoria experta');
+    // Slide 1
+    const [heroTitle, setHeroTitle] = useState('Ingeniería Fiscal y Patrimonial para la Frontera Norte');
+    const [heroSubtitle, setHeroSubtitle] = useState('Optimizamos tu carga tributaria en México y coordinamos tu cumplimiento internacional. Desde RESICO hasta Precios de Transferencia.');
+
+    // Slide 2
+    const [slide2Title, setSlide2Title] = useState('Para cada empresa hay una estrategia');
+    const [slide2Subtitle, setSlide2Subtitle] = useState('Accrual es tu aliado en el mundo fiscal y financiero. Ofrecemos soluciones adaptadas a tus necesidades, ayudándote a cumplir con tus responsabilidades fiscales y a gestionar tu patrimonio de manera eficiente.');
 
     const handleSave = () => {
         // Implement save logic here
@@ -21,24 +26,54 @@ const AdminHomepage = () => {
                 </h3>
                 
                 <div className="space-y-6">
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">Título Principal (H1)</label>
-                        <input 
-                            type="text" 
-                            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#00D0B0] focus:border-transparent transition-shadow text-gray-800"
-                            value={heroTitle}
-                            onChange={(e) => setHeroTitle(e.target.value)}
-                        />
+                    <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                        <h4 className="font-bold text-[#233657] mb-4">Slide 1: Fiscal</h4>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Título Principal (H1)</label>
+                                <input 
+                                    type="text" 
+                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#00D0B0] focus:border-transparent transition-shadow text-gray-800"
+                                    value={heroTitle}
+                                    onChange={(e) => setHeroTitle(e.target.value)}
+                                />
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Subtítulo</label>
+                                <textarea 
+                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#00D0B0] focus:border-transparent transition-shadow h-28 text-gray-800"
+                                    value={heroSubtitle}
+                                    onChange={(e) => setHeroSubtitle(e.target.value)}
+                                ></textarea>
+                            </div>
+                        </div>
                     </div>
-                    
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">Subtítulo</label>
-                        <textarea 
-                            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#00D0B0] focus:border-transparent transition-shadow h-24 text-gray-800"
-                            value={heroSubtitle}
-                            onChange={(e) => setHeroSubtitle(e.target.value)}
-                        ></textarea>
+
+                    <div className="bg-gray-50 p-6 rounded-lg border border-gray-200 mt-6">
+                        <h4 className="font-bold text-[#233657] mb-4">Slide 2: Estrategia</h4>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Título (H1)</label>
+                                <input 
+                                    type="text" 
+                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#00D0B0] focus:border-transparent transition-shadow text-gray-800"
+                                    value={slide2Title}
+                                    onChange={(e) => setSlide2Title(e.target.value)}
+                                />
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Párrafo Descriptivo</label>
+                                <textarea 
+                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#00D0B0] focus:border-transparent transition-shadow h-36 text-gray-800"
+                                    value={slide2Subtitle}
+                                    onChange={(e) => setSlide2Subtitle(e.target.value)}
+                                ></textarea>
+                            </div>
+                        </div>
                     </div>
+
 
                     <div>
                         <label className="block text-sm font-semibold text-gray-700 mb-2">Video o Imagen de Fondo</label>

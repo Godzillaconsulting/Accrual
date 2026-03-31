@@ -2,6 +2,11 @@ import React from 'react';
 import whatsappLogo from '../assets/WhatsApp (white).png';
 
 const FloatingWhatsApp = () => {
+    // Hide when viewed inside an iframe (e.g., from the Admin Panel Live Preview)
+    if (window.self !== window.top) {
+        return null;
+    }
+
     return (
         <a
             href="https://wa.me/526563049604"
