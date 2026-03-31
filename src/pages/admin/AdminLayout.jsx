@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate, Link } from 'react-router-dom';
+import accrualLogo from '../../assets/Accrual logo (sin slogan).png';
 import { Home, Users, Briefcase, FileText, Settings, LogOut, Menu, X, LayoutDashboard } from 'lucide-react';
 
 const AdminLayout = () => {
@@ -23,11 +24,10 @@ const AdminLayout = () => {
         <div className="flex bg-[#F3F4F6] min-h-screen text-gray-800 font-sans">
             {/* Sidebar Desktop */}
             <aside className="hidden md:flex flex-col w-64 bg-[#233657] text-white shadow-2xl transition-all duration-300 z-20">
-                <div className="flex items-center justify-center h-20 border-b border-white/10">
-                    <h1 className="text-2xl font-black tracking-wider flex items-center gap-2">
-                        <Settings className="w-6 h-6 text-[#00D0B0]" />
-                        <span className="text-white">Admin</span><span className="text-[#00D0B0]">Panel</span>
-                    </h1>
+                <div className="flex items-center justify-center h-20 border-b border-white/10 px-6">
+                    <Link to="/" className="w-full flex items-center justify-center transition-transform duration-300 hover:scale-105" title="Ir a la página principal">
+                        <img src={accrualLogo} alt="Accrual Logo" className="max-h-12 w-auto object-contain drop-shadow-lg" />
+                    </Link>
                 </div>
 
                 <nav className="flex-1 py-6 px-4 space-y-2 overflow-y-auto">
@@ -62,11 +62,10 @@ const AdminLayout = () => {
             </aside>
 
             {/* Mobile Header */}
-            <div className="md:hidden flex items-center justify-between p-4 bg-[#233657] text-white fixed top-0 w-full z-30 shadow-md">
-                <h1 className="text-xl font-bold flex items-center gap-2">
-                    <Settings className="w-5 h-5 text-[#00D0B0]" />
-                    <span className="text-white">Admin</span><span className="text-[#00D0B0]">Panel</span>
-                </h1>
+            <div className="md:hidden flex items-center justify-between p-4 bg-[#233657] text-white fixed top-0 w-full z-30 shadow-md h-16">
+                <Link to="/" className="flex items-center transition-transform duration-300 hover:scale-105" title="Ir a la página principal">
+                    <img src={accrualLogo} alt="Accrual Logo" className="h-8 w-auto object-contain drop-shadow-md" />
+                </Link>
                 <button
                     onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                     className="p-2 bg-white/10 rounded-md text-white hover:bg-white/20 transition-colors"
