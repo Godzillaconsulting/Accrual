@@ -96,8 +96,8 @@ const servicesData = {
         image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
         description: "Asesoría y gestión de cumplimiento tributario para asegurar el cumplimiento con las normativas legales vigentes.",
         content: `
-            <p>Ofrecemos auditorías financieras integrales para evaluar la exactitud y conformidad de sus estados financieros.</p>
-            <p>Nuestro equipo de auditores profesionales utiliza técnicas avanzadas para identificar discrepancias y proporcionar recomendaciones para fortalecer el control interno y mejorar la transparencia financiera.</p>
+            <p>Brindamos servicios de compliance fiscal para garantizar que su empresa opere dentro del marco normativo vigente y minimice riesgos fiscales.</p>
+            <p>Nuestro equipo de especialistas en materia tributaria implementa controles, revisa procesos internos y ofrece recomendaciones estratégicas para fortalecer la gobernanza fiscal y asegurar transparencia ante las autoridades.</p>
         `
     },
     "cumplimiento-en-seguridad-social": {
