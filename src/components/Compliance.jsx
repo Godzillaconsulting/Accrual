@@ -78,7 +78,7 @@ const Compliance = () => {
                                 />
                             </div>
                             <h3 className="text-3xl font-bold mb-1 text-white">Joel Urrutia</h3>
-                            <p className="text-[#D0D0DA]/80 text-lg mb-0 font-medium">Contador público</p>
+                            <p className="text-[#D0D0DA]/80 text-lg mb-0 font-medium">Socio fundador</p>
                         </div>
 
                         <button
