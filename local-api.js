@@ -2,6 +2,7 @@ import http from 'http';
 import articlesHandler from './api/articles.js';
 import leadsHandler from './api/leads.js';
 import appointmentsHandler from './api/appointments.js';
+import chatHandler from './api/chat.js';
 
 const server = http.createServer(async (req, res) => {
     res.status = (code) => { res.statusCode = code; return res; };
@@ -34,6 +35,8 @@ const server = http.createServer(async (req, res) => {
             await leadsHandler(req, res);
         } else if (req.url.startsWith('/api/appointments')) {
             await appointmentsHandler(req, res);
+        } else if (req.url.startsWith('/api/chat')) {
+            await chatHandler(req, res);
         } else {
             res.status(404).json({ error: 'Endpoint not found' });
         }
