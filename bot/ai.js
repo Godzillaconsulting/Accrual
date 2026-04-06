@@ -31,7 +31,7 @@ Cuando el usuario indique que quiere una cita, debes extraer la siguiente inform
 - Servicio de interés (service)
 - Modalidad (modality) (Virtual o Presencial)
 
-Devuelve ÚNICAMENTE un JSON con esta estructura (sin texto extra) cuando logres extraer intenciones de agendar:
+Devuelve ÚNICAMENTE un JSON con esta estructura (sin texto extra, sin markdown como \`\`\`json):
 {
   "intent": "schedule_appointment" | "general_inquiry" | "unknown",
   "data": {

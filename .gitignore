@@ -72,3 +72,10 @@ preview_site.bat
 Screenshots
 .vercel
 .env*.local
+
+# Archivos Sensibles del Bot y API
+credentials.json
+.wwebjs_auth
+.wwebjs_cache
+*.wwebjs_auth
+bot_sessions/

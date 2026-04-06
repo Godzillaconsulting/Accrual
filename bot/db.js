@@ -14,26 +14,25 @@ export async function saveAppointmentToDB(appt) {
         const calculatedPrice = appt.price || (duration === '60min' ? 1000 : 600);
         
         // Inserting into Neon table and expecting RETURNING id
-        const result = await sql\`
+        const result = await sql`
             INSERT INTO appointments (
-                nombre, apellidos, email, telefono, mensaje, fecha, hora, modalidad, duracion, service_requested, precio, status
+                nombre, apellidos, email, telefono, mensaje, fecha, hora, modalidad, duracion, precio, status
             ) 
             VALUES (
-                \${appt.firstName || 'Cliente'}, 
-                \${appt.lastName || 'WhatsApp'}, 
-                \${appt.email || 'whatsapp@bot.com'}, 
-                \${appt.phone}, 
-                \${appt.message || 'Cita generada vía WhatsApp Bot'}, 
-                \${appt.date}, 
-                \${appt.time}, 
-                \${appt.modality || 'Virtual'}, 
-                \${duration}, 
-                \${appt.service || 'No especificado'}, 
-                \${calculatedPrice},
+                ${appt.firstName || 'Cliente'}, 
+                ${appt.lastName || 'WhatsApp'}, 
+                ${appt.email || 'whatsapp@bot.com'}, 
+                ${appt.phone}, 
+                ${appt.service ? 'Servicio solicitado: ' + appt.service : 'Cita generada vía WhatsApp Bot'}, 
+                ${appt.date}, 
+                ${appt.time}, 
+                ${appt.modality || 'Virtual'}, 
+                ${duration}, 
+                ${calculatedPrice},
                 'confirmed_by_bot'
             )
             RETURNING id
-        \`;
+        `;
         
         return { success: true, appointmentId: result[0].id };
     } catch (error) {

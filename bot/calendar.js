@@ -11,9 +11,8 @@ let auth;
 try {
     // Example using Service Account JSON file (if available) or standard env variables
     auth = new google.auth.GoogleAuth({
+        keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS || 'credentials.json',
         scopes: ['https://www.googleapis.com/auth/calendar.events'],
-        // This relies on GOOGLE_APPLICATION_CREDENTIALS being set in the .env 
-        // or explicitly passing credentials here.
     });
 } catch (error) {
     console.warn('Warning: Google Auth couldn\'t be initialized. Need Service Account credentials.');
@@ -31,20 +30,30 @@ export async function createGoogleCalendarEvent(appointmentData) {
     // Convert duration like '30min' or '60min' to minutes integer
     const durationMinutes = parseInt(duration) || 30;
     
-    // Construct Date objects
-    // Assume date is 'YYYY-MM-DD' and time is 'HH:MM'
-    const startTime = new Date(\`\${date}T\${time}:00\`);
-    const endTime = new Date(startTime.getTime() + durationMinutes * 60000);
+    // Parse time mathematically to add duration without timezone issues
+    const [hoursStr, minutesStr] = time.split(':');
+    let hours = parseInt(hoursStr, 10);
+    let minutes = parseInt(minutesStr, 10);
+    
+    minutes += durationMinutes;
+    hours += Math.floor(minutes / 60);
+    minutes = minutes % 60;
+    
+    const endHoursStr = hours.toString().padStart(2, '0');
+    const endMinutesStr = minutes.toString().padStart(2, '0');
+    
+    const startTimeStr = `${date}T${time}:00`;
+    const endTimeStr = `${date}T${endHoursStr}:${endMinutesStr}:00`;
 
     const event = {
-        summary: \`Cita: \${firstName} \${lastName} - \${service || 'Servicio'}\`,
-        description: \`Nombre: \${firstName} \${lastName}\\nEmail: \${email || ''}\\nTel: \${phone}\\nModalidad: \${modality}\\nServicio: \${service}\`,
+        summary: `Cita: ${firstName} ${lastName} - ${service || 'Servicio'}`,
+        description: `Nombre: ${firstName} ${lastName}\nEmail: ${email || ''}\nTel: ${phone}\nModalidad: ${modality}\nServicio: ${service}`,
         start: {
-            dateTime: startTime.toISOString(),
-            timeZone: 'America/Mexico_City', // Adjust based on user's timezone implicitly
+            dateTime: startTimeStr,
+            timeZone: 'America/Mexico_City',
         },
         end: {
-            dateTime: endTime.toISOString(),
+            dateTime: endTimeStr,
             timeZone: 'America/Mexico_City',
         },
     };
