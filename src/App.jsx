@@ -31,13 +31,13 @@ const Loader = () => (
     </div>
 );
 
-// Admin Pages
-import AdminLayout from './pages/admin/AdminLayout';
-import AdminDashboard from './pages/admin/AdminDashboard';
-import AdminHomepage from './pages/admin/AdminHomepage';
-import AdminAboutUs from './pages/admin/AdminAboutUs';
-import AdminServices from './pages/admin/AdminServices';
-import AdminArticles from './pages/admin/AdminArticles';
+// Admin Pages (Nuevas)
+const Login = React.lazy(() => import('./components/Login'));
+const AdminStudio = React.lazy(() => import('./components/AdminStudio'));
+const AccrualSora = React.lazy(() => import('./components/AccrualSora'));
+const ErrorBoundary = React.lazy(() => import('./components/ErrorBoundary'));
+import PrivateRoute from './components/PrivateRoute';
+import { Navigate } from 'react-router-dom';
 
 function App() {
     return (
@@ -65,14 +65,12 @@ function App() {
                     <Route path="/soluciones/negocio" element={<LandingPymes />} />
                     <Route path="/soluciones/corporativo" element={<LandingCorporativo />} />
                     
-                    {/* Admin Routes */}
-                    <Route path="/admin" element={<AdminLayout />}>
-                        <Route index element={<AdminDashboard />} />
-                        <Route path="homepage" element={<AdminHomepage />} />
-                        <Route path="quienes-somos" element={<AdminAboutUs />} />
-                        <Route path="servicios" element={<AdminServices />} />
-                        <Route path="articulos" element={<AdminArticles />} />
-                    </Route>
+                    {/* Admin Routes (Dashboard Integrado) */}
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/admin/*" element={<ErrorBoundary><PrivateRoute><AdminStudio /></PrivateRoute></ErrorBoundary>} />
+                    <Route path="/cm" element={<Navigate to="/admin/calendar" replace />} />
+                    <Route path="/studio" element={<Navigate to="/admin/studio" replace />} />
+                    <Route path="/accrual-sora" element={<ErrorBoundary><PrivateRoute><AccrualSora /></PrivateRoute></ErrorBoundary>} />
                 </Routes>
             </Suspense>
         </>

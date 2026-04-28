@@ -5,6 +5,8 @@ import Footer from '../components/Footer';
 import FloatingWhatsApp from '../components/FloatingWhatsApp';
 import { ArrowRight, Loader2 } from 'lucide-react';
 
+import { mockArticles } from '../utils/mockArticles';
+
 const Articles = () => {
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -21,8 +23,9 @@ const Articles = () => {
                 setLoading(false);
             })
             .catch(err => {
-                console.error('Fetch error:', err);
-                setError(err.message);
+                console.warn('Usando mock de artículos:', err);
+                setArticles(mockArticles);
+                setError(null);
                 setLoading(false);
             });
     }, []);
