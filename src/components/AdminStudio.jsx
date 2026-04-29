@@ -563,7 +563,7 @@ export default function AdminStudio() {
                 }`}
                 >
                 <div className="min-w-0 flex-1">
-                <span className={`block text-xs font-black truncate drop-shadow-sm transition-colors duration-300 ${isSelected ? 'text-[#ff4444]' : 'text-white/70 group-hover/btn:text-white'}`}>
+                <span className={`block text-xs font-black truncate drop-shadow-sm transition-colors duration-300 ${isSelected ? 'text-[#0099CC]' : 'text-white/70 group-hover/btn:text-white'}`}>
                 {meta?.label || node.id}
                 </span>
                 <span className={`text-[9px] font-black transition-colors duration-300 ${isSelected ? 'text-[#0099CC]/80' : 'text-white/30 group-hover/btn:text-white/50'}`}>
