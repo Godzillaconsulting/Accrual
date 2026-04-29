@@ -9,8 +9,8 @@ import { useSiteData } from '../context/SiteContext';
 import { mockArticles } from '../utils/mockArticles';
 
 const Articles = () => {
-    const { getSiteData } = useSiteData();
-    const siteData = getSiteData('articulos-grid');
+    const { getNodeData } = useSiteData();
+    const siteData = getNodeData('articulos-grid');
 
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(true);

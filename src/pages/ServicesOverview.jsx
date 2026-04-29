@@ -26,8 +26,8 @@ const servicesList = [
 ];
 
 const ServicesOverview = () => {
-    const { getSiteData } = useSiteData();
-    const siteData = getSiteData('servicios-grid');
+    const { getNodeData } = useSiteData();
+    const siteData = getNodeData('servicios-grid');
 
     useEffect(() => {
         window.scrollTo(0, 0);
