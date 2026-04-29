@@ -1,5 +1,6 @@
 import React, { Suspense, lazy, useEffect, useRef, useState, Component } from'react';
 import { MemoryRouter, Routes, Route } from'react-router-dom';
+import { Eye } from 'lucide-react';
 
 // ── Componentes del sitio (lazy) ──────────────────────────────────────────────
 // Las vistas previas de la landing page pública se han eliminado para enfocarse solo en el Dashboard.
@@ -301,10 +302,10 @@ export default function StudioPreview({ nodeId, draftData, hoveredField }) {
 
  if (!nodeId || !draftData) {
  return (
- <div className="flex flex-col items-center pt-32 h-full gap-4 text-neutral-600">
- <span className="text-5xl">👁️</span>
- <p className="text-sm font-medium">Selecciona una sección</p>
- <p className="text-xs">La preview aparece aquí</p>
+ <div className="flex flex-col items-center pt-32 h-full gap-4 text-white/80">
+ <Eye className="w-12 h-12 opacity-50" strokeWidth={1.5} />
+ <p className="text-sm font-medium text-white">Selecciona una sección</p>
+ <p className="text-xs text-white/60">La preview aparece aquí</p>
  </div>
  );
  }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from'react';
+import { MousePointerClick } from 'lucide-react';
 import { useSiteData } from'../context/SiteContext';
 import StudioPreview from'./StudioPreview';
 import MediaPicker from'./MediaPicker';
@@ -1324,9 +1325,9 @@ export default function AdminStudio() {
  </div>
  </>
  ) : (
- <div className="flex-1 flex flex-col items-center pt-32 gap-4 text-neutral-700">
- <span className="text-6xl">🦖</span>
- <p className="text-base font-bold">Selecciona una sección</p>
+ <div className="flex-1 flex flex-col items-center pt-32 gap-4 text-white/80">
+ <MousePointerClick className="w-16 h-16 opacity-50" strokeWidth={1.5} />
+ <p className="text-base font-bold text-white">Selecciona una sección</p>
  </div>
  )}
  </div>
