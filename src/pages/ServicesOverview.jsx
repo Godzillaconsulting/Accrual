@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import FloatingWhatsApp from '../components/FloatingWhatsApp';
 import { ArrowRight } from 'lucide-react';
+import { useSiteData } from '../context/SiteContext';
 
 const servicesList = [
     { title: "Consultoría", slug: "consultoria", image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
@@ -25,6 +26,9 @@ const servicesList = [
 ];
 
 const ServicesOverview = () => {
+    const { getSiteData } = useSiteData();
+    const siteData = getSiteData('servicios-grid');
+
     useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
@@ -35,8 +39,10 @@ const ServicesOverview = () => {
 
             <main>
                 {/* Hero / Header Section */}
-                <section className="bg-[#4B5563] text-white py-24 px-6 font-sans">
-                    <div className="max-w-7xl mx-auto text-center">
+                <section className="bg-[#4B5563] text-white py-24 px-6 font-sans relative"
+                         style={siteData?.heroImageUrl ? { backgroundImage: `url(${siteData.heroImageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}>
+                    {siteData?.heroImageUrl && <div className="absolute inset-0 bg-[#4B5563]/80 backdrop-blur-sm"></div>}
+                    <div className="max-w-7xl mx-auto text-center relative z-10">
                         <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tight mb-6">
                             Servicios
                         </h1>
@@ -51,7 +57,7 @@ const ServicesOverview = () => {
 
                                 {/* Full Background Image */}
                                 <img loading="lazy" 
-                                    src={service.image}
+                                    src={siteData?.[`img_${service.slug}`] || service.image}
                                     alt={service.title}
                                     className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-in-out"
                                 />

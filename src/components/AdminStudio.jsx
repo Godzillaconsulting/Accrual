@@ -20,6 +20,8 @@ import SqlAtaquesPanel from './SqlAtaquesPanel';
 // ── Hover field wrapper → activa resaltado en preview ──────────────────────
 import { PAGE_SECTIONS, injectSectionDefaults } from '../utils/studioConfig';
 import { detectTextFields, detectMediaFields, toLabel, detectGroupedFields, MEDIA_PATTERNS } from '../utils/editorParser';
+import { servicesData } from '../utils/mockServices';
+import { mockArticles } from '../utils/mockArticles';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 function EditorField({ fieldKey, onHover, children }) {
@@ -906,7 +908,12 @@ export default function AdminStudio() {
  Media detectada ({mediaFields.length} slots)
  </p>
 
-  {mediaFields.map(([key, val]) => {
+  {mediaFields.filter(([key]) => {
+      if (selectedNodeId === 'servicios-grid' || selectedNodeId === 'articulos-grid') {
+          if (key === 'heroImageUrl' || key.startsWith('img_')) return false;
+      }
+      return true;
+  }).map(([key, val]) => {
   const grpMatch = key.match(/^([a-zA-Z]+?)(\d+)([A-Z][a-zA-Z]*)$/);
   return (
   <EditorField key={key} fieldKey={key} onHover={setHoveredField}>
@@ -945,6 +952,34 @@ export default function AdminStudio() {
   </EditorField>
   );
   })}
+
+  {selectedNodeId === 'servicios-grid' && (
+      <div className="space-y-4 mt-6 pt-4 border-t border-neutral-800">
+          <p className="text-xs font-bold text-yellow-400 tracking-widest">Imágenes de Servicios</p>
+          <EditorField fieldKey="heroImageUrl" onHover={setHoveredField}>
+             <MediaPicker label="Portada de la página (Hero)" value={draftData.heroImageUrl || ''} onChange={url => change('heroImageUrl', url)} accept="image" />
+          </EditorField>
+          {Object.entries(servicesData).map(([slug, srv]) => (
+              <EditorField key={slug} fieldKey={`img_${slug}`} onHover={setHoveredField}>
+                  <MediaPicker label={`Imagen: ${srv.title}`} value={draftData[`img_${slug}`] || ''} onChange={url => change(`img_${slug}`, url)} accept="image" />
+              </EditorField>
+          ))}
+      </div>
+  )}
+
+  {selectedNodeId === 'articulos-grid' && (
+      <div className="space-y-4 mt-6 pt-4 border-t border-neutral-800">
+          <p className="text-xs font-bold text-yellow-400 tracking-widest">Imágenes de Artículos</p>
+          <EditorField fieldKey="heroImageUrl" onHover={setHoveredField}>
+             <MediaPicker label="Portada de la página (Hero)" value={draftData.heroImageUrl || ''} onChange={url => change('heroImageUrl', url)} accept="image" />
+          </EditorField>
+          {mockArticles.map(art => (
+              <EditorField key={art.id} fieldKey={`img_articulo_${art.id}`} onHover={setHoveredField}>
+                  <MediaPicker label={`Artículo: ${art.title}`} value={draftData[`img_articulo_${art.id}`] || ''} onChange={url => change(`img_articulo_${art.id}`, url)} accept="image" />
+              </EditorField>
+          ))}
+      </div>
+  )}
 
   {selectedNodeId === 'portafolio' && (
       <button 
@@ -1092,7 +1127,7 @@ export default function AdminStudio() {
  </div>
  )}
 
- {mediaFields.length === 0 && (
+ {mediaFields.length === 0 && selectedNodeId !== 'servicios-grid' && selectedNodeId !== 'articulos-grid' && (
  <div className="text-center py-8 space-y-2">
  <p className="text-neutral-600 text-sm">No hay campos de media en los datos publicados.</p>
  <p className="text-neutral-700 text-xs">Añade campos como imageUrl, videoUrl, logoUrl en la BD para habilitarlos aquí.</p>
