@@ -729,8 +729,8 @@ export default function AdminStudio() {
  {/* Cuerpo */}
  <div className="flex-1 flex overflow-hidden p-4 gap-4">
 
- {/* ─ PANEL EDITOR ─ */}
- <div className="flex flex-col overflow-hidden bg-[#152033]/40 backdrop-blur-xl border border-blue-900/30 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.1)] transition-all duration-300"
+ {/* ─ PANEL EDITOR - Stitch Style ─ */}
+ <div className="flex flex-col overflow-hidden glass-panel rounded-3xl relative transition-all duration-300 border border-[#00bcd4]/30 shadow-[0_0_40px_rgba(0,188,212,0.15)]"
  style={{ width: (showPreview && activeTab !== 'correos') ?'45%' :'100%' }}>
 
  {selectedNodeId && draftData ? (
@@ -740,8 +740,8 @@ export default function AdminStudio() {
  {tabs.map(tab => (
  <button key={tab.id}
  onClick={() => { setActiveTab(tab.id); setSelectedElementIndex(null); setSelectedFeatureIndex(null); }}
- className={`px-4 py-2 rounded-xl text-xs font-black whitespace-nowrap border border-transparent shadow-sm transition-all ${
-  activeTab === tab.id ?'bg-white/90 text-[#0099CC] border-[#0099CC]/50 shadow-md' :'bg-[#152033]/40 text-neutral-400 hover:text-white hover:bg-[#0099CC]/20 hover:border-[#0099CC]/40'
+ className={`px-6 py-2.5 rounded-xl text-xs font-black whitespace-nowrap border transition-all ${
+  activeTab === tab.id ?'bg-gradient-to-r from-[#00bcd4]/20 to-[#18ffff]/20 text-[#18ffff] border-[#18ffff]/50 shadow-[0_0_20px_rgba(24,255,255,0.3)] scale-105' :'bg-black/40 text-slate-400 hover:bg-[#00bcd4]/10 border-transparent hover:text-white'
   }`}>
  {tab.label}
  </button>
@@ -770,7 +770,7 @@ export default function AdminStudio() {
  </label>
  <textarea rows={val.length > 80 ? 3 : 2} value={val}
  onChange={e => change(key, e.target.value)}
- className="w-full p-3 bg-[#152033]/40 backdrop-blur-md border border-[#0099CC]/20 shadow-inner rounded-xl text-white font-bold text-sm focus:bg-[#0099CC]/10 focus:border-[#0099CC]/50 outline-none resize-none transition-colors" />
+ className="w-full bg-black/50 border border-[#00bcd4]/30 rounded-xl p-4 text-sm text-white focus:bg-black/80 focus:border-[#18ffff] focus:shadow-[0_0_15px_rgba(24,255,255,0.2)] outline-none transition-all shadow-inner resize-y" />
  </div>
  </EditorField>
  ));

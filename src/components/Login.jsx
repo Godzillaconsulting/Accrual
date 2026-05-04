@@ -118,12 +118,12 @@ const Login = () => {
 
     return (
         <section className="min-h-screen bg-[#111111] flex flex-col items-center justify-center pt-24 pb-12 px-6 relative overflow-hidden">
-            {/* Background glows */}
-            <div className="absolute top-0 right-0 w-96 h-96 bg-[#0099CC] rounded-full mix-blend-multiply filter blur-[128px] opacity-20 pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#0099CC] rounded-full mix-blend-multiply filter blur-[128px] opacity-10 pointer-events-none" />
+            {/* Background glows - Stitch Style */}
+            <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-[#18ffff] rounded-full mix-blend-screen filter blur-[150px] opacity-20 pointer-events-none animate-pulse" />
+            <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-[#00bcd4] rounded-full mix-blend-screen filter blur-[150px] opacity-10 pointer-events-none" />
             {isLocked && <div className="absolute inset-0 bg-[#152033]/60 backdrop-blur-sm z-0 pointer-events-none" />}
 
-            <div className="w-full max-w-md relative z-10 bg-[#1a1a1a] p-10 rounded-[30px] border border-gray-800 shadow-2xl">
+            <div className="w-full max-w-md relative z-10 bg-black/60 backdrop-blur-xl p-10 rounded-[30px] border border-[#00bcd4]/30 shadow-[0_0_50px_rgba(0,188,212,0.15)]">
                 <div className="flex justify-center mb-8">
                     <img src={logo} alt="Accrual Logo" className="h-16 w-auto object-contain" />
                 </div>
@@ -203,7 +203,7 @@ const Login = () => {
                                         id="admin-username"
                                         value={username}
                                         onChange={e => setUsername(e.target.value)}
-                                        className="w-full bg-[#111] border border-gray-700 rounded-xl pl-12 pr-4 py-3 text-white focus:outline-none focus:border-[#0099CC] transition-colors"
+                                        className="w-full bg-black/50 border border-[#00bcd4]/30 rounded-xl pl-12 pr-4 py-3 text-white focus:outline-none focus:border-[#18ffff] focus:shadow-[0_0_15px_rgba(24,255,255,0.2)] transition-all shadow-inner"
                                         placeholder="accrual_admin"
                                         autoComplete="username"
                                         disabled={loading}
@@ -224,7 +224,7 @@ const Login = () => {
                                         id="admin-password"
                                         value={password}
                                         onChange={e => setPassword(e.target.value)}
-                                        className="w-full bg-[#111] border border-gray-700 rounded-xl pl-12 pr-12 py-3 text-white focus:outline-none focus:border-[#0099CC] transition-colors"
+                                        className="w-full bg-black/50 border border-[#00bcd4]/30 rounded-xl pl-12 pr-12 py-3 text-white focus:outline-none focus:border-[#18ffff] focus:shadow-[0_0_15px_rgba(24,255,255,0.2)] transition-all shadow-inner"
                                         placeholder="••••••••"
                                         autoComplete="current-password"
                                         disabled={loading}
@@ -243,7 +243,7 @@ const Login = () => {
                             <button
                                 type="submit"
                                 disabled={loading || isLocked}
-                                className="w-full flex items-center justify-center gap-2 bg-[#0099CC] hover:bg-white text-white hover:text-[#0099CC] py-3.5 rounded-xl font-black transition-all shadow-lg hover:shadow-xl mt-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#00bcd4] to-[#18ffff] hover:scale-105 text-slate-900 py-3.5 rounded-xl font-black transition-all shadow-[0_0_20px_rgba(0,188,212,0.4)] hover:shadow-[0_0_30px_rgba(24,255,255,0.6)] mt-4 disabled:opacity-60 disabled:cursor-not-allowed"
                             >
                                 {loading
                                     ? <><Loader size={18} className="animate-spin" /> Verificando...</>
