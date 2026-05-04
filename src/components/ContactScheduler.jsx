@@ -653,8 +653,24 @@ const ContactScheduler = ({ showHeader = false, showMap = true }) => {
                                                 });
                                             }
 
-                                            const price = duration === '30min' ? 600 : 1000;
-                                            navigate('/pago', { state: { appointmentId: data.appointmentId, bookingType, selectedDate, selectedTime, duration, price, formData } });
+                                            // HARDCODED STRIPE BYPASS PARA TESTING:
+                                            // Confirmar el pago automáticamente
+                                            await fetch('/api/public/appointments', {
+                                                method: 'PUT',
+                                                headers: { 'Content-Type': 'application/json' },
+                                                body: JSON.stringify({ appointmentId: data.appointmentId, status: 'paid', paymentMethod: 'card' })
+                                            });
+
+                                            setShowSuccess(true);
+                                            // const price = duration === '30min' ? 600 : 1000;
+                                            // navigate('/pago', { state: { appointmentId: data.appointmentId, bookingType, selectedDate, selectedTime, duration, price, formData } });
+                                            
+                                            // Reset form after 3 seconds
+                                            setTimeout(() => {
+                                                setShowSuccess(false);
+                                                setSelectedTime(null);
+                                                setFormData({ nombre: '', apellidos: '', email: '', telefono: '', servicio: '', mensaje: '' });
+                                            }, 4000);
                                         } catch (error) {
                                             alert(error.message);
                                         } finally {
