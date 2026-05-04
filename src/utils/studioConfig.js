@@ -152,6 +152,13 @@ export function injectSectionDefaults(nodeId, draftSource) {
       if (combinedData.test6Text === undefined) combinedData.test6Text = 'Tener orden en mis impuestos y nómina me dio la paz mental que necesitaba para enfocarme en mi negocio. Gracias, Accrual.';
       if (combinedData.test6Avatar === undefined) combinedData.test6Avatar = 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
 
+  } else if (nodeId === 'articulos-grid') {
+      if (combinedData.title === undefined) combinedData.title = 'Artículos';
+      if (combinedData.description === undefined) combinedData.description = 'Mantente informado con las últimas noticias, análisis y estrategias fiscales para tu negocio.';
+      if (combinedData.heroImageUrl === undefined) combinedData.heroImageUrl = ''; 
+  } else if (nodeId === 'servicios-grid') {
+      if (combinedData.title === undefined) combinedData.title = 'Servicios';
+      if (combinedData.heroImageUrl === undefined) combinedData.heroImageUrl = ''; 
   } else {
       // Forzar campos básicos por defecto genérico
       if (combinedData.title === undefined) combinedData.title = 'Título por defecto';

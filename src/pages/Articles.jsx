@@ -44,12 +44,14 @@ const Articles = () => {
                          style={siteData?.heroImageUrl ? { backgroundImage: `url(${siteData.heroImageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}>
                     {siteData?.heroImageUrl && <div className="absolute inset-0 bg-[#233657]/80 backdrop-blur-sm"></div>}
                     <div className="max-w-7xl mx-auto text-center relative z-10">
-                        <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tight mb-6">
-                            Artículos
-                        </h1>
-                        <p className="text-xl opacity-80 max-w-2xl mx-auto">
-                            Mantente informado con las últimas noticias, análisis y estrategias fiscales para tu negocio.
-                        </p>
+                        <h1 
+                            className="text-5xl md:text-7xl font-black uppercase tracking-tight mb-6"
+                            dangerouslySetInnerHTML={{ __html: siteData?.title || 'Artículos' }}
+                        />
+                        <p 
+                            className="text-xl opacity-80 max-w-2xl mx-auto"
+                            dangerouslySetInnerHTML={{ __html: siteData?.description || 'Mantente informado con las últimas noticias, análisis y estrategias fiscales para tu negocio.' }}
+                        />
                     </div>
                 </section>
 

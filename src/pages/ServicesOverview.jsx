@@ -43,9 +43,10 @@ const ServicesOverview = () => {
                          style={siteData?.heroImageUrl ? { backgroundImage: `url(${siteData.heroImageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}>
                     {siteData?.heroImageUrl && <div className="absolute inset-0 bg-[#4B5563]/80 backdrop-blur-sm"></div>}
                     <div className="max-w-7xl mx-auto text-center relative z-10">
-                        <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tight mb-6">
-                            Servicios
-                        </h1>
+                        <h1 
+                            className="text-5xl md:text-7xl font-black uppercase tracking-tight mb-6"
+                            dangerouslySetInnerHTML={{ __html: siteData?.title || 'Servicios' }}
+                        />
                     </div>
                 </section>
 
