@@ -12,6 +12,7 @@ export default function AdminProfile({ profile, onProfileUpdate }) {
     const [photoUrl, setPhotoUrl] = useState(profile?.photo_url || '');
     const [personalMsg, setPersonalMsg] = useState({ text: '', type: '' });
     const [securityAlerts, setSecurityAlerts] = useState([]);
+    const [changelogs, setChangelogs] = useState([]);
 
     // --- Estado de Tareas Personales (Live DB) ---
     const [allTasks, setAllTasks] = useState([]);
@@ -117,6 +118,7 @@ export default function AdminProfile({ profile, onProfileUpdate }) {
     useEffect(() => {
         if (subTab === 'personal' && canManageUsers) {
             fetchSecurityAlerts();
+            fetchChangelogs();
         }
     }, [subTab, profile, canManageUsers]);
 
@@ -132,6 +134,21 @@ export default function AdminProfile({ profile, onProfileUpdate }) {
             }
         } catch (e) {
             console.error('Error fetching security alerts', e);
+        }
+    };
+
+    const fetchChangelogs = async () => {
+        try {
+            const token = localStorage.getItem('adminToken');
+            const res = await fetch(`${API}/api/system/changelog`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (data.logs) {
+                setChangelogs(data.logs);
+            }
+        } catch (e) {
+            console.error('Error fetching changelogs', e);
         }
     };
 
@@ -335,6 +352,41 @@ export default function AdminProfile({ profile, onProfileUpdate }) {
                             <div className="mt-8 bg-green-950/20 border border-green-500/30 rounded-2xl p-6 text-center animate-in fade-in">
                                 <span className="text-2xl mb-2 block">✅</span>
                                 <p className="text-green-500 text-sm font-bold uppercase tracking-widest">Sin amenazas de inyección SQL registradas</p>
+                            </div>
+                        )}
+
+                        {/* Registro de Cambios (Changelog) */}
+                        {canManageUsers && changelogs.length > 0 && (
+                            <div className="mt-8 bg-purple-950/20 border border-purple-500/30 rounded-2xl overflow-hidden shadow-[0_0_20px_rgba(168,85,247,0.15)] animate-in fade-in slide-in-from-bottom-4">
+                                <div className="px-6 py-4 border-b border-purple-900/30 bg-[#a855f7]/10 flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-xl">📜</span>
+                                        <h3 className="text-sm font-bold text-purple-500 uppercase tracking-widest">Auditoría: Cambios en el Sistema</h3>
+                                    </div>
+                                    <span className="text-xs font-black text-purple-400 bg-purple-500/10 px-2 py-1 rounded border border-purple-500/20">{changelogs.length} Commits Recientes</span>
+                                </div>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-left text-sm whitespace-nowrap">
+                                        <thead className="bg-[#233657] text-xs text-purple-500 font-black uppercase">
+                                            <tr>
+                                                <th className="px-6 py-4 border-b border-purple-900/30">Fecha</th>
+                                                <th className="px-6 py-4 border-b border-purple-900/30">Autor (Quién)</th>
+                                                <th className="px-6 py-4 border-b border-purple-900/30">Hash</th>
+                                                <th className="px-6 py-4 border-b border-purple-900/30 w-full">Descripción del Cambio</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-purple-900/20">
+                                            {changelogs.map(log => (
+                                                <tr key={log.hash} className="hover:bg-purple-900/10 transition">
+                                                    <td className="px-6 py-3 text-neutral-400 text-xs font-mono">{log.date}</td>
+                                                    <td className="px-6 py-3 font-mono text-purple-300 font-bold">{log.author}</td>
+                                                    <td className="px-6 py-3 font-mono text-[10px] text-gray-500">{log.hash}</td>
+                                                    <td className="px-6 py-3 text-gray-300 text-xs whitespace-normal">{log.message}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         )}
                     </div>

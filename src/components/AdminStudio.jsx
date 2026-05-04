@@ -368,6 +368,9 @@ export default function AdminStudio() {
  };
 
  const handlePublish = async () => {
+ if (!window.confirm("⚠️ ATENCIÓN: Estás a punto de alterar el diseño y contenido de la página web en vivo para todo el público. ¿Estás seguro de que deseas lanzar estos cambios?")) {
+     return;
+ }
  setIsPublishing(true);
  const base = '' || (import.meta.env.DEV ? 'http://localhost:3000' : '');
  const token = localStorage.getItem('adminToken');

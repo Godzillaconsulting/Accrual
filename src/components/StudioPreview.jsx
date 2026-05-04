@@ -155,6 +155,64 @@ function useHighlightInjector(nodeId, hoveredField, previewContainerId) {
  }, [hoveredField, nodeId, previewContainerId]);
 }
 
+// ── Hook: inyecta colores y tipografía dinámica ──────────────────────────────
+function useColorInjector(draftData, previewContainerId) {
+    useEffect(() => {
+        const styleId = 'studio-color-injector-css';
+        let el = document.getElementById(styleId);
+        if (!el) {
+            el = document.createElement('style');
+            el.id = styleId;
+            document.head.appendChild(el);
+        }
+
+        if (!draftData) { el.textContent = ''; return; }
+
+        let cssRules = [];
+        const baseSel = `#${previewContainerId}`;
+
+        // Colores
+        if (draftData.bgColor) {
+            cssRules.push(`${baseSel} section, ${baseSel} .bg-\\[\\#152033\\], ${baseSel} .bg-\\[\\#D0D0DA\\], ${baseSel} .bg-\\[\\#233657\\] { background-color: ${draftData.bgColor} !important; }`);
+        }
+        if (draftData.textColor) {
+            cssRules.push(`${baseSel} h1, ${baseSel} h2, ${baseSel} h3, ${baseSel} p.text-white, ${baseSel} .text-\\[\\#233657\\] { color: ${draftData.textColor} !important; }`);
+        }
+        if (draftData.subtextColor) {
+            cssRules.push(`${baseSel} p.text-gray-400, ${baseSel} p.text-gray-300 { color: ${draftData.subtextColor} !important; }`);
+        }
+        if (draftData.accentColor) {
+            cssRules.push(`${baseSel} a, ${baseSel} .text-\\[\\#0F4C82\\] { color: ${draftData.accentColor} !important; }`);
+            cssRules.push(`${baseSel} .border-\\[\\#0099CC\\] { border-color: ${draftData.accentColor} !important; }`);
+        }
+        if (draftData.ctaColor) {
+            cssRules.push(`${baseSel} button, ${baseSel} .bg-\\[\\#0099CC\\], ${baseSel} .bg-yellow-400 { background-color: ${draftData.ctaColor} !important; color: white !important; }`);
+        }
+
+        // Tipografía
+        if (draftData.fontFamily) {
+            cssRules.push(`${baseSel} * { font-family: "${draftData.fontFamily}", sans-serif !important; }`);
+        }
+        if (draftData.titleFontSize || draftData.titleFontWeight || draftData.titleLetterSpacing) {
+            let titleStyles = [];
+            if (draftData.titleFontSize) titleStyles.push(`font-size: ${draftData.titleFontSize}px !important;`);
+            if (draftData.titleFontWeight) titleStyles.push(`font-weight: ${draftData.titleFontWeight} !important;`);
+            if (draftData.titleLetterSpacing) titleStyles.push(`letter-spacing: ${draftData.titleLetterSpacing} !important;`);
+            cssRules.push(`${baseSel} h1, ${baseSel} h2, ${baseSel} h3 { ${titleStyles.join(' ')} }`);
+        }
+        if (draftData.bodyFontSize || draftData.bodyLineHeight) {
+            let bodyStyles = [];
+            if (draftData.bodyFontSize) bodyStyles.push(`font-size: ${draftData.bodyFontSize}px !important;`);
+            if (draftData.bodyLineHeight) bodyStyles.push(`line-height: ${draftData.bodyLineHeight} !important;`);
+            cssRules.push(`${baseSel} p, ${baseSel} span { ${bodyStyles.join(' ')} }`);
+        }
+
+        el.textContent = cssRules.join('\n');
+
+        return () => { if (el) el.textContent = ''; };
+    }, [draftData, previewContainerId]);
+}
+
 // ── Componentes mapa ──────────────────────────────────────────────────────────
 const Home = lazy(() => import('../pages/Home'));
 const ServicesOverview = lazy(() => import('../pages/ServicesOverview'));
@@ -299,6 +357,7 @@ function ScaledSection({ nodeId }) {
 // ── Exportación principal ─────────────────────────────────────────────────────
 export default function StudioPreview({ nodeId, draftData, hoveredField }) {
  useHighlightInjector(nodeId, hoveredField, PREVIEW_ID);
+ useColorInjector(draftData, PREVIEW_ID);
 
  if (!nodeId || !draftData) {
  return (

@@ -3,6 +3,24 @@ const NON_TEXT_KEYS = new Set(['ctaLink','enlace','link','href','url','src','ele
 export const MEDIA_PATTERNS = /url|src|image|video|logo|icon|thumbnail|cover|photo|gif|bg|media|banner|foto|avatar/i;
 const SKIP_MEDIA = new Set(['ctaLink','enlace','link','href']);
 
+const LOGICAL_ORDER = {
+  title: 1, name: 1,
+  subtitle: 2, role: 2,
+  description: 3, desc: 3,
+  fullDescription: 4, content: 4, text: 4,
+  btn: 5, button: 5, link: 5, cta: 5,
+};
+
+function getFieldWeight(key) {
+  const lower = key.toLowerCase();
+  if (lower.includes('title') || lower.includes('name')) return 1;
+  if (lower.includes('subtitle') || lower.includes('role')) return 2;
+  if (lower.includes('desc')) return 3;
+  if (lower.includes('content') || lower.includes('text')) return 4;
+  if (lower.includes('btn') || lower.includes('button')) return 5;
+  return 99;
+}
+
 export function detectTextFields(data) {
   return Object.entries(data || {}).filter(([key, val]) =>
     typeof val === 'string' &&
@@ -14,6 +32,11 @@ export function detectTextFields(data) {
       const numA = parseInt(a.match(/\d+/) ? a.match(/\d+/)[0] : '0', 10);
       const numB = parseInt(b.match(/\d+/) ? b.match(/\d+/)[0] : '0', 10);
       if (numA !== numB) return numA - numB;
+      
+      const weightA = getFieldWeight(a);
+      const weightB = getFieldWeight(b);
+      if (weightA !== weightB) return weightA - weightB;
+      
       return a.localeCompare(b);
   });
 }
