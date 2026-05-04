@@ -131,14 +131,14 @@ const Footer = () => {
                         <span className="hidden md:inline">|</span>
                         <Link to="/politica-de-cookies" className="hover:text-[#0F4C82] transition-colors">POLÍTICA DE COOKIES</Link>
                     </div>
-                    <div className="flex items-center gap-3">
-                        <p className="text-[10px] tracking-widest opacity-60">Copyright © 2026 Todos los derechos reservados</p>
+                    <div className="flex flex-col items-center gap-6 mt-4">
+                        <p className="text-[10px] tracking-widest opacity-60 text-center">Copyright © 2026 Todos los derechos reservados</p>
                         <Link 
                             to="/login"
                             title="Panel Maestro" 
-                            className="opacity-20 hover:opacity-100 hover:text-[#00bcd4] hover:scale-110 transition-all cursor-pointer"
+                            className="p-4 opacity-20 hover:opacity-100 hover:text-[#00bcd4] hover:scale-110 transition-all cursor-pointer"
                         >
-                            <Lock size={10} />
+                            <Lock size={24} />
                         </Link>
                     </div>
                 </div>
