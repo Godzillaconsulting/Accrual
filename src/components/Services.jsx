@@ -24,15 +24,15 @@ const Services = () => {
                             dangerouslySetInnerHTML={{ __html: data.pack1Title || 'Emprendedores' }}
                         />
                         <div className="mb-6">
-                            <div className="text-sm text-gray-500 font-medium mb-1">menos de</div>
+                            <div className="text-sm text-gray-500 font-medium mb-1" dangerouslySetInnerHTML={{ __html: data.pack1PrePrice || 'menos de' }} />
                             <div>
                                 <span 
                                     className="text-3xl xl:text-4xl font-black tracking-tight"
                                     dangerouslySetInnerHTML={{ __html: data.pack1Price || '$3,500,000' }}
                                 />
-                                <span className="text-xl font-bold text-gray-400 ml-1">mxn</span>
+                                <span className="text-xl font-bold text-gray-400 ml-1" dangerouslySetInnerHTML={{ __html: data.pack1PostPrice || 'mxn' }} />
                             </div>
-                            <div className="text-sm text-gray-500 font-medium mt-1">/ Facturación mensual</div>
+                            <div className="text-sm text-gray-500 font-medium mt-1" dangerouslySetInnerHTML={{ __html: data.pack1Subtitle || '/ Facturación mensual' }} />
                         </div>
 
                         <p 
@@ -41,18 +41,18 @@ const Services = () => {
                         />
                     </div>
 
-                    <Link to="/soluciones/emprendedor" className="w-full bg-transparent text-[#233657] font-bold py-3 rounded-full mb-10 hover:bg-[#233657] hover:text-white transition-all border border-gray-300 hover:border-[#233657] shadow-sm transform hover:scale-105 hover:shadow-md text-center block">
-                        Ver Solución Emprendedor
-                    </Link>
+                    <Link to="/soluciones/emprendedor" className="w-full bg-transparent text-[#233657] font-bold py-3 rounded-full mb-10 hover:bg-[#233657] hover:text-white transition-all border border-gray-300 hover:border-[#233657] shadow-sm transform hover:scale-105 hover:shadow-md text-center block"
+                        dangerouslySetInnerHTML={{ __html: data.pack1Btn || 'Ver Solución Emprendedor' }}
+                    />
 
                     <ul className="space-y-4 text-sm min-h-[120px]">
                         <li className="flex items-start gap-3">
                             <Check className="w-5 h-5 text-gray-400 shrink-0" strokeWidth={3} />
-                            <span className="text-gray-600 font-medium">Simplifica tu vida fiscal</span>
+                            <span className="text-gray-600 font-medium" dangerouslySetInnerHTML={{ __html: data.pack1Bullet1 || 'Simplifica tu vida fiscal' }} />
                         </li>
                         <li className="flex items-start gap-3">
                             <Check className="w-5 h-5 text-gray-400 shrink-0" strokeWidth={3} />
-                            <span className="text-gray-600 font-medium">Servicio Clave: RESICO</span>
+                            <span className="text-gray-600 font-medium" dangerouslySetInnerHTML={{ __html: data.pack1Bullet2 || 'Servicio Clave: RESICO' }} />
                         </li>
                     </ul>
                 </div>
@@ -65,15 +65,15 @@ const Services = () => {
                             dangerouslySetInnerHTML={{ __html: data.pack2Title || 'Pymes y Negocios' }}
                         />
                         <div className="mb-6">
-                            <div className="text-sm text-gray-500 font-medium mb-1">entre</div>
+                            <div className="text-sm text-gray-500 font-medium mb-1" dangerouslySetInnerHTML={{ __html: data.pack2PrePrice || 'entre' }} />
                             <div>
                                 <span 
                                     className="text-xl lg:text-[1.35rem] xl:text-2xl font-black tracking-tight"
                                     dangerouslySetInnerHTML={{ __html: data.pack2Price || '$3,500,000 - $30,000,000' }}
                                 />
-                                <span className="text-base font-bold text-gray-400 ml-1">mxn</span>
+                                <span className="text-base font-bold text-gray-400 ml-1" dangerouslySetInnerHTML={{ __html: data.pack2PostPrice || 'mxn' }} />
                             </div>
-                            <div className="text-sm text-gray-500 font-medium mt-1">/ Facturación mensual</div>
+                            <div className="text-sm text-gray-500 font-medium mt-1" dangerouslySetInnerHTML={{ __html: data.pack2Subtitle || '/ Facturación mensual' }} />
                         </div>
 
                         <p 
@@ -82,22 +82,22 @@ const Services = () => {
                         />
                     </div>
 
-                    <Link to="/soluciones/negocio" className="w-full bg-transparent text-[#233657] font-bold py-3 rounded-full mb-10 hover:bg-[#233657] hover:text-white transition-all border border-gray-300 hover:border-[#233657] shadow-sm transform hover:scale-105 hover:shadow-md text-center block">
-                        Ver Solución Negocio
-                    </Link>
+                    <Link to="/soluciones/negocio" className="w-full bg-transparent text-[#233657] font-bold py-3 rounded-full mb-10 hover:bg-[#233657] hover:text-white transition-all border border-gray-300 hover:border-[#233657] shadow-sm transform hover:scale-105 hover:shadow-md text-center block"
+                        dangerouslySetInnerHTML={{ __html: data.pack2Btn || 'Ver Solución Negocio' }}
+                    />
 
                     <ul className="space-y-4 text-sm min-h-[120px]">
                         <li className="flex items-start gap-3">
                             <Check className="w-5 h-5 text-gray-400 shrink-0" strokeWidth={3} />
-                            <span className="text-gray-600 font-medium">Estímulos fronterizos</span>
+                            <span className="text-gray-600 font-medium" dangerouslySetInnerHTML={{ __html: data.pack2Bullet1 || 'Estímulos fronterizos' }} />
                         </li>
                         <li className="flex items-start gap-3">
                             <Check className="w-5 h-5 text-gray-400 shrink-0" strokeWidth={3} />
-                            <span className="text-gray-600 font-medium">Servicio Clave: Regularización</span>
+                            <span className="text-gray-600 font-medium" dangerouslySetInnerHTML={{ __html: data.pack2Bullet2 || 'Servicio Clave: Regularización' }} />
                         </li>
                         <li className="flex items-start gap-3">
                             <Check className="w-5 h-5 text-gray-400 shrink-0" strokeWidth={3} />
-                            <span className="text-gray-600 font-medium">Optimización de Nómina</span>
+                            <span className="text-gray-600 font-medium" dangerouslySetInnerHTML={{ __html: data.pack2Bullet3 || 'Optimización de Nómina' }} />
                         </li>
                     </ul>
                 </div>
@@ -113,15 +113,15 @@ const Services = () => {
                             dangerouslySetInnerHTML={{ __html: data.pack3Title || 'Corporativo Global' }}
                         />
                         <div className="mb-6">
-                            <div className="text-sm text-gray-400 font-medium mb-1">más de</div>
+                            <div className="text-sm text-gray-400 font-medium mb-1" dangerouslySetInnerHTML={{ __html: data.pack3PrePrice || 'más de' }} />
                             <div>
                                 <span 
                                     className="text-3xl xl:text-4xl font-black tracking-tight text-white"
                                     dangerouslySetInnerHTML={{ __html: data.pack3Price || '$30,000,000' }}
                                 />
-                                <span className="text-xl font-bold text-gray-400 ml-1">mxn</span>
+                                <span className="text-xl font-bold text-gray-400 ml-1" dangerouslySetInnerHTML={{ __html: data.pack3PostPrice || 'mxn' }} />
                             </div>
-                            <div className="text-sm text-gray-400 font-medium mt-1">/ Facturación mensual + Ops USA</div>
+                            <div className="text-sm text-gray-400 font-medium mt-1" dangerouslySetInnerHTML={{ __html: data.pack3Subtitle || '/ Facturación mensual + Ops USA' }} />
                         </div>
 
                         <p 
@@ -130,22 +130,22 @@ const Services = () => {
                         />
                     </div>
 
-                    <Link to="/soluciones/corporativo" className="w-full bg-[#0F4C82] text-white font-bold py-3 rounded-full mb-10 hover:bg-white hover:text-[#0F4C82] transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(15,76,130,0.5)] border border-transparent relative z-10 text-center block">
-                        Ver Solución Corporativo
-                    </Link>
+                    <Link to="/soluciones/corporativo" className="w-full bg-[#0F4C82] text-white font-bold py-3 rounded-full mb-10 hover:bg-white hover:text-[#0F4C82] transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(15,76,130,0.5)] border border-transparent relative z-10 text-center block"
+                        dangerouslySetInnerHTML={{ __html: data.pack3Btn || 'Ver Solución Corporativo' }}
+                    />
 
                     <ul className="space-y-4 text-sm min-h-[120px] relative z-10">
                         <li className="flex items-start gap-3">
                             <Check className="w-5 h-5 text-gray-500 shrink-0" strokeWidth={3} />
-                            <span className="text-gray-300 font-medium">Estrategia Binacional</span>
+                            <span className="text-gray-300 font-medium" dangerouslySetInnerHTML={{ __html: data.pack3Bullet1 || 'Estrategia Binacional' }} />
                         </li>
                         <li className="flex items-start gap-3">
                             <Check className="w-5 h-5 text-gray-500 shrink-0" strokeWidth={3} />
-                            <span className="text-gray-300 font-medium">Precios de Transferencia</span>
+                            <span className="text-gray-300 font-medium" dangerouslySetInnerHTML={{ __html: data.pack3Bullet2 || 'Precios de Transferencia' }} />
                         </li>
                         <li className="flex items-start gap-3">
                             <Check className="w-5 h-5 text-gray-500 shrink-0" strokeWidth={3} />
-                            <span className="text-gray-300 font-medium">Auditoria & Compliance</span>
+                            <span className="text-gray-300 font-medium" dangerouslySetInnerHTML={{ __html: data.pack3Bullet3 || 'Auditoria & Compliance' }} />
                         </li>
                     </ul>
                 </div>

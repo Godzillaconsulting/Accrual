@@ -81,7 +81,7 @@ const CanvasCaptcha = forwardRef(({ onValidate, height = 50, length = 5 }, ref) 
 
     useImperativeHandle(ref, () => ({
         refresh: generateCaptcha,
-        isValid: () => captchaText.toLowerCase() === inputValue.toLowerCase(),
+        isValid: () => captchaText === inputValue,
         reset: () => {
             generateCaptcha();
             setInputValue('');
@@ -91,7 +91,7 @@ const CanvasCaptcha = forwardRef(({ onValidate, height = 50, length = 5 }, ref) 
     const handleChange = (e) => {
         const val = e.target.value;
         setInputValue(val);
-        const valid = val.toLowerCase() === captchaText.toLowerCase();
+        const valid = val === captchaText;
         if (val.length >= length) {
             setIsValid(valid);
         } else {
@@ -126,7 +126,7 @@ const CanvasCaptcha = forwardRef(({ onValidate, height = 50, length = 5 }, ref) 
                     value={inputValue}
                     onChange={handleChange}
                     placeholder="Escribe las letras que ves..."
-                    className={`w-full bg-black/40 border ${isValid === false ? 'border-red-500/50' : isValid === true ? 'border-[#00bcd4]/60' : 'border-white/10'} rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#00bcd4]/50 focus:bg-[#00bcd4]/5 transition-all shadow-inner font-mono tracking-[0.2em] uppercase`}
+                    className={`w-full bg-black/40 border ${isValid === false ? 'border-red-500/50' : isValid === true ? 'border-[#00bcd4]/60' : 'border-white/10'} rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#00bcd4]/50 focus:bg-[#00bcd4]/5 transition-all shadow-inner font-mono tracking-[0.2em]`}
                     maxLength={length}
                     autoComplete="off"
                 />

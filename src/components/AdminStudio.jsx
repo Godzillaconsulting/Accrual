@@ -851,31 +851,101 @@ export default function AdminStudio() {
  })()}
 
  {/* Campos agrupados (service1Title, service2Desc...) */}
- {hasGrouped && Object.entries(groupedFields).map(([prefix, nums]) => (
+ {hasGrouped && Object.entries(groupedFields).map(([prefix, nums]) => {
+ const sortedNums = Object.entries(nums).sort(([a],[b]) => +a - +b);
+ return (
  <div key={prefix} className="space-y-3 pt-3 border-t border-neutral-800">
  <p className="text-xs font-bold text-yellow-400 tracking-widest">
  📋 Grupo: {toLabel(prefix)} ({Object.keys(nums).length} items)
  </p>
- {Object.entries(nums).sort(([a],[b]) => +a - +b).map(([num, fields]) => (
+ {sortedNums.map(([num, fields], index) => (
  <div key={num} className="bg-neutral-900 rounded-xl p-3 space-y-2 border border-neutral-800">
   <div className="flex items-center justify-between">
     <p className="text-[10px] text-neutral-500 font-bold">#{num}</p>
-    <button
-      title="Eliminar este elemento por completo"
-      onClick={() => {
-        setDraftData(prev => {
-          const next = { ...prev };
-          Object.keys(next).forEach(k => {
-            const m = k.match(/^([a-zA-Z]+?)(\d+)([A-Z][a-zA-Z]*)$/);
-            if (m && m[1] === prefix && m[2] === num) next[k] = '';
+    <div className="flex items-center gap-2">
+      {index > 0 && (
+          <button
+              title="Subir"
+              onClick={() => {
+                  const prevNum = sortedNums[index - 1][0];
+                  setDraftData(prev => {
+                      const next = { ...prev };
+                      const keysA = Object.keys(next).filter(k => {
+                           const m = k.match(/^([a-zA-Z]+?)(\d+)([A-Z][a-zA-Z]*)$/);
+                           return m && m[1] === prefix && m[2] === String(num);
+                      });
+                      const keysB = Object.keys(next).filter(k => {
+                           const m = k.match(/^([a-zA-Z]+?)(\d+)([A-Z][a-zA-Z]*)$/);
+                           return m && m[1] === prefix && m[2] === String(prevNum);
+                      });
+                      const valsA = {}; keysA.forEach(k => { valsA[k] = next[k]; delete next[k]; });
+                      const valsB = {}; keysB.forEach(k => { valsB[k] = next[k]; delete next[k]; });
+                      Object.keys(valsB).forEach(k => {
+                           const m = k.match(/^([a-zA-Z]+?)(\d+)([A-Z][a-zA-Z]*)$/);
+                           next[`${m[1]}${num}${m[3]}`] = valsB[k];
+                      });
+                      Object.keys(valsA).forEach(k => {
+                           const m = k.match(/^([a-zA-Z]+?)(\d+)([A-Z][a-zA-Z]*)$/);
+                           next[`${m[1]}${prevNum}${m[3]}`] = valsA[k];
+                      });
+                      return next;
+                  });
+              }}
+              className="px-2 py-1 text-[10px] font-black text-white border border-neutral-600 rounded-lg hover:bg-neutral-800 transition-all flex items-center"
+          >
+              ↑
+          </button>
+      )}
+      {index < sortedNums.length - 1 && (
+          <button
+              title="Bajar"
+              onClick={() => {
+                  const nextNum = sortedNums[index + 1][0];
+                  setDraftData(prev => {
+                      const next = { ...prev };
+                      const keysA = Object.keys(next).filter(k => {
+                           const m = k.match(/^([a-zA-Z]+?)(\d+)([A-Z][a-zA-Z]*)$/);
+                           return m && m[1] === prefix && m[2] === String(num);
+                      });
+                      const keysB = Object.keys(next).filter(k => {
+                           const m = k.match(/^([a-zA-Z]+?)(\d+)([A-Z][a-zA-Z]*)$/);
+                           return m && m[1] === prefix && m[2] === String(nextNum);
+                      });
+                      const valsA = {}; keysA.forEach(k => { valsA[k] = next[k]; delete next[k]; });
+                      const valsB = {}; keysB.forEach(k => { valsB[k] = next[k]; delete next[k]; });
+                      Object.keys(valsB).forEach(k => {
+                           const m = k.match(/^([a-zA-Z]+?)(\d+)([A-Z][a-zA-Z]*)$/);
+                           next[`${m[1]}${num}${m[3]}`] = valsB[k];
+                      });
+                      Object.keys(valsA).forEach(k => {
+                           const m = k.match(/^([a-zA-Z]+?)(\d+)([A-Z][a-zA-Z]*)$/);
+                           next[`${m[1]}${nextNum}${m[3]}`] = valsA[k];
+                      });
+                      return next;
+                  });
+              }}
+              className="px-2 py-1 text-[10px] font-black text-white border border-neutral-600 rounded-lg hover:bg-neutral-800 transition-all flex items-center"
+          >
+              ↓
+          </button>
+      )}
+      <button
+        title="Eliminar este elemento por completo"
+        onClick={() => {
+          setDraftData(prev => {
+            const next = { ...prev };
+            Object.keys(next).forEach(k => {
+              const m = k.match(/^([a-zA-Z]+?)(\d+)([A-Z][a-zA-Z]*)$/);
+              if (m && m[1] === prefix && m[2] === String(num)) next[k] = '';
+            });
+            return next;
           });
-          return next;
-        });
-      }}
-      className="px-2 py-1 text-[10px] font-black text-blue-400 border border-blue-500/30 rounded-lg hover:bg-blue-500/10 hover:text-blue-300 transition-all flex items-center gap-1"
-    >
-      Eliminar
-    </button>
+        }}
+        className="px-2 py-1 text-[10px] font-black text-blue-400 border border-blue-500/30 rounded-lg hover:bg-blue-500/10 hover:text-blue-300 transition-all flex items-center gap-1"
+      >
+        Eliminar
+      </button>
+    </div>
   </div>
  {Object.entries(fields).filter(([k]) => k !=='_keys').map(([field, val]) => {
  const originalKey = fields._keys[field];
@@ -892,8 +962,35 @@ export default function AdminStudio() {
  })}
  </div>
  ))}
+ <button
+     onClick={() => {
+         setDraftData(prev => {
+             const next = { ...prev };
+             let maxNum = 0;
+             Object.keys(next).forEach(k => {
+                  const m = k.match(/^([a-zA-Z]+?)(\d+)([A-Z][a-zA-Z]*)$/);
+                  if (m && m[1] === prefix) {
+                      maxNum = Math.max(maxNum, parseInt(m[2], 10));
+                  }
+             });
+             const newNum = maxNum + 1;
+             const suffixes = new Set();
+             Object.keys(next).forEach(k => {
+                  const m = k.match(/^([a-zA-Z]+?)(\d+)([A-Z][a-zA-Z]*)$/);
+                  if (m && m[1] === prefix) suffixes.add(m[3]);
+             });
+             suffixes.forEach(suffix => {
+                  next[`${prefix}${newNum}${suffix}`] = '';
+             });
+             return next;
+         });
+     }}
+     className="mt-4 px-4 py-3 bg-[#0099CC]/10 text-[#0099CC] border border-[#0099CC]/30 text-xs font-bold rounded-xl hover:bg-[#0099CC] hover:text-white transition-all w-full flex items-center justify-center gap-2"
+ >
+     ➕ Añadir nuevo a {toLabel(prefix)}
+ </button>
  </div>
- ))}
+ )})}
 
  {textFields.length === 0 && !hasGrouped && (
  <p className="text-neutral-600 text-sm text-center py-8">Sin campos de texto para esta sección.</p>

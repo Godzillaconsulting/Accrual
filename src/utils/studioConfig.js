@@ -82,16 +82,36 @@ export function injectSectionDefaults(nodeId, draftSource) {
       if (combinedData.aboutImage === undefined) combinedData.aboutImage = 'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
   } else if (nodeId === 'paquetes') {
       if (combinedData.pack1Title === undefined) combinedData.pack1Title = 'Emprendedores';
+      if (combinedData.pack1PrePrice === undefined) combinedData.pack1PrePrice = 'menos de';
       if (combinedData.pack1Price === undefined) combinedData.pack1Price = '$3,500,000';
+      if (combinedData.pack1PostPrice === undefined) combinedData.pack1PostPrice = 'mxn';
+      if (combinedData.pack1Subtitle === undefined) combinedData.pack1Subtitle = '/ Facturación mensual';
       if (combinedData.pack1Desc === undefined) combinedData.pack1Desc = '¿Estás facturando menos de $3,500,000 al mes? <br /><br /> Deja de perder tiempo en trámites y enfócate en lo que genera dinero. Construimos la estructura fiscal que soporta tu primer millón sin riesgos ante el SAT';
+      if (combinedData.pack1Btn === undefined) combinedData.pack1Btn = 'Ver Solución Emprendedor';
+      if (combinedData.pack1Bullet1 === undefined) combinedData.pack1Bullet1 = 'Simplifica tu vida fiscal';
+      if (combinedData.pack1Bullet2 === undefined) combinedData.pack1Bullet2 = 'Servicio Clave: RESICO';
       
       if (combinedData.pack2Title === undefined) combinedData.pack2Title = 'Pymes y Negocios';
+      if (combinedData.pack2PrePrice === undefined) combinedData.pack2PrePrice = 'entre';
       if (combinedData.pack2Price === undefined) combinedData.pack2Price = '$3,500,000 - $30,000,000';
+      if (combinedData.pack2PostPrice === undefined) combinedData.pack2PostPrice = 'mxn';
+      if (combinedData.pack2Subtitle === undefined) combinedData.pack2Subtitle = '/ Facturación mensual';
       if (combinedData.pack2Desc === undefined) combinedData.pack2Desc = '¿Estás facturando entre $3,500,000 y $30,000,000 al mes? <br /><br /> ¿Tu nómina y el SAT se están comiendo tu flujo de caja? Activamos los estímulos fronterizos y optimizamos tu carga laboral para inyectar capital inmediato a tu operación.';
+      if (combinedData.pack2Btn === undefined) combinedData.pack2Btn = 'Ver Solución Negocio';
+      if (combinedData.pack2Bullet1 === undefined) combinedData.pack2Bullet1 = 'Estímulos fronterizos';
+      if (combinedData.pack2Bullet2 === undefined) combinedData.pack2Bullet2 = 'Servicio Clave: Regularización';
+      if (combinedData.pack2Bullet3 === undefined) combinedData.pack2Bullet3 = 'Optimización de Nómina';
 
       if (combinedData.pack3Title === undefined) combinedData.pack3Title = 'Corporativo Global';
+      if (combinedData.pack3PrePrice === undefined) combinedData.pack3PrePrice = 'más de';
       if (combinedData.pack3Price === undefined) combinedData.pack3Price = '$30,000,000';
+      if (combinedData.pack3PostPrice === undefined) combinedData.pack3PostPrice = 'mxn';
+      if (combinedData.pack3Subtitle === undefined) combinedData.pack3Subtitle = '/ Facturación mensual + Ops USA';
       if (combinedData.pack3Desc === undefined) combinedData.pack3Desc = '¿Estás facturando más de $30,000,000 al mes? <br /><br /> Proteja su patrimonio transfronterizo. Sincronizamos su operación México-USA mediante ingeniería fiscal avanzada, precios de transferencia y blindaje legal preventivo';
+      if (combinedData.pack3Btn === undefined) combinedData.pack3Btn = 'Ver Solución Corporativo';
+      if (combinedData.pack3Bullet1 === undefined) combinedData.pack3Bullet1 = 'Estrategia Binacional';
+      if (combinedData.pack3Bullet2 === undefined) combinedData.pack3Bullet2 = 'Precios de Transferencia';
+      if (combinedData.pack3Bullet3 === undefined) combinedData.pack3Bullet3 = 'Auditoria & Compliance';
   } else if (nodeId === 'testimonios') {
       if (combinedData.testMainTitle === undefined) combinedData.testMainTitle = 'LO QUE OPINAN NUESTROS CLIENTES <br /> DE ACCRUAL';
       if (combinedData.testSubtitle === undefined) combinedData.testSubtitle = 'Resultados Reales en la Frontera Norte';
