@@ -32,14 +32,22 @@ export const agendarEnGoogleCalendar = async ({ nombre, correo, telefono, servic
     const auth = await getAuthClient();
     const calendar = google.calendar({ version: 'v3', auth });
 
-    const startDateTime = new Date(`${fecha}T${hora}:00-07:00`); // Asegurar timezone correcto
-    const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000); // 1 hora de duración
+    // Convertir '10:00 am' a '10:00:00'
+    let horaStr = hora.split(' ')[0];
+    const isPM = hora.toLowerCase().includes('pm');
+    let [horas, minutos] = horaStr.split(':');
+    let horasInt = parseInt(horas);
+    if (isPM && horasInt !== 12) horasInt += 12;
+    if (!isPM && horasInt === 12) horasInt = 0;
+
+    const startDateTimeStr = `${fecha}T${horasInt.toString().padStart(2, '0')}:${minutos}:00`;
+    const endDateTimeStr = `${fecha}T${(horasInt + 1).toString().padStart(2, '0')}:${minutos}:00`;
 
     const event = {
         summary: `Consulta Accrual: ${nombre} - ${servicio}`,
         description: `Servicio: ${servicio}\nTeléfono: ${telefono}\nEmail: ${correo || 'No provisto'}\nNotas: ${notas}`,
-        start: { dateTime: startDateTime.toISOString() },
-        end: { dateTime: endDateTime.toISOString() },
+        start: { dateTime: startDateTimeStr, timeZone: 'America/Ojinaga' },
+        end: { dateTime: endDateTimeStr, timeZone: 'America/Ojinaga' },
         attendees: correo && correo !== 'sin-correo@wa.com' ? [{ email: correo }] : [],
         reminders: {
             useDefault: false,
