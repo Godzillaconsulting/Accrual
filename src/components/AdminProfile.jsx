@@ -69,7 +69,7 @@ export default function AdminProfile({ profile, onProfileUpdate }) {
 
     // --- Estado de IT Bugs (Solo JareG/Dani) ---
     const [itBugs, setItBugs] = useState([]);
-    const isIT = ['jareg', 'accrual_admin', 'dani'].includes(profile?.username?.toLowerCase());
+    const isIT = ['jareg', 'accrual_admin', 'dani', 'adrianaccrual'].includes(profile?.username?.toLowerCase());
 
     const fetchBugs = async () => {
         const token = localStorage.getItem('adminToken');
@@ -113,7 +113,7 @@ export default function AdminProfile({ profile, onProfileUpdate }) {
     }, [profile]);
 
 
-    const canManageUsers = profile?.is_superadmin || profile?.role === 'admin' || ['jareg', 'oscar', 'accrual_admin'].includes(profile?.username?.toLowerCase());
+    const canManageUsers = profile?.is_superadmin || profile?.role === 'admin' || ['jareg', 'oscar', 'accrual_admin', 'adrianaccrual'].includes(profile?.username?.toLowerCase());
 
     useEffect(() => {
         if (subTab === 'personal' && canManageUsers) {

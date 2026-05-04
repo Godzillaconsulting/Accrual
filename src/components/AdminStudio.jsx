@@ -295,8 +295,8 @@ export default function AdminStudio() {
  // ── Permisos por Rol Avanzados ──────────────────────────────────────────
  const username = adminProfile?.username?.toLowerCase() || '';
  const isSuperAdmin = adminProfile?.is_superadmin === true;
- // JareG, Accrual_admin, Dani, Oscar y Alex ven absolutamente todo (incluyendo DB, Master, SQL)
- const isCEO = isSuperAdmin || username === 'accrual_admin' || username === 'jareg' || ['dani', 'oscar', 'alex'].includes(username); 
+ // JareG, Accrual_admin, Dani, Oscar, Alex y adrianaccrual ven absolutamente todo
+ const isCEO = isSuperAdmin || username === 'accrual_admin' || username === 'jareg' || ['dani', 'oscar', 'alex', 'adrianaccrual'].includes(username); 
  
  const isCM = adminProfile?.role === 'cm' && username !== 'oscar';
  
@@ -597,22 +597,29 @@ export default function AdminStudio() {
 
    <div className="mt-8 px-2 pb-16 space-y-1 shrink-0 border-t border-[#0099CC]/20 pt-4">
 
-   {canSeePanelMaestro && (
-       <button onClick={() => { setIsAnalyticsMode(false); navigate('/admin/master'); setSelectedNodeId(null); }}
-       className={`w-full text-[10px] py-2 shadow-sm rounded-xl transition-all font-black uppercase flex items-center justify-center border ${ activeSection ==='panel_maestro' ?'bg-neutral-900 text-[#fbbf24] border-[#fbbf24]/50 shadow-[0_0_15px_rgba(251,191,36,0.2)]' :'text-neutral-300 border-transparent hover:border-[#fbbf24]/40 hover:bg-[#fbbf24]/5 hover:text-white' }`}>
-       <span className="text-xs mr-2 drop-shadow-sm">🏛️</span> Panel Maestro
-       </button>
-   )}
+    {canSeePanelMaestro && (
+        <button onClick={() => { window.location.href = '/admin/master'; }}
+        className={`w-full text-[10px] py-2 shadow-sm rounded-xl transition-all font-black uppercase flex items-center justify-center border ${ activeSection ==='panel_maestro' ?'bg-neutral-900 text-[#fbbf24] border-[#fbbf24]/50 shadow-[0_0_15px_rgba(251,191,36,0.2)]' :'text-neutral-300 border-transparent hover:border-[#fbbf24]/40 hover:bg-[#fbbf24]/5 hover:text-white' }`}>
+        <span className="text-xs mr-2 drop-shadow-sm">🏛️</span> Panel Maestro
+        </button>
+    )}
 
-   {canSeeSqlAtaques && (
-       <button onClick={() => { setIsAnalyticsMode(false); navigate('/admin/sql'); setSelectedNodeId(null); }}
-       className={`w-full text-[10px] py-2 shadow-sm rounded-xl transition-all font-black uppercase flex items-center justify-center border ${ activeSection ==='sql_ataques' ?'bg-neutral-900 text-[#ef4444] border-[#ef4444]/50 shadow-[0_0_15px_rgba(239,68,68,0.2)]' :'text-neutral-300 border-transparent hover:border-[#ef4444]/40 hover:bg-[#ef4444]/5 hover:text-white' }`}>
-       <span className="text-xs mr-2 drop-shadow-sm">🛡️</span> Ataques SQL
-       </button>
-   )}
-   
-   <button onClick={() => { setIsAnalyticsMode(false); navigate('/admin/profile'); setSelectedNodeId(null); }}
-   className={`w-full p-2 flex items-center gap-3 transition-colors rounded-xl shadow-sm border border-transparent ${ activeSection ==='profile' ?'bg-white/70 border-[#0099CC]/50 shadow-[0_4px_15px_rgba(255,255,255,0.8)]' :'hover:bg-[#152033]/40 hover:border-[#0099CC]/20' }`}>
+    {canSeeDBEstudio && (
+        <button onClick={() => { window.location.href = '/admin/db'; }}
+        className={`w-full text-[10px] py-2 shadow-sm rounded-xl transition-all font-black uppercase flex items-center justify-center border ${ activeSection ==='db_estudio' ?'bg-neutral-900 text-[#0099CC] border-[#0099CC]/50 shadow-[0_0_15px_rgba(0,153,204,0.2)]' :'text-neutral-300 border-transparent hover:border-[#0099CC]/40 hover:bg-[#0099CC]/5 hover:text-white' }`}>
+        <span className="text-xs mr-2 drop-shadow-sm">🗄️</span> DB Studio
+        </button>
+    )}
+
+    {canSeeSqlAtaques && (
+        <button onClick={() => { window.location.href = '/admin/sql'; }}
+        className={`w-full text-[10px] py-2 shadow-sm rounded-xl transition-all font-black uppercase flex items-center justify-center border ${ activeSection ==='sql_ataques' ?'bg-neutral-900 text-[#ef4444] border-[#ef4444]/50 shadow-[0_0_15px_rgba(239,68,68,0.2)]' :'text-neutral-300 border-transparent hover:border-[#ef4444]/40 hover:bg-[#ef4444]/5 hover:text-white' }`}>
+        <span className="text-xs mr-2 drop-shadow-sm">🛡️</span> Ataques SQL
+        </button>
+    )}
+    
+    <button onClick={() => { window.location.href = '/admin/profile'; }}
+    className={`w-full p-2 flex items-center gap-3 transition-colors rounded-xl shadow-sm border border-transparent ${ activeSection ==='profile' ?'bg-white/70 border-[#0099CC]/50 shadow-[0_4px_15px_rgba(255,255,255,0.8)]' :'hover:bg-[#152033]/40 hover:border-[#0099CC]/20' }`}>
        <div className="w-6 h-6 rounded-full bg-[#152033]/60 overflow-hidden shrink-0 border border-[#0099CC]/50">
            {adminProfile?.photo_url ? <img src={adminProfile.photo_url} className="w-full h-full object-cover"/> : <span className="text-xs flex items-center justify-center w-full h-full drop-shadow">🦖</span>}
        </div>
