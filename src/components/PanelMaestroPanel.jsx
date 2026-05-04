@@ -27,8 +27,8 @@ export default function PanelMaestroPanel({ adminProfile }) {
             });
             const data = await res.json();
             if (data.success) {
-                setUsers(data.users);
-                setLogs(data.logs);
+                setUsers(data.users || []);
+                setLogs(data.logs || []);
             }
         } catch (e) {
             console.error('Error cargando equipo', e);
