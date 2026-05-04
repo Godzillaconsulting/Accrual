@@ -133,15 +133,13 @@ const Footer = () => {
                     </div>
                     <div className="flex items-center gap-3">
                         <p className="text-[10px] tracking-widest opacity-60">Copyright © 2026 Todos los derechos reservados</p>
-                        <a 
-                            href="https://bot.accrual.ai/login"
-                            target="_blank" 
-                            rel="noopener noreferrer"
+                        <Link 
+                            to="/login"
                             title="Panel Maestro" 
                             className="opacity-20 hover:opacity-100 hover:text-[#00bcd4] hover:scale-110 transition-all cursor-pointer"
                         >
                             <Lock size={10} />
-                        </a>
+                        </Link>
                     </div>
                 </div>
             </div>
