@@ -24,6 +24,13 @@ const ServiceDetail = ({ slug: propSlug }) => {
     const serviceContent = dynamicData.fullDescription || localFallback.content || '';
     const serviceImage = dynamicData.imageUrl || localFallback.image || '';
 
+    // New Dynamic Fields
+    const heroBtnText = dynamicData.heroBtnText || 'Solicita un presupuesto ›';
+    const profileName = dynamicData.profileName || 'Joel Urrutia';
+    const profileRole = dynamicData.profileRole || 'Socio fundador';
+    const profileBtnText = dynamicData.profileBtnText || 'Contáctame';
+    const profileImage = dynamicData.profileImage || adrianImg;
+
     useEffect(() => {
         window.scrollTo(0, 0);
     }, [slug]);
@@ -65,9 +72,8 @@ const ServiceDetail = ({ slug: propSlug }) => {
                     <button
                         onClick={handleScrollToContact}
                         className="bg-[#0F4C82] hover:bg-[#233657] text-[#D0D0DA] font-bold py-3 px-8 rounded-full text-lg flex items-center gap-2 transition-all shadow-lg transform hover:scale-105 mb-16"
-                    >
-                        Solicita un presupuesto <span className="text-xl">›</span>
-                    </button>
+                        dangerouslySetInnerHTML={{ __html: heroBtnText }}
+                    />
 
                     <div className="w-full max-w-6xl aspect-video bg-[#233657]/10 rounded-[2rem] relative flex items-center justify-center shadow-2xl overflow-hidden group border border-[#233657]/20 backdrop-blur-xl">
                         <img loading="lazy" 
@@ -100,13 +106,13 @@ const ServiceDetail = ({ slug: propSlug }) => {
                         <div className="bg-[#0F4C82] rounded-[2.5rem] p-10 w-full max-w-[400px] text-center shadow-2xl relative">
                             <div className="w-48 h-48 mx-auto rounded-full overflow-hidden mb-6 border-4 border-[#D0D0DA]/20 bg-gray-300">
                                 <img loading="lazy" 
-                                    src={adrianImg}
-                                    alt="Joel Urrutia"
+                                    src={profileImage}
+                                    alt="Socio"
                                     className="w-full h-full object-cover"
                                 />
                             </div>
-                            <h3 className="text-3xl font-bold mb-1 text-white">Joel Urrutia</h3>
-                            <p className="text-[#D0D0DA]/80 text-lg mb-0 font-medium">Socio fundador</p>
+                            <h3 className="text-3xl font-bold mb-1 text-white" dangerouslySetInnerHTML={{ __html: profileName }} />
+                            <p className="text-[#D0D0DA]/80 text-lg mb-0 font-medium" dangerouslySetInnerHTML={{ __html: profileRole }} />
                         </div>
 
                         <button
@@ -114,7 +120,7 @@ const ServiceDetail = ({ slug: propSlug }) => {
                             className="bg-[#D0D0DA] hover:bg-white text-[#233657] font-bold py-4 px-12 rounded-full text-xl flex items-center justify-center gap-3 transition-all shadow-lg w-full max-w-[400px]"
                         >
                             <Phone className="w-6 h-6 fill-current" />
-                            Contáctame
+                            <span dangerouslySetInnerHTML={{ __html: profileBtnText }} />
                         </button>
                     </div>
                 </div>

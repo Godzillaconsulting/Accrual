@@ -86,6 +86,13 @@ export function injectSectionDefaults(nodeId, draftSource) {
       if (combinedData.fullDescription === undefined) combinedData.fullDescription = localFallback.content || '<p>Descripción completa del servicio. Puedes usar HTML aquí.</p>';
       if (combinedData.imageUrl === undefined) combinedData.imageUrl = localFallback.image || 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80';
       if (combinedData.icon === undefined) combinedData.icon = 'briefcase';
+      
+      // Dynamic fields for ServiceDetail
+      if (combinedData.heroBtnText === undefined) combinedData.heroBtnText = 'Solicita un presupuesto ›';
+      if (combinedData.profileName === undefined) combinedData.profileName = 'Joel Urrutia';
+      if (combinedData.profileRole === undefined) combinedData.profileRole = 'Socio fundador';
+      if (combinedData.profileBtnText === undefined) combinedData.profileBtnText = 'Contáctame';
+      if (combinedData.profileImage === undefined) combinedData.profileImage = '';
   } else if (nodeId.startsWith('articulo-')) {
       const artId = articleIdMap[nodeId];
       const localFallback = mockArticles.find(a => a.id === artId) || {};

@@ -111,7 +111,7 @@ export default function AdminStudio() {
       } else {
           searchParams.delete('node');
       }
-      setSearchParams(searchParams);
+      setSearchParams(searchParams, { replace: true });
   };
   
   const activeSection = useMemo(() => {
