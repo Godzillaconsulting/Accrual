@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
-const API = import.meta.env.DEV ? 'http://localhost:3000' : 'https://bot.accrual.ai';
+const API = 'http://localhost:3002';
 export const getYouTubeId = (url) => {
     if (!url) return null;
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
@@ -36,9 +36,10 @@ export default function MediaPicker({ value, onChange, accept = 'all', label = '
 
     const fetchMedia = async () => {
         try {
-            // Anti-cache total: Headers estrictos
+            const token = localStorage.getItem('accrual_auth_token');
             const r = await fetch(`${API}/api/media`, {
                 headers: {
+                    'Authorization': `Bearer ${token}`,
                     'Cache-Control': 'no-cache, no-store, must-revalidate',
                     'Pragma': 'no-cache',
                     'Expires': '0'
@@ -98,7 +99,7 @@ export default function MediaPicker({ value, onChange, accept = 'all', label = '
             };
             xhr.onerror = () => { setUploading(false); alert('Error de red al subir archivo.'); };
             xhr.open('POST', endpoint);
-            const token = localStorage.getItem('adminToken');
+            const token = localStorage.getItem('accrual_auth_token');
             if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`);
             xhr.send(formData);
         } catch (e) {
@@ -112,7 +113,7 @@ export default function MediaPicker({ value, onChange, accept = 'all', label = '
         e.stopPropagation();
         if (!confirm(`⚠️ ALERTA: ¿Seguro que quieres eliminar permanentemente ${filename} de la base de datos? Esto no se puede deshacer.`)) return;
         
-        const token = localStorage.getItem('adminToken');
+        const token = localStorage.getItem('accrual_auth_token');
         await fetch(`${API}/api/media/${type}/${filename}`, { 
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` }
