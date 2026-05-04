@@ -11,25 +11,71 @@ const LOGICAL_ORDER = {
   btn: 5, button: 5, link: 5, cta: 5,
 };
 
-function getFieldWeight(key) {
+// Orden visual estricto para TODAS las categorías del panel
+const EXACT_WEIGHTS = {
+  // Servicios & Articulos
+  'title': 10,
+  'description': 20,
+  'heroBtnText': 30,
+  'fullDescription': 40,
+  'content': 40,
+  'profileName': 50,
+  'profileRole': 60,
+  'profileBtnText': 70,
+  'ctaBtn': 80,
+  'relatedTitle': 90,
+
+  // Hero
+  'heroTitle1': 100,
+  'heroSubtitle1': 110,
+  'heroBtn1': 120,
+  'heroBtn2': 130,
+
+  // CTA
+  'ctaTitle': 200,
+  'ctaDesc': 210,
+  'ctaBtn': 220,
+  'ctaGuarantee': 230,
+
+  // About
+  'aboutMainTitle': 300,
+  'aboutSubtitle1': 310,
+  'aboutText1': 320,
+  'aboutSubtitle2': 330,
+  'aboutText2': 340,
+  'aboutSubtitle3': 350,
+  'aboutText3': 360,
+  'aboutBtn': 370,
+
+  // Testimonials
+  'testMainTitle': 400,
+  'testSubtitle': 410,
+};
+
+export function getFieldWeight(key) {
+  if (EXACT_WEIGHTS[key] !== undefined) return EXACT_WEIGHTS[key];
+  
+  // Testimonios dinámicos (test1Name, etc.)
+  const testMatch = key.match(/^test(\d+)(Name|Role|Text)$/);
+  if (testMatch) {
+      const num = parseInt(testMatch[1], 10);
+      const type = testMatch[2];
+      const typeWeight = type === 'Name' ? 1 : (type === 'Role' ? 2 : 3);
+      return 500 + (num * 10) + typeWeight;
+  }
+
+  // Fallback for unknown
   const lower = key.toLowerCase();
+  if (lower.includes('title') || lower.includes('name')) return 1000;
+  if (lower.includes('preprice')) return 1001;
+  if (lower.includes('price') || lower.includes('postprice')) return 1002;
+  if (lower.includes('subtitle') || lower.includes('role')) return 1003;
+  if (lower.includes('desc')) return 1004;
+  if (lower.includes('content') || lower.includes('text')) return 1005;
+  if (lower.includes('bullet')) return 1006;
+  if (lower.includes('btn') || lower.includes('button')) return 1007;
   
-  // Specific blocks mapping to visual order
-  if (key === 'title') return 1;
-  if (key === 'description') return 2;
-  if (key === 'heroBtnText') return 3;
-  if (key === 'fullDescription' || key === 'content') return 4;
-  
-  if (lower.includes('profile')) return 7; // Perfil al final
-  if (lower.includes('related')) return 8; // Relacionados hasta abajo
-  
-  if (lower.includes('title') || lower.includes('name')) return 5;
-  if (lower.includes('subtitle') || lower.includes('role')) return 6;
-  if (lower.includes('desc')) return 6;
-  if (lower.includes('content') || lower.includes('text')) return 6;
-  if (lower.includes('btn') || lower.includes('button')) return 6;
-  
-  return 99;
+  return 2000;
 }
 
 export function detectTextFields(data) {
@@ -40,14 +86,10 @@ export function detectTextFields(data) {
     !key.startsWith('#') &&
     !/^([a-zA-Z]+?)(\d+)([A-Z][a-zA-Z]*)$/.test(key)
   ).sort(([a], [b]) => {
-      const numA = parseInt(a.match(/\d+/) ? a.match(/\d+/)[0] : '0', 10);
-      const numB = parseInt(b.match(/\d+/) ? b.match(/\d+/)[0] : '0', 10);
-      if (numA !== numB) return numA - numB;
-      
       const weightA = getFieldWeight(a);
       const weightB = getFieldWeight(b);
-      if (weightA !== weightB) return weightA - weightB;
       
+      if (weightA !== weightB) return weightA - weightB;
       return a.localeCompare(b);
   });
 }

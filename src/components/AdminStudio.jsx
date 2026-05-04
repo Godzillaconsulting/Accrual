@@ -19,7 +19,7 @@ import PanelMaestroPanel from './PanelMaestroPanel';
 import SqlAtaquesPanel from './SqlAtaquesPanel';
 // ── Hover field wrapper → activa resaltado en preview ──────────────────────
 import { PAGE_SECTIONS, injectSectionDefaults } from '../utils/studioConfig';
-import { detectTextFields, detectMediaFields, toLabel, detectGroupedFields, MEDIA_PATTERNS } from '../utils/editorParser';
+import { detectTextFields, detectMediaFields, toLabel, detectGroupedFields, MEDIA_PATTERNS, getFieldWeight } from '../utils/editorParser';
 import { servicesData } from '../utils/mockServices';
 import { mockArticles } from '../utils/mockArticles';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
@@ -960,7 +960,15 @@ export default function AdminStudio() {
       </button>
     </div>
   </div>
- {Object.entries(fields).filter(([k]) => k !=='_keys').map(([field, val]) => {
+  {Object.entries(fields)
+    .filter(([k]) => k !== '_keys')
+    .sort(([a], [b]) => {
+      const weightA = getFieldWeight(fields._keys[a]);
+      const weightB = getFieldWeight(fields._keys[b]);
+      if (weightA !== weightB) return weightA - weightB;
+      return a.localeCompare(b);
+    })
+    .map(([field, val]) => {
  const originalKey = fields._keys[field];
  return (
  <EditorField key={originalKey} fieldKey={originalKey} onHover={setHoveredField}>
