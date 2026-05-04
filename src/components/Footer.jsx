@@ -1,5 +1,5 @@
 import React from 'react';
-import { Facebook, Instagram, Phone } from 'lucide-react';
+import { Facebook, Instagram, Phone, Lock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import accrualSymbol from '../assets/simbolo.svg';
 import whatsappLogoFooter from '../assets/WhatsApp (white).png';
@@ -131,7 +131,18 @@ const Footer = () => {
                         <span className="hidden md:inline">|</span>
                         <Link to="/politica-de-cookies" className="hover:text-[#0F4C82] transition-colors">POLÍTICA DE COOKIES</Link>
                     </div>
-                    <p className="text-[10px] tracking-widest opacity-60">Copyright © 2026 Todos los derechos reservados</p>
+                    <div className="flex items-center gap-3">
+                        <p className="text-[10px] tracking-widest opacity-60">Copyright © 2026 Todos los derechos reservados</p>
+                        <a 
+                            href={import.meta.env.VITE_ADMIN_URL || "http://localhost:3002/login"} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            title="Panel Maestro" 
+                            className="opacity-20 hover:opacity-100 hover:text-[#00bcd4] hover:scale-110 transition-all cursor-pointer"
+                        >
+                            <Lock size={10} />
+                        </a>
+                    </div>
                 </div>
             </div>
         </footer >
