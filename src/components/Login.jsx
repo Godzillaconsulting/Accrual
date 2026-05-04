@@ -2,14 +2,17 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, User, ArrowRight, AlertCircle, Loader, ShieldAlert, Eye, EyeOff } from 'lucide-react';
 import logo from '../assets/Accrual logo (white).png';
+import CanvasCaptcha from './CanvasCaptcha';
 
-const API_BASE = '' || (import.meta.env.DEV ? 'http://localhost:3000' : '');
-const MAX_ATTEMPTS = 5; // Reflejado también en backend
+const API_BASE = 'https://api.accrual.com.mx';
+const MAX_ATTEMPTS = 10;
 
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [captchaValid, setCaptchaValid] = useState(false);
+    const captchaRef = useRef(null);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const [checking, setChecking] = useState(true);
@@ -94,24 +97,63 @@ const Login = () => {
             return;
         }
 
+        if (!captchaValid) {
+            setError('Validación de Escáner Anti-IA incorrecta.');
+            if (captchaRef.current) captchaRef.current.refresh();
+            return;
+        }
+
         setLoading(true);
-        // Simular tiempo de carga
-        setTimeout(() => {
-            localStorage.removeItem('loginAttempts');
-            localStorage.removeItem('lockUntil');
-            setAttempts(0);
+        
+        try {
+            const response = await fetch(`${API_BASE}/api/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    username: username.trim(), 
+                    password: password.trim()
+                })
+            });
 
-            localStorage.setItem('adminToken', 'bypass-dev-token');
-            const loggedUser = username.trim() || 'admin';
-            localStorage.setItem('adminUser', loggedUser);
-            localStorage.setItem('adminRole', 'admin');
+            const data = await response.json();
 
-            if (loggedUser.toLowerCase() === 'judith') {
-                navigate('/cm');
+            if (data.success) {
+                // Login Exitoso
+                localStorage.removeItem('loginAttempts');
+                localStorage.removeItem('lockUntil');
+                setAttempts(0);
+
+                localStorage.setItem('adminToken', data.token);
+                localStorage.setItem('adminUser', username.trim());
+                localStorage.setItem('adminRole', data.role);
+
+                if (data.role === 'cm' || username.trim().toLowerCase() === 'judith') {
+                    navigate('/cm');
+                } else {
+                    navigate('/admin');
+                }
             } else {
-                navigate('/admin');
+                // Falla Login
+                setError(data.message || 'Credenciales inválidas.');
+                if (captchaRef.current) captchaRef.current.refresh();
+                
+                const newAttempts = attempts + 1;
+                setAttempts(newAttempts);
+                localStorage.setItem('loginAttempts', newAttempts.toString());
+                
+                if (newAttempts >= MAX_ATTEMPTS) {
+                    setIsLocked(true);
+                    const lockTime = Date.now() + (5 * 60 * 1000); // 5 minutos
+                    localStorage.setItem('lockUntil', lockTime.toString());
+                    setLockCountdown(5 * 60);
+                }
             }
-        }, 500);
+        } catch (err) {
+            setError('Error de conexión con el servidor.');
+            if (captchaRef.current) captchaRef.current.refresh();
+        } finally {
+            setLoading(false);
+        }
     };
 
     const strengthLevel = attempts === 0 ? null : attempts <= 2 ? 'low' : attempts <= 4 ? 'med' : 'high';
@@ -238,6 +280,17 @@ const Login = () => {
                                         {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                     </button>
                                 </div>
+                            </div>
+
+                            {/* Escáner Anti-IA Captcha */}
+                            <div>
+                                <label className="block text-sm font-bold text-gray-300 mb-2">Escáner Anti-IA</label>
+                                <CanvasCaptcha 
+                                    ref={captchaRef}
+                                    onValidate={setCaptchaValid} 
+                                    height={46} 
+                                    length={5} 
+                                />
                             </div>
 
                             <button
