@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://api.accrual.com.mx/api/$1"
+      "destination": "https://confident-discrimination-receivers-chapters.trycloudflare.com/api/$1"
     },
     {
       "source": "/(.*)",
