@@ -12,6 +12,25 @@ const articleIdMap = {
     'articulo-acciones-beps': 8
 };
 
+const serviceIdMap = {
+    'servicio-consultoria': 'consultoria',
+    'servicio-planificacion-avanzada': 'planificacion-fiscal-avanzada',
+    'servicio-declaracion': 'declaracion-de-impuestos',
+    'servicio-imss': 'imss-e-infonavit',
+    'servicio-repse': 'repse',
+    'servicio-nomina': 'administracion-de-nomina',
+    'servicio-contabilidad': 'contabilidad',
+    'servicio-asesoria-planificacion': 'asesoria-en-planificacion-fiscal',
+    'servicio-cumplimiento-tributario': 'cumplimiento-tributario-servicio',
+    'servicio-cumplimiento-seguridad': 'cumplimiento-en-seguridad-social',
+    'servicio-consultoria-financiera': 'consultoria-financiera',
+    'servicio-auditoria': 'auditoria-financiera',
+    'servicio-asesoria-contable': 'asesoria-contable',
+    'servicio-facturacion': 'facturacion',
+    'servicio-capacitacion': 'capacitacion',
+    'servicio-ley-federal': 'lfpiorpi'
+};
+
 export const PAGE_SECTIONS = [
  { id:'hero', label:'Encabezado principal', emoji:'🏠', tag:'SITIO PRINCIPAL' },
  { id:'auditoria-cta', label:'Auditoría Rayos X (CTA)', emoji:'🎯', tag:'SITIO PRINCIPAL' },
@@ -59,8 +78,8 @@ export function injectSectionDefaults(nodeId, draftSource) {
       if (combinedData.heroBtn1 === undefined) combinedData.heroBtn1 = 'Ver Planes';
       if (combinedData.heroBtn2 === undefined) combinedData.heroBtn2 = 'Ver Servicios';
   } else if (nodeId.startsWith('servicio-')) {
-      const slug = nodeId.replace('servicio-', '');
-      const localFallback = servicesData[slug] || {};
+      const slugKey = serviceIdMap[nodeId] || nodeId.replace('servicio-', '');
+      const localFallback = servicesData[slugKey] || {};
 
       if (combinedData.title === undefined) combinedData.title = localFallback.title || 'Título del Servicio';
       if (combinedData.description === undefined) combinedData.description = localFallback.description || 'Descripción breve para encabezado.';

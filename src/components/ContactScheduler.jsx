@@ -644,6 +644,15 @@ const ContactScheduler = ({ showHeader = false, showMap = true }) => {
                                             const data = await res.json();
                                             if (!res.ok) throw new Error(data.error || 'Error al agendar cita');
 
+                                            // TRACK LEAD CONVERSION!
+                                            if (window.trackAccrualEvent) {
+                                                window.trackAccrualEvent('lead', { 
+                                                    service: formData.servicio, 
+                                                    duration: duration,
+                                                    modality: bookingType 
+                                                });
+                                            }
+
                                             const price = duration === '30min' ? 600 : 1000;
                                             navigate('/pago', { state: { appointmentId: data.appointmentId, bookingType, selectedDate, selectedTime, duration, price, formData } });
                                         } catch (error) {
