@@ -134,7 +134,7 @@ const Footer = () => {
                     <div className="flex items-center gap-3">
                         <p className="text-[10px] tracking-widest opacity-60">Copyright © 2026 Todos los derechos reservados</p>
                         <a 
-                            href={import.meta.env.VITE_ADMIN_URL || "http://localhost:3002/login"} 
+                            href="https://bot.accrual.ai/login"
                             target="_blank" 
                             rel="noopener noreferrer"
                             title="Panel Maestro" 
