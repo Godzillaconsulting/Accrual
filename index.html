@@ -23,6 +23,41 @@
   fbq('track', 'PageView');
   </script>
   <!-- End Meta Pixel Code -->
+
+  <!-- Accrual Analytics Tracker -->
+  <script>
+    window.trackAccrualEvent = function(eventName, metadata = {}) {
+        try {
+            // 1. Enviar a Meta Pixel si existe
+            if (window.fbq) {
+                if(eventName === 'page_view') window.fbq('track', 'PageView');
+                else if(eventName === 'lead') window.fbq('track', 'Lead', metadata);
+                else window.fbq('trackCustom', eventName, metadata);
+            }
+            
+            // 2. Enviar a DB Local Accrual (Dashboard)
+            fetch('/api/public/pixel', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    event_name: eventName, 
+                    source_url: window.location.href, 
+                    metadata 
+                })
+            }).catch(e => console.log('Tracker API silencioso'));
+        } catch(e) { console.error('Tracker error'); }
+    };
+
+    // Auto-track page view on load
+    window.addEventListener('load', () => {
+        window.trackAccrualEvent('page_view');
+        
+        // Track time spent (after 30 seconds)
+        setTimeout(() => {
+            window.trackAccrualEvent('engaged_session', { duration: '30s' });
+        }, 30000);
+    });
+  </script>
 </head>
 
 <body>

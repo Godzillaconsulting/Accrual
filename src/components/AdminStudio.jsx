@@ -22,7 +22,7 @@ import { PAGE_SECTIONS, injectSectionDefaults } from '../utils/studioConfig';
 import { detectTextFields, detectMediaFields, toLabel, detectGroupedFields, MEDIA_PATTERNS } from '../utils/editorParser';
 import { servicesData } from '../utils/mockServices';
 import { mockArticles } from '../utils/mockArticles';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 
 function EditorField({ fieldKey, onHover, children }) {
  return (
@@ -102,7 +102,17 @@ export default function AdminStudio() {
  const navigate = useNavigate();
   const location = useLocation();
   const { nodes, fetchNodes, setPreviewOverride } = useSiteData();
-  const [selectedNodeId, setSelectedNodeId] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedNodeId = searchParams.get('node') || null;
+  
+  const setSelectedNodeId = (id) => {
+      if (id) {
+          searchParams.set('node', id);
+      } else {
+          searchParams.delete('node');
+      }
+      setSearchParams(searchParams);
+  };
   
   const activeSection = useMemo(() => {
     if (location.pathname.includes('/calendar')) return 'social';
