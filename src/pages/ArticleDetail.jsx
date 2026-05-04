@@ -117,9 +117,9 @@ const ArticleDetail = ({ id: propId }) => {
                     {/* CTA Button */}
                     <div className="flex justify-center mt-16 mb-8">
                         <Link to="/contacto">
-                            <button className="bg-[#233657] hover:bg-[#0F4C82] text-white font-bold py-4 px-10 rounded-full uppercase text-lg shadow-xl transition-all transform hover:scale-105">
-                                Quiero más información
-                            </button>
+                            <button className="bg-[#233657] hover:bg-[#0F4C82] text-white font-bold py-4 px-10 rounded-full uppercase text-lg shadow-xl transition-all transform hover:scale-105"
+                                dangerouslySetInnerHTML={{ __html: dynamicData.ctaBtn || 'Quiero más información' }}
+                            />
                         </Link>
                     </div>
 
@@ -128,9 +128,9 @@ const ArticleDetail = ({ id: propId }) => {
                 {/* Related Articles Section */}
                 <section className="max-w-7xl mx-auto px-6 py-20 border-t border-gray-200">
                     <div className="flex items-center justify-between mb-12">
-                        <h3 className="text-3xl font-black uppercase text-[#233657]">
-                            Continúa Leyendo
-                        </h3>
+                        <h3 className="text-3xl font-black uppercase text-[#233657]"
+                            dangerouslySetInnerHTML={{ __html: dynamicData.relatedTitle || 'Continúa Leyendo' }}
+                        />
                         <div className="flex gap-4">
                             <button
                                 onClick={prevRelated}

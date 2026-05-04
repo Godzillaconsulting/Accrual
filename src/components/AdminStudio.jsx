@@ -771,9 +771,9 @@ export default function AdminStudio() {
  <span className="text-[10px] font-mono bg-neutral-800 px-1.5 py-0.5 rounded text-neutral-400">{key}</span>
  {toLabel(key)}
  </label>
- <textarea rows={val.length > 80 ? 3 : 2} value={val}
+ <textarea rows={val.length > 100 ? 8 : (val.length > 40 ? 4 : 2)} value={val}
  onChange={e => change(key, e.target.value)}
- className="w-full bg-black/50 border border-[#00bcd4]/30 rounded-xl p-4 text-sm text-white focus:bg-black/80 focus:border-[#18ffff] focus:shadow-[0_0_15px_rgba(24,255,255,0.2)] outline-none transition-all shadow-inner resize-y" />
+ className="w-full bg-black/50 border border-[#00bcd4]/30 rounded-xl p-4 text-sm text-white focus:bg-black/80 focus:border-[#18ffff] focus:shadow-[0_0_15px_rgba(24,255,255,0.2)] outline-none transition-all shadow-inner resize-y min-h-[60px]" />
  </div>
  </EditorField>
  ));

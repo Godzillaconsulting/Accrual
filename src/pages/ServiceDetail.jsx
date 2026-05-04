@@ -90,7 +90,7 @@ const ServiceDetail = ({ slug: propSlug }) => {
                             dangerouslySetInnerHTML={{ __html: serviceTitle }}
                         />
                         <div
-                            className="text-lg md:text-xl font-light leading-relaxed space-y-8 opacity-90 article-content light-text text-[#D0D0DA]"
+                            className="text-lg md:text-xl font-light leading-relaxed space-y-8 opacity-90 article-content light-text text-[#D0D0DA] whitespace-pre-wrap"
                             dangerouslySetInnerHTML={{ __html: serviceContent }}
                         />
                     </div>

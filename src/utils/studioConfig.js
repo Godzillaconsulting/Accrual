@@ -1,4 +1,16 @@
 import { servicesData } from './mockServices';
+import { mockArticles } from './mockArticles';
+
+const articleIdMap = {
+    'articulo-errores': 1,
+    'articulo-beneficios-asesor': 2,
+    'articulo-beneficios-compliance': 3,
+    'articulo-presupuesto': 4,
+    'articulo-implicaciones-delitos': 5,
+    'articulo-suspension-sellos': 6,
+    'articulo-partes-relacionadas': 7,
+    'articulo-acciones-beps': 8
+};
 
 export const PAGE_SECTIONS = [
  { id:'hero', label:'Encabezado principal', emoji:'🏠', tag:'SITIO PRINCIPAL' },
@@ -56,9 +68,14 @@ export function injectSectionDefaults(nodeId, draftSource) {
       if (combinedData.imageUrl === undefined) combinedData.imageUrl = localFallback.image || 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80';
       if (combinedData.icon === undefined) combinedData.icon = 'briefcase';
   } else if (nodeId.startsWith('articulo-')) {
-      if (combinedData.title === undefined) combinedData.title = 'Título del Artículo';
-      if (combinedData.content === undefined) combinedData.content = '<p>Contenido completo del artículo. Escribe tu texto aquí.</p>';
-      if (combinedData.imageUrl === undefined) combinedData.imageUrl = 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80';
+      const artId = articleIdMap[nodeId];
+      const localFallback = mockArticles.find(a => a.id === artId) || {};
+
+      if (combinedData.title === undefined) combinedData.title = localFallback.title || 'Título del Artículo';
+      if (combinedData.content === undefined) combinedData.content = localFallback.content || '<p>Contenido completo del artículo. Escribe tu texto aquí.</p>';
+      if (combinedData.imageUrl === undefined) combinedData.imageUrl = localFallback.image || 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80';
+      if (combinedData.ctaBtn === undefined) combinedData.ctaBtn = 'Quiero más información';
+      if (combinedData.relatedTitle === undefined) combinedData.relatedTitle = 'Continúa Leyendo';
   } else if (nodeId === 'auditoria-cta') {
       if (combinedData.ctaTitle === undefined) combinedData.ctaTitle = 'TU CIERRE FISCAL ESTÁ EN RIESGO.';
       if (combinedData.ctaDesc === undefined) combinedData.ctaDesc = 'El SAT ha automatizado sus auditorías. ¿Estás seguro de que tus XMLs coinciden con tus bancos? <br/><br/> Obtén nuestra auditoría de diagnóstico "Rayos X". Revisamos tu situación fiscal actual, detectamos discrepancias y te entregamos un plan de corrección antes de tu declaración anual.';
