@@ -1,7 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Quote } from 'lucide-react';
+import { useSiteData } from '../context/SiteContext';
 
-const testimonials = [
+const testimonialsStatic = [
     {
         name: "Miranda Wiley ND",
         role: "Directora Ejecutiva",
@@ -41,6 +42,48 @@ const testimonials = [
 ];
 
 const Testimonials = () => {
+    const { getNodeData } = useSiteData();
+    const data = getNodeData('testimonios') || {};
+
+    const dynamicTestimonials = [
+        {
+            name: data.test1Name || testimonialsStatic[0].name,
+            role: data.test1Role || testimonialsStatic[0].role,
+            content: data.test1Text || testimonialsStatic[0].content,
+            avatar: data.test1Avatar || testimonialsStatic[0].avatar
+        },
+        {
+            name: data.test2Name || testimonialsStatic[1].name,
+            role: data.test2Role || testimonialsStatic[1].role,
+            content: data.test2Text || testimonialsStatic[1].content,
+            avatar: data.test2Avatar || testimonialsStatic[1].avatar
+        },
+        {
+            name: data.test3Name || testimonialsStatic[2].name,
+            role: data.test3Role || testimonialsStatic[2].role,
+            content: data.test3Text || testimonialsStatic[2].content,
+            avatar: data.test3Avatar || testimonialsStatic[2].avatar
+        },
+        {
+            name: data.test4Name || testimonialsStatic[3].name,
+            role: data.test4Role || testimonialsStatic[3].role,
+            content: data.test4Text || testimonialsStatic[3].content,
+            avatar: data.test4Avatar || testimonialsStatic[3].avatar
+        },
+        {
+            name: data.test5Name || testimonialsStatic[4].name,
+            role: data.test5Role || testimonialsStatic[4].role,
+            content: data.test5Text || testimonialsStatic[4].content,
+            avatar: data.test5Avatar || testimonialsStatic[4].avatar
+        },
+        {
+            name: data.test6Name || testimonialsStatic[5].name,
+            role: data.test6Role || testimonialsStatic[5].role,
+            content: data.test6Text || testimonialsStatic[5].content,
+            avatar: data.test6Avatar || testimonialsStatic[5].avatar
+        }
+    ];
+
     const [activeIndex, setActiveIndex] = useState(0);
     const [isDragging, setIsDragging] = useState(false);
     const [startX, setStartX] = useState(0);
@@ -49,14 +92,14 @@ const Testimonials = () => {
     const sliderRef = useRef(null);
 
     // Update isMobile on resize
-    React.useEffect(() => {
+    useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth < 768);
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
     const itemsPerView = isMobile ? 1 : 3;
-    const maxIndex = Math.max(0, testimonials.length - itemsPerView);
+    const maxIndex = Math.max(0, dynamicTestimonials.length - itemsPerView);
 
     const next = () => {
         if (activeIndex < maxIndex) {
@@ -97,10 +140,10 @@ const Testimonials = () => {
     return (
         <section className="bg-[#D0D0DA] py-24 px-4 overflow-hidden select-none">
             <div className="max-w-7xl mx-auto text-center">
-                <h2 className="text-[#233657] text-3xl md:text-5xl font-black mb-20 md:mb-28 tracking-tight uppercase">
-                    <span className="block">lo que opinan nuestros clientes</span>
-                    <span className="block">de Accrual</span>
-                </h2>
+                <h2 
+                    className="text-[#233657] text-3xl md:text-5xl font-black mb-20 md:mb-28 tracking-tight uppercase"
+                    dangerouslySetInnerHTML={{ __html: data.testMainTitle || '<span class="block">lo que opinan nuestros clientes</span><span class="block">de Accrual</span>' }}
+                />
 
                 <div className="relative flex items-center justify-center gap-2">
                     {/* Left Button */}
@@ -128,7 +171,7 @@ const Testimonials = () => {
                                 transform: `translateX(calc(-${activeIndex} * (${100 / itemsPerView}% + ${32 / itemsPerView}px)))`
                             }}
                         >
-                            {testimonials.map((testimonial, index) => (
+                            {dynamicTestimonials.map((testimonial, index) => (
                                 <div
                                     key={index}
                                     className="w-full md:w-[calc(33.333%-1.35rem)] flex-shrink-0 group"
@@ -145,15 +188,22 @@ const Testimonials = () => {
                                             </div>
 
                                             {/* Name & Role */}
-                                            <h3 className="text-[#233657] font-black text-2xl mb-2 tracking-tight">{testimonial.name}</h3>
-                                            <p className="text-[#233657]/50 text-xs font-black uppercase tracking-[0.2em] mb-8">{testimonial.role}</p>
+                                            <h3 
+                                                className="text-[#233657] font-black text-2xl mb-2 tracking-tight"
+                                                dangerouslySetInnerHTML={{ __html: testimonial.name }}
+                                            />
+                                            <p 
+                                                className="text-[#233657]/50 text-xs font-black uppercase tracking-[0.2em] mb-8"
+                                                dangerouslySetInnerHTML={{ __html: testimonial.role }}
+                                            />
 
                                             {/* Content with Decorative Quotes */}
                                             <div className="relative pt-6 border-t border-[#233657]/5 w-full">
                                                 <Quote className="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 text-[#233657]/10" />
-                                                <p className="text-[#233657]/70 text-lg italic font-medium leading-relaxed px-4 text-center">
-                                                    "{testimonial.content}"
-                                                </p>
+                                                <p 
+                                                    className="text-[#233657]/70 text-lg italic font-medium leading-relaxed px-4 text-center"
+                                                    dangerouslySetInnerHTML={{ __html: `"${testimonial.content}"` }}
+                                                />
                                             </div>
                                         </div>
                                     </div>
@@ -173,7 +223,7 @@ const Testimonials = () => {
 
                 {/* Pagination Dots (Optional for better UX with swipe) */}
                 <div className="mt-12 flex justify-center gap-3">
-                    {testimonials.map((_, i) => (
+                    {dynamicTestimonials.map((_, i) => (
                         <button
                             key={i}
                             onClick={() => setActiveIndex(i)}

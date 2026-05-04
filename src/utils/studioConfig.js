@@ -1,0 +1,143 @@
+import { servicesData } from './mockServices';
+
+export const PAGE_SECTIONS = [
+ { id:'hero', label:'Encabezado principal', emoji:'🏠', tag:'SITIO PRINCIPAL' },
+ { id:'auditoria-cta', label:'Auditoría Rayos X (CTA)', emoji:'🎯', tag:'SITIO PRINCIPAL' },
+ { id:'paquetes', label:'Paquetes', emoji:'📦', tag:'SITIO PRINCIPAL' },
+ { id:'testimonios', label:'Testimonios', emoji:'💬', tag:'SITIO PRINCIPAL' },
+
+ { id:'quienes-somos', label:'Quiénes somos', emoji:'🏢', tag:'QUIÉNES SOMOS' },
+
+ { id:'servicios-grid', label:'Servicios Grid', emoji:'⚡', tag:'SERVICIOS' },
+ { id:'servicio-consultoria', label:'Consultoría', emoji:'📊', tag:'SERVICIOS' },
+ { id:'servicio-planificacion-avanzada', label:'Planificación fiscal avanzada', emoji:'🗓️', tag:'SERVICIOS' },
+ { id:'servicio-declaracion', label:'Declaración de impuestos', emoji:'📝', tag:'SERVICIOS' },
+ { id:'servicio-imss', label:'IMSS e Infonavit', emoji:'🏥', tag:'SERVICIOS' },
+ { id:'servicio-repse', label:'REPSE', emoji:'📋', tag:'SERVICIOS' },
+ { id:'servicio-nomina', label:'Administración de nómina', emoji:'👥', tag:'SERVICIOS' },
+ { id:'servicio-contabilidad', label:'Contabilidad', emoji:'💻', tag:'SERVICIOS' },
+ { id:'servicio-asesoria-planificacion', label:'Asesoría en planif. fiscal', emoji:'📈', tag:'SERVICIOS' },
+ { id:'servicio-cumplimiento-tributario', label:'Cumplimiento tributario', emoji:'⚖️', tag:'SERVICIOS' },
+ { id:'servicio-cumplimiento-seguridad', label:'Cumplimiento en seg. social', emoji:'🛡️', tag:'SERVICIOS' },
+ { id:'servicio-consultoria-financiera', label:'Consultoría financiera', emoji:'💡', tag:'SERVICIOS' },
+ { id:'servicio-auditoria', label:'Auditoría financiera', emoji:'🔍', tag:'SERVICIOS' },
+ { id:'servicio-asesoria-contable', label:'Asesoría contable', emoji:'📚', tag:'SERVICIOS' },
+ { id:'servicio-facturacion', label:'Facturación', emoji:'🧾', tag:'SERVICIOS' },
+ { id:'servicio-capacitacion', label:'Capacitación', emoji:'🎓', tag:'SERVICIOS' },
+ { id:'servicio-ley-federal', label:'Ley federal prev. ilícita', emoji:'🚨', tag:'SERVICIOS' },
+
+ { id:'articulos-grid', label:'Artículos Grid', emoji:'📚', tag:'ARTÍCULOS' },
+ { id:'articulo-errores', label:'Errores en declaración', emoji:'📄', tag:'ARTÍCULOS' },
+ { id:'articulo-beneficios-asesor', label:'Beneficios de asesor fiscal', emoji:'📄', tag:'ARTÍCULOS' },
+ { id:'articulo-beneficios-compliance', label:'Beneficios del compliance', emoji:'📄', tag:'ARTÍCULOS' },
+ { id:'articulo-presupuesto', label:'Importancia del presupuesto', emoji:'📄', tag:'ARTÍCULOS' },
+ { id:'articulo-implicaciones-delitos', label:'Implicaciones delitos fisc.', emoji:'📄', tag:'ARTÍCULOS' },
+ { id:'articulo-suspension-sellos', label:'Suspensión de sellos', emoji:'📄', tag:'ARTÍCULOS' },
+ { id:'articulo-partes-relacionadas', label:'Partes relacionadas y pre.', emoji:'📄', tag:'ARTÍCULOS' },
+ { id:'articulo-acciones-beps', label:'Acciones BEPS', emoji:'📄', tag:'ARTÍCULOS' },
+];
+
+export function injectSectionDefaults(nodeId, draftSource) {
+  const combinedData = { ...draftSource };
+
+  if (nodeId === 'hero') {
+      if (combinedData.videoUrl === undefined) combinedData.videoUrl = '';
+      if (combinedData.heroTitle1 === undefined) combinedData.heroTitle1 = 'Ingeniería Fiscal y Patrimonial <br /> para la Frontera Norte';
+      if (combinedData.heroSubtitle1 === undefined) combinedData.heroSubtitle1 = 'Optimizamos tu carga tributaria en México y coordinamos tu cumplimiento internacional. Desde RESICO hasta Precios de Transferencia.';
+      if (combinedData.heroBtn1 === undefined) combinedData.heroBtn1 = 'Ver Planes';
+      if (combinedData.heroBtn2 === undefined) combinedData.heroBtn2 = 'Ver Servicios';
+      
+      if (combinedData.heroTitle2 === undefined) combinedData.heroTitle2 = 'Para cada empresa <br /> hay una estrategia';
+      if (combinedData.heroSubtitle2 === undefined) combinedData.heroSubtitle2 = 'Accrual es tu aliado en el mundo fiscal y financiero. Ofrecemos soluciones adaptadas a tus necesidades, ayudándote a cumplir con tus responsabilidades fiscales y a gestionar tu patrimonio de manera eficiente.';
+      if (combinedData.heroBtn3 === undefined) combinedData.heroBtn3 = 'Solicita un presupuesto';
+      if (combinedData.heroImage2 === undefined) combinedData.heroImage2 = 'https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';
+  } else if (nodeId.startsWith('servicio-')) {
+      const slug = nodeId.replace('servicio-', '');
+      const localFallback = servicesData[slug] || {};
+
+      if (combinedData.title === undefined) combinedData.title = localFallback.title || 'Título del Servicio';
+      if (combinedData.description === undefined) combinedData.description = localFallback.description || 'Descripción breve para encabezado.';
+      if (combinedData.fullDescription === undefined) combinedData.fullDescription = localFallback.content || '<p>Descripción completa del servicio. Puedes usar HTML aquí.</p>';
+      if (combinedData.imageUrl === undefined) combinedData.imageUrl = localFallback.image || 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80';
+      if (combinedData.icon === undefined) combinedData.icon = 'briefcase';
+  } else if (nodeId.startsWith('articulo-')) {
+      if (combinedData.title === undefined) combinedData.title = 'Título del Artículo';
+      if (combinedData.content === undefined) combinedData.content = '<p>Contenido completo del artículo. Escribe tu texto aquí.</p>';
+      if (combinedData.imageUrl === undefined) combinedData.imageUrl = 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80';
+  } else if (nodeId === 'auditoria-cta') {
+      if (combinedData.ctaTitle === undefined) combinedData.ctaTitle = 'TU CIERRE FISCAL ESTÁ EN RIESGO.';
+      if (combinedData.ctaDesc === undefined) combinedData.ctaDesc = 'El SAT ha automatizado sus auditorías. ¿Estás seguro de que tus XMLs coinciden con tus bancos? <br/><br/> Obtén nuestra auditoría de diagnóstico "Rayos X". Revisamos tu situación fiscal actual, detectamos discrepancias y te entregamos un plan de corrección antes de tu declaración anual.';
+      if (combinedData.ctaBtn === undefined) combinedData.ctaBtn = 'QUIERO MI AUDITORÍA RAYOS X';
+      if (combinedData.ctaGuarantee === undefined) combinedData.ctaGuarantee = 'Si no encontramos áreas de mejora, te devolvemos tu dinero.';
+      if (combinedData.ctaImageUrl === undefined) combinedData.ctaImageUrl = 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';
+  } else if (nodeId === 'quienes-somos') {
+      if (combinedData.aboutMainTitle === undefined) combinedData.aboutMainTitle = '¿Quiénes <br /> Somos?';
+      if (combinedData.aboutSubtitle1 === undefined) combinedData.aboutSubtitle1 = 'Nuestra Historia';
+      if (combinedData.aboutText1 === undefined) combinedData.aboutText1 = 'Fundada en 2015 Accrual se ha dedicado a fortalecer a sus socios de negocios mediante servicios de vanguardia, profesionalismo y veracidad.';
+      if (combinedData.aboutSubtitle2 === undefined) combinedData.aboutSubtitle2 = 'Visión';
+      if (combinedData.aboutText2 === undefined) combinedData.aboutText2 = 'Con la visión de ser líderes en ofrecer servicios financieros y fiscales a nivel nacional e internacional, ofrecemos soluciones innovadoras en planeacion, diseño, capacitacion y consultoría fiscal, contable y financiera.';
+      if (combinedData.aboutSubtitle3 === undefined) combinedData.aboutSubtitle3 = 'Misión';
+      if (combinedData.aboutText3 === undefined) combinedData.aboutText3 = 'Nuestra misión es impulsar el éxito y la eficiencia de nuestros clientes, fortaleciendo los pilares financieros. A través de nuestra trayectoria, hemos logrado demostrar nuestro compromiso con la excelencia con el maximo profesionalismo.';
+      if (combinedData.aboutBtn === undefined) combinedData.aboutBtn = 'Conoce nuestros servicios';
+      if (combinedData.aboutImage === undefined) combinedData.aboutImage = 'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+  } else if (nodeId === 'paquetes') {
+      if (combinedData.pack1Title === undefined) combinedData.pack1Title = 'Emprendedores';
+      if (combinedData.pack1Price === undefined) combinedData.pack1Price = '$3,500,000';
+      if (combinedData.pack1Desc === undefined) combinedData.pack1Desc = '¿Estás facturando menos de $3,500,000 al mes? <br /><br /> Deja de perder tiempo en trámites y enfócate en lo que genera dinero. Construimos la estructura fiscal que soporta tu primer millón sin riesgos ante el SAT';
+      
+      if (combinedData.pack2Title === undefined) combinedData.pack2Title = 'Pymes y Negocios';
+      if (combinedData.pack2Price === undefined) combinedData.pack2Price = '$3,500,000 - $30,000,000';
+      if (combinedData.pack2Desc === undefined) combinedData.pack2Desc = '¿Estás facturando entre $3,500,000 y $30,000,000 al mes? <br /><br /> ¿Tu nómina y el SAT se están comiendo tu flujo de caja? Activamos los estímulos fronterizos y optimizamos tu carga laboral para inyectar capital inmediato a tu operación.';
+
+      if (combinedData.pack3Title === undefined) combinedData.pack3Title = 'Corporativo Global';
+      if (combinedData.pack3Price === undefined) combinedData.pack3Price = '$30,000,000';
+      if (combinedData.pack3Desc === undefined) combinedData.pack3Desc = '¿Estás facturando más de $30,000,000 al mes? <br /><br /> Proteja su patrimonio transfronterizo. Sincronizamos su operación México-USA mediante ingeniería fiscal avanzada, precios de transferencia y blindaje legal preventivo';
+  } else if (nodeId === 'testimonios') {
+      if (combinedData.testMainTitle === undefined) combinedData.testMainTitle = 'LO QUE OPINAN NUESTROS CLIENTES <br /> DE ACCRUAL';
+      if (combinedData.testSubtitle === undefined) combinedData.testSubtitle = 'Resultados Reales en la Frontera Norte';
+
+      // Testimonio 1
+      if (combinedData.test1Name === undefined) combinedData.test1Name = 'Miranda Wiley ND';
+      if (combinedData.test1Role === undefined) combinedData.test1Role = 'Directora Ejecutiva';
+      if (combinedData.test1Text === undefined) combinedData.test1Text = 'Desde que trabajamos con Accrual, nuestra planificación fiscal ha dado un salto de calidad increíble. Entienden perfectamente los retos de la frontera.';
+      if (combinedData.test1Avatar === undefined) combinedData.test1Avatar = 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
+
+      // Testimonio 2
+      if (combinedData.test2Name === undefined) combinedData.test2Name = 'Ricardo Treviño';
+      if (combinedData.test2Role === undefined) combinedData.test2Role = 'Empresario Industrial';
+      if (combinedData.test2Text === undefined) combinedData.test2Text = 'La asesoría en IMSS e Infonavit fue clave para regularizar nuestras operaciones. Son estrategas reales, no solo capturistas.';
+      if (combinedData.test2Avatar === undefined) combinedData.test2Avatar = 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
+
+      // Testimonio 3
+      if (combinedData.test3Name === undefined) combinedData.test3Name = 'Sofía Martínez';
+      if (combinedData.test3Role === undefined) combinedData.test3Role = 'Fundadora de StartUp';
+      if (combinedData.test3Text === undefined) combinedData.test3Text = 'Excelente servicio de contabilidad y facturación. El equipo es muy profesional y siempre están disponibles para resolver dudas.';
+      if (combinedData.test3Avatar === undefined) combinedData.test3Avatar = 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
+
+      // Testimonio 4
+      if (combinedData.test4Name === undefined) combinedData.test4Name = 'Carlos Méndez';
+      if (combinedData.test4Role === undefined) combinedData.test4Role = 'Director de Logística';
+      if (combinedData.test4Text === undefined) combinedData.test4Text = 'La implementación de estrategias de cumplimiento tributario nos ahorró tiempo y recursos valiosos. Altamente recomendados.';
+      if (combinedData.test4Avatar === undefined) combinedData.test4Avatar = 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
+
+      // Testimonio 5
+      if (combinedData.test5Name === undefined) combinedData.test5Name = 'Elena Gómez';
+      if (combinedData.test5Role === undefined) combinedData.test5Role = 'Consultora de Negocios';
+      if (combinedData.test5Text === undefined) combinedData.test5Text = 'Su enfoque en la planeación avanzada es lo que los distingue. Realmente se preocupan por el crecimiento patrimonial de sus clientes.';
+      if (combinedData.test5Avatar === undefined) combinedData.test5Avatar = 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
+
+      // Testimonio 6
+      if (combinedData.test6Name === undefined) combinedData.test6Name = 'Javier Ortiz';
+      if (combinedData.test6Role === undefined) combinedData.test6Role = 'Dueño de Restaurante';
+      if (combinedData.test6Text === undefined) combinedData.test6Text = 'Tener orden en mis impuestos y nómina me dio la paz mental que necesitaba para enfocarme en mi negocio. Gracias, Accrual.';
+      if (combinedData.test6Avatar === undefined) combinedData.test6Avatar = 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
+
+  } else {
+      // Forzar campos básicos por defecto genérico
+      if (combinedData.title === undefined) combinedData.title = 'Título por defecto';
+      if (combinedData.description === undefined) combinedData.description = 'Descripción detallada para esta sección. Puedes editar este texto desde el panel.';
+      if (combinedData.imageUrl === undefined) combinedData.imageUrl = ''; 
+  }
+
+  return combinedData;
+}

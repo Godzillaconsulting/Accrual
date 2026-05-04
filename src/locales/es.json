@@ -1,0 +1,188 @@
+{
+  "navbar": {
+    "home": "Inicio",
+    "culture": "Cultura",
+    "services": "Servicios",
+    "portfolio": "Portafolio",
+    "resources": "Recursos",
+    "packages": "Paquetes",
+    "digital_marketing": "Marketing Digital",
+    "ecommerce": "Ecommerce y Software",
+    "ai_solutions": "Soluciones con IA",
+    "about": "Sobre Nosotros",
+    "login": "Iniciar Sesión",
+    "start_now": "Contáctanos"
+  },
+  "hero": {
+    "title": "DETÉN LA FUGA DE LEADS Y ESCALA TU FACTURACIÓN CON INTELIGENCIA ARTIFICIAL.",
+    "subtitle": "El único sistema de marketing que instala un recepcionista digital 24/7, reactiva tu base de datos y te garantiza resultados por contrato. Si no cumplimos, no pagas.",
+    "ctaText": "Ver planes y garantías"
+  },
+  "services": {
+    "overline": "Soluciones de Alto Impacto",
+    "title": "SERVICIOS",
+    "learn_more": "Saber más",
+    "items": {
+      "bots": {
+        "title": "Automatización de Bots",
+        "desc": "Automatiza tu atención al cliente 24/7 con bots entrenados en tu negocio, que responden dudas, califican prospectos y los llevan directo a la cita o a la venta. Integrados con WhatsApp, redes sociales y tu CRM."
+      },
+      "video": {
+        "title": "Producción audiovisual",
+        "desc": "Creamos contenido audiovisual estratégico que genera confianza, autoridad, fortalece tu marca, comunica tu propuesta de valor y potencia la conversión en campañas y redes sociales."
+      },
+      "funnels": {
+        "title": "Embudos de venta",
+        "desc": "Estructuramos embudos digitales orientados a resultados que convierten tráfico en citas y oportunidades comerciales medibles."
+      },
+      "social": {
+        "title": "Gestión de redes sociales",
+        "desc": "Administramos la presencia digital de tu marca con una estrategia de contenido profesional, enfocada en posicionamiento, reputación y generación de prospectos."
+      },
+      "seo": {
+        "title": "Optimización web y SEO",
+        "desc": "Optimizamos tu sitio web y su estructura SEO para mejorar visibilidad en buscadores, experiencia de usuario y generación de leads calificados."
+      },
+      "crm": {
+        "title": "CRM con SAAS personalizado",
+        "desc": "Implementamos plataformas CRM y soluciones SaaS a la medida para centralizar contactos, automatizar seguimientos y facilitar la gestión comercial de tu equipo."
+      }
+    }
+  },
+  "footer": {
+    "contact": "Información de contacto",
+    "nav": "Navegación",
+    "legal": "Legal",
+    "home": "Inicio",
+    "culture": "Cultura",
+    "services": "Servicios",
+    "packages": "Paquetes",
+    "portfolio": "Portafolio",
+    "resources": "Recursos",
+    "terms": "Términos y Condiciones",
+    "privacy": "Aviso de Privacidad",
+    "cookies": "Política de cookies",
+    "copyright": "Accrual Co. Todos los derechos reservados."
+  },
+  "contact": {
+    "title": "EMPECEMOS LA GUERRA",
+    "h3": "Agenda tu Sesión Estratégica",
+    "subtitle": "Deja de perder dinero en campañas que no funcionan. Completa el formulario para agendar una sesión estratégica de diagnóstico.",
+    "noOffice": "¿No puedes visitarnos en oficina?",
+    "visitText": "¡Nosotros vamos a tu negocio!",
+    "name": "Nombre completo",
+    "company": "Empresa o Proyecto",
+    "email": "Correo empresarial",
+    "phone": "Teléfono (Opcional)",
+    "sessionLabel": "¿Cómo prefieres tu sesión?",
+    "sessionVideo": "Videollamada (Zoom)",
+    "sessionInPerson": "Presencial (Ciudad Juárez)",
+    "dateLabel": "Fecha (Lun-Vie)",
+    "timeLabel": "Hora",
+    "timePlaceholder": "Selecciona una hora",
+    "required": "Campos obligatorios",
+    "revenue": "Facturación actual o proyectada",
+    "revenue_options": {
+      "new": "Apenas iniciando ($0 - $5,000 USD)",
+      "growing": "Creciendo ($5,000 - $20,000 USD)",
+      "scaling": "Escalando ($20,000 - $50,000 USD)",
+      "enterprise": "Empresa establecida ($50,000+ USD)"
+    },
+    "message": "¿Cuál es tu reto principal a resolver?",
+    "submit": "APLICAR AHORA",
+    "submitting": "ENVIANDO...",
+    "success": "Información recibida correctamente.",
+    "error": "Error al conectar. Por favor intenta de nuevo.",
+    "confirmed": "¡CITA CONFIRMADA!",
+    "thankyou": "¡GRACIAS POR TU TIEMPO!",
+    "appointmentSet": "Tu cita ha sido programada exitosamente. Nos pondremos en contacto contigo pronto.",
+    "addCalendar": "Agregar a Google Calendar",
+    "backForm": "Volver al formulario",
+    "newsletter": "Suscríbete a nuestro boletín",
+    "newsletterPlaceholder": "Ingresa tu correo aquí",
+    "newsletterLatest": "Recibe lo último en marketing e Inteligencia Artificial.",
+    "followUs": "Síguenos en nuestras redes",
+    "subscribedOk": "¡Suscrito con éxito! Revisa tu bandeja pronto.",
+    "subscribedError": "Error al procesar la suscripción.",
+    "networkError": "Error de red. Intenta de nuevo más tarde."
+  },
+  "banner": {
+    "limited": "TIEMPO LIMITADO",
+    "getBonus": "Descarga el Reporte Ejecutivo",
+    "close": "Cerrar"
+  },
+  "faq": {
+    "title": "PREGUNTAS FRECUENTES",
+    "subtitle": "Respuestas claras sobre nuestra forma de operar."
+  },
+  "leadmagnet": {
+    "title": "7 Prompts de IA comprobados",
+    "subtitle": "Déjanos tu correo y recíbelos al instante.",
+    "placeholder": "Tu mejor correo...",
+    "btnDownloading": "Enviando...",
+    "btnDownload": "Descargar",
+    "success": "¡El recurso va en camino a tu bandeja de entrada!",
+    "alreadySent": "¡Ya habíamos enviado este documento a tu correo antes! Revisa tu bandeja de spam.",
+    "emptyEmail": "Escribe un email válido."
+  },
+  "faqPage": {
+    "title1": "PREGUNTAS",
+    "title2": "FRECUENTES",
+    "subtitle": "Todo lo que necesitas saber sobre Accrual",
+    "notFound": "¿No encontraste lo que buscabas?",
+    "contact": "Contáctanos directamente"
+  },
+  "portfolio": {
+    "overline": "CASOS DE ÉXITO",
+    "title": "CASOS DE ÉXITO",
+    "subtitle": "No hacemos solo campañas, construimos sistemas"
+  },
+  "chat": {
+    "greeting": "¡Hola! Soy Zilla. 😊 ¿Cómo puedo ayudarte?"
+  },
+  "culture": {
+    "title": "NUESTRA",
+    "titleRed": "CULTURA",
+    "mission": "Nuestra Misión",
+    "missionText": "Impulsar el crecimiento escalable de negocios B2B mediante la implementación de embudos inteligentes, automatización avanzada y estrategias omnicanal.",
+    "vision": "La Visión",
+    "visionText": "Convertirnos en la agencia integral de referencia, liderando la transformación digital con IA para que las empresas no sólo vendan, sino que sistematicen su éxito.",
+    "values": "Nuestros Valores",
+    "values1": "Innovación implacable",
+    "values2": "Transparencia radical",
+    "values3": "Diseño centrado en resultados",
+    "values4": "Adaptabilidad extrema",
+    "values5": "Pasión por los datos",
+    "values6": "Obsesión por el cliente"
+  },
+  "packages": {
+    "title": "PAQUETES",
+    "titleRed": "",
+    "subtitle": "Soluciones integrales de crecimiento",
+    "btn": "Contratar ahora",
+    "includes": "Incluye:",
+    "consult": "Hablar con ventas"
+  },
+  "resources": {
+    "title": "NUESTROS",
+    "titleRed": "RECURSOS",
+    "subtitle": "Herramientas gratuitas para automatizar tu negocio",
+    "btn": "Descargar ahora"
+  },
+  "responsibilities": {
+    "title": "Responsabilidades",
+    "subtitle": "de nuestros clientes",
+    "h3": "Trabajamos juntos, entregamos juntos",
+    "p": "Los tiempos de entrega que prometemos son reales, pero dependen de un ingrediente clave: el trabajo en equipo. Nosotros ponemos toda nuestra experiencia y agilidad, pero necesitamos que estés disponible para feedback, aprobaciones y entrega de materiales. Cuando ambos cumplimos nuestra parte, los resultados llegan a tiempo.",
+    "points": [
+      "Firma del contrato de prestación de servicios antes de iniciar el proyecto",
+      "Entrega de información y materiales solicitados dentro de los plazos establecidos para evitar retrasos",
+      "Respuestas y feedback en máximo 48-72 horas hábiles",
+      "Accesos necesarios (redes sociales, dominio, hosting, plataformas publicitarias) proporcionados al inicio",
+      "Disponibilidad para juntas de seguimiento programadas con anticipación",
+      "Aprobaciones claras y por escrito para avanzar a las siguientes etapas del proyecto",
+      "Punto de contacto designado que tenga autoridad para tomar decisiones"
+    ],
+    "warning": "El incumplimiento de estos puntos puede resultar en extensión de los tiempos de entrega originalmente acordados."
+  }
+}

@@ -7,13 +7,20 @@ import { ArrowRight, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react
 
 
 
-const ArticleDetail = () => {
-    const { id } = useParams();
+import { mockArticles } from '../utils/mockArticles';
+import { useSiteData } from '../context/SiteContext';
+
+const ArticleDetail = ({ id: propId }) => {
+    const params = useParams();
+    const id = propId || params.id;
     const [article, setArticle] = useState(null);
     const [allArticles, setAllArticles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [relatedStartIndex, setRelatedStartIndex] = useState(0);
+
+    const { getNodeData } = useSiteData();
+    const dynamicData = getNodeData('articulo-' + id) || {};
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -32,8 +39,11 @@ const ArticleDetail = () => {
                 setLoading(false);
             })
             .catch(err => {
-                console.error(err);
-                setError(err.message);
+                console.warn('Usando mock de artículos por error en API:', err);
+                setAllArticles(mockArticles);
+                const current = mockArticles.find(a => a.id === parseInt(id));
+                setArticle(current);
+                setError(current ? null : 'Artículo no encontrado');
                 setLoading(false);
             });
     }, [id]);
@@ -57,7 +67,7 @@ const ArticleDetail = () => {
         );
     }
 
-    if (error || !article) {
+    if (!dynamicData.title && (error || !article)) {
         return (
             <div className="min-h-screen bg-white flex items-center justify-center text-[#233657]">
                 <div className="text-center">
@@ -68,6 +78,10 @@ const ArticleDetail = () => {
         );
     }
 
+    const finalTitle = dynamicData.title || article?.title || 'Artículo';
+    const finalContent = dynamicData.content || article?.content || '';
+    const finalImage = dynamicData.imageUrl || article?.image || '';
+
     return (
         <div className="min-h-screen bg-white font-sans text-[#233657]">
             <Navbar />
@@ -76,27 +90,28 @@ const ArticleDetail = () => {
                 {/* Header Section */}
                 <section className="bg-[#4B5563] text-white py-24 px-6 font-sans">
                     <div className="max-w-4xl mx-auto text-left">
-                        <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tight mb-8 leading-tight">
-                            {article.title}
-                        </h1>
+                        <h1 
+                            className="text-3xl md:text-5xl font-black uppercase tracking-tight mb-8 leading-tight"
+                            dangerouslySetInnerHTML={{ __html: finalTitle }}
+                        />
                     </div>
                 </section>
 
                 <article className="max-w-4xl mx-auto px-6 py-16">
 
                     {/* Featured Image */}
-                    <div className="w-full h-[400px] md:h-[500px] rounded-[2rem] overflow-hidden shadow-lg mb-16">
+                    <div className="w-full h-[400px] md:h-[500px] rounded-[2rem] overflow-hidden shadow-lg mb-16 relative bg-gray-100">
                         <img loading="lazy" 
-                            src={article.image}
-                            alt={article.title}
-                            className="w-full h-full object-cover"
+                            src={finalImage}
+                            alt="Artículo"
+                            className="absolute inset-0 w-full h-full object-cover"
                         />
                     </div>
 
                     {/* Content */}
                     <div
                         className="prose prose-lg max-w-none text-[#233657]/80 leading-relaxed mb-12 article-content"
-                        dangerouslySetInnerHTML={{ __html: article.content }}
+                        dangerouslySetInnerHTML={{ __html: finalContent }}
                     />
 
                     {/* CTA Button */}

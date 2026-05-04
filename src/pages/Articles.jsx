@@ -4,8 +4,14 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import FloatingWhatsApp from '../components/FloatingWhatsApp';
 import { ArrowRight, Loader2 } from 'lucide-react';
+import { useSiteData } from '../context/SiteContext';
+
+import { mockArticles } from '../utils/mockArticles';
 
 const Articles = () => {
+    const { getNodeData } = useSiteData();
+    const siteData = getNodeData('articulos-grid');
+
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -21,8 +27,9 @@ const Articles = () => {
                 setLoading(false);
             })
             .catch(err => {
-                console.error('Fetch error:', err);
-                setError(err.message);
+                console.warn('Usando mock de artículos:', err);
+                setArticles(mockArticles);
+                setError(null);
                 setLoading(false);
             });
     }, []);
@@ -33,8 +40,10 @@ const Articles = () => {
 
             <main>
                 {/* Hero / Header Section */}
-                <section className="bg-[#233657] text-[#D0D0DA] py-20 px-6 font-sans">
-                    <div className="max-w-7xl mx-auto text-center">
+                <section className="bg-[#233657] text-[#D0D0DA] py-20 px-6 font-sans relative"
+                         style={siteData?.heroImageUrl ? { backgroundImage: `url(${siteData.heroImageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}>
+                    {siteData?.heroImageUrl && <div className="absolute inset-0 bg-[#233657]/80 backdrop-blur-sm"></div>}
+                    <div className="max-w-7xl mx-auto text-center relative z-10">
                         <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tight mb-6">
                             Artículos
                         </h1>
@@ -61,7 +70,7 @@ const Articles = () => {
                                 <div key={article.id} className="relative h-[450px] rounded-[2rem] overflow-hidden shadow-2xl group cursor-pointer border border-[#233657]/10 hover:border-[#0F4C82] transition-all duration-300 hover:-translate-y-2">
                                     {/* Full Background Image */}
                                     <img loading="lazy" 
-                                        src={article.image}
+                                        src={siteData?.[`img_articulo_${article.id}`] || article.image}
                                         alt={article.title}
                                         className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-in-out"
                                     />
