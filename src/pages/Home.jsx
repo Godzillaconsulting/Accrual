@@ -1,6 +1,7 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
+import About from '../components/About';
 import Services from '../components/Services';
 import AuditCTA from '../components/AuditCTA';
 import Testimonials from '../components/Testimonials';
@@ -15,6 +16,7 @@ const Home = () => {
         <div className="min-h-screen bg-[#D0D0DA] font-sans">
             <Navbar />
             <Hero />
+            <About />
             <AuditCTA />
             <Services />
             <TalkClear />

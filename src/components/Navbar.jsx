@@ -211,6 +211,39 @@ const Navbar = () => {
             {/* Mobile Menu Overlay */}
             {isMobileMenuOpen && (
                 <div className="lg:hidden mt-4 pb-4 flex flex-col gap-4 border-t border-white/10 pt-4">
+                    <div className="flex items-center bg-white/10 rounded-full px-4 h-10 mb-2 border border-white/10">
+                        <input
+                            type="text"
+                            placeholder="Buscar..."
+                            className="bg-transparent border-none outline-none w-full h-full text-white placeholder-white/50 font-medium text-sm"
+                            value={searchQuery}
+                            onChange={handleSearch}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && searchQuery.trim().length > 0) {
+                                    setIsMobileMenuOpen(false);
+                                    navigate(`/buscar?q=${encodeURIComponent(searchQuery)}`);
+                                }
+                            }}
+                        />
+                        <Search className="w-4 h-4 text-white" />
+                    </div>
+                    {searchResults.length > 0 && searchQuery.length > 0 && (
+                        <div className="flex flex-col gap-2 mb-4 pl-4 border-l-2 border-[#0F4C82]">
+                            {searchResults.slice(0, 3).map((result, idx) => (
+                                <Link 
+                                    key={idx} 
+                                    to={result.path}
+                                    className="text-sm text-[#D0D0DA] hover:text-white"
+                                    onClick={() => {
+                                        setSearchQuery('');
+                                        setIsMobileMenuOpen(false);
+                                    }}
+                                >
+                                    {result.title}
+                                </Link>
+                            ))}
+                        </div>
+                    )}
                     <Link to="/" className="text-[#D0D0DA] hover:text-white transition-colors" onClick={() => setIsMobileMenuOpen(false)}>INICIO</Link>
                     <Link to="/quienes-somos" className="text-[#D0D0DA] hover:text-white transition-colors" onClick={() => setIsMobileMenuOpen(false)}>QUIÉNES SOMOS</Link>
                     <Link to="/cumplimiento-tributario" className="text-[#D0D0DA] hover:text-white transition-colors" onClick={() => setIsMobileMenuOpen(false)}>SERVICIOS</Link>
