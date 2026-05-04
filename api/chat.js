@@ -53,7 +53,7 @@ export default async function handler(req, res) {
             content: row.content
         }));
 
-        // Call the Godzilla Protocol AI logic
+        // Call the Accrual Protocol AI logic
         const aiResponse = await generateAccrualBotResponse(history, message);
 
         // Store the interaction in the database

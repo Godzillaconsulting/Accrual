@@ -1,6 +1,6 @@
 #!/bin/bash
 # ==============================================================================
-# WP-CLI Hardening Script: "High Performance Godzilla Tunnel"
+# WP-CLI Hardening Script: "High Performance Accrual Tunnel"
 # ==============================================================================
 
 # Ruta por defecto a la instalación de WP (Asegúrate de ajustar esta variable)
@@ -40,7 +40,7 @@ WP_CONFIG_FILE="$WP_PATH/wp-config.php"
 if ! grep -q "HTTP_X_FORWARDED_PROTO" "$WP_CONFIG_FILE"; then
     # Inyectar validaciones seguras directamente antes del comentario stop editing
     sed -i "/stop editing/i \\
-/* Configuración de Proxy Inverso (Godzilla Cloudflare Tunnel) */\\
+/* Configuración de Proxy Inverso (Accrual Cloudflare Tunnel) */\\
 if ( isset( \\\$_SERVER['HTTP_X_FORWARDED_PROTO'] ) && \\\$_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https' ) {\\
     \\\$_SERVER['HTTPS'] = 'on';\\
 }\\
@@ -54,7 +54,7 @@ else
 fi
 
 echo "================================================================="
-echo "✅ Hardening exitoso. Tu WP está amurallado para el Godzilla Tunnel."
+echo "✅ Hardening exitoso. Tu WP está amurallado para el Accrual Tunnel."
 echo ""
 echo "🔥 IMPORTANTE POST-INSTALL 🔥"
 echo "Para el sistema de Cron, abre crontab (-e) y añade para ejecutar cada 5 mins:"

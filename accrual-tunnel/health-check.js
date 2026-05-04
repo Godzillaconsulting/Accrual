@@ -33,7 +33,7 @@ function checkWPHealth() {
     });
 }
 
-console.log(`🚀 Godzilla Tunnel Monitor iniciado. Vigílalo cada ${CHECK_INTERVAL/1000}s en: ${WP_URL}`);
+console.log(`🚀 Accrual Tunnel Monitor iniciado. Vigílalo cada ${CHECK_INTERVAL/1000}s en: ${WP_URL}`);
 setInterval(checkWPHealth, CHECK_INTERVAL);
 
 // Primera ejecución inmediata

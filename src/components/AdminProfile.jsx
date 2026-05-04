@@ -153,16 +153,18 @@ export default function AdminProfile({ profile, onProfileUpdate }) {
             });
             const data = await res.json();
             if (data.success) {
-                setPersonalMsg({ text: 'Perfil actualizado exitosamente.', type: 'success' });
-                setPassword(''); // limpiar input
-                if (onProfileUpdate) onProfileUpdate({ ...profile, username: data.newUsername, photo_url: photoUrl });
+                setPersonalMsg({ text: 'Perfil actualizado. Reiniciando sesión por seguridad...', type: 'success' });
+                alert("Perfil actualizado exitosamente. Por seguridad, el sistema cerrará la sesión para aplicar tus nuevas credenciales.");
+                localStorage.clear();
+                window.location.href = '/login';
             } else {
                 setPersonalMsg({ text: data.message || 'Error al guardar.', type: 'error' });
+                setSaving(false);
             }
         } catch (e) {
             setPersonalMsg({ text: 'Error de conexión.', type: 'error' });
+            setSaving(false);
         }
-        setSaving(false);
     };
 
     const handlePhotoUpload = async (e) => {

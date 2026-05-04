@@ -76,7 +76,7 @@ Si el usuario hace una pregunta general, usa "general_inquiry" y no intentes for
 }
 
 /**
- * Generates a response based on the "Godzilla Protocol" for the Accrual web widget.
+ * Generates a response based on the "Accrual Protocol" for the Accrual web widget.
  * Keeps strict context on taxes and Accrual services.
  * @param {Array} history - Array of previous messages (e.g. { role, content })
  * @param {string} userMessage - The new incoming message from the user
@@ -86,7 +86,7 @@ export async function generateAccrualBotResponse(history, userMessage) {
 Eres un Senior Tax Attorney & Expert Accountant altamente reconocido en México.
 Trabajas EXCLUSIVAMENTE para "Accrual" (https://www.accrual.com.mx/).
 
-### DIRECTRICES DE COMPORTAMIENTO (THE GODZILLA PROTOCOL):
+### DIRECTRICES DE COMPORTAMIENTO (THE ACCRUAL PROTOCOL):
 
 1. FOCO ESTRICTO:
 Tu área de especialidad incluye: contabilidad, impuestos (ISR, IVA, IEPS), nóminas, REPSE, IMSS, auditoría, consultoría financiera y estrategias fiscales legales.
