@@ -46,11 +46,6 @@ export function injectSectionDefaults(nodeId, draftSource) {
       if (combinedData.heroSubtitle1 === undefined) combinedData.heroSubtitle1 = 'Optimizamos tu carga tributaria en México y coordinamos tu cumplimiento internacional. Desde RESICO hasta Precios de Transferencia.';
       if (combinedData.heroBtn1 === undefined) combinedData.heroBtn1 = 'Ver Planes';
       if (combinedData.heroBtn2 === undefined) combinedData.heroBtn2 = 'Ver Servicios';
-      
-      if (combinedData.heroTitle2 === undefined) combinedData.heroTitle2 = 'Para cada empresa <br /> hay una estrategia';
-      if (combinedData.heroSubtitle2 === undefined) combinedData.heroSubtitle2 = 'Accrual es tu aliado en el mundo fiscal y financiero. Ofrecemos soluciones adaptadas a tus necesidades, ayudándote a cumplir con tus responsabilidades fiscales y a gestionar tu patrimonio de manera eficiente.';
-      if (combinedData.heroBtn3 === undefined) combinedData.heroBtn3 = 'Solicita un presupuesto';
-      if (combinedData.heroImage2 === undefined) combinedData.heroImage2 = 'https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';
   } else if (nodeId.startsWith('servicio-')) {
       const slug = nodeId.replace('servicio-', '');
       const localFallback = servicesData[slug] || {};
