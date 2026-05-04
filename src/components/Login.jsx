@@ -110,7 +110,7 @@ const Login = () => {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
-                    username: username.trim(), 
+                    username: username.trim().toLowerCase(), 
                     password: password.trim()
                 })
             });
@@ -124,7 +124,7 @@ const Login = () => {
                 setAttempts(0);
 
                 localStorage.setItem('adminToken', data.token);
-                localStorage.setItem('adminUser', username.trim());
+                localStorage.setItem('adminUser', username.trim().toLowerCase());
                 localStorage.setItem('adminRole', data.role);
 
                 if (data.role === 'cm' || username.trim().toLowerCase() === 'judith') {
@@ -245,6 +245,8 @@ const Login = () => {
                                         id="admin-username"
                                         value={username}
                                         onChange={e => setUsername(e.target.value)}
+                                        autoCapitalize="none"
+                                        autoCorrect="off"
                                         className="w-full bg-black/50 border border-[#00bcd4]/30 rounded-xl pl-12 pr-4 py-3 text-white focus:outline-none focus:border-[#18ffff] focus:shadow-[0_0_15px_rgba(24,255,255,0.2)] transition-all shadow-inner"
                                         placeholder="accrual_admin"
                                         autoComplete="username"
