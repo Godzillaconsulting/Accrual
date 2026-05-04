@@ -13,12 +13,22 @@ const LOGICAL_ORDER = {
 
 function getFieldWeight(key) {
   const lower = key.toLowerCase();
-  if (lower.includes('related')) return 6; // Relacionados van al final
-  if (lower.includes('title') || lower.includes('name')) return 1;
-  if (lower.includes('subtitle') || lower.includes('role')) return 2;
-  if (lower.includes('desc')) return 3;
-  if (lower.includes('content') || lower.includes('text')) return 4;
-  if (lower.includes('btn') || lower.includes('button')) return 5;
+  
+  // Specific blocks mapping to visual order
+  if (key === 'title') return 1;
+  if (key === 'description') return 2;
+  if (key === 'heroBtnText') return 3;
+  if (key === 'fullDescription' || key === 'content') return 4;
+  
+  if (lower.includes('profile')) return 7; // Perfil al final
+  if (lower.includes('related')) return 8; // Relacionados hasta abajo
+  
+  if (lower.includes('title') || lower.includes('name')) return 5;
+  if (lower.includes('subtitle') || lower.includes('role')) return 6;
+  if (lower.includes('desc')) return 6;
+  if (lower.includes('content') || lower.includes('text')) return 6;
+  if (lower.includes('btn') || lower.includes('button')) return 6;
+  
   return 99;
 }
 
