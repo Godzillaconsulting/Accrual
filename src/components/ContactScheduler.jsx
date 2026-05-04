@@ -62,7 +62,7 @@ const ContactScheduler = ({ showHeader = false, showMap = true }) => {
                     day: '2-digit' 
                 }).format(selectedDate);
                 
-                const response = await fetch(`/api/appointments?date=${dateStr}`);
+                const response = await fetch(`/api/public/appointments?date=${dateStr}`);
                 if (response.ok) {
                     const data = await response.json();
                     
@@ -635,7 +635,7 @@ const ContactScheduler = ({ showHeader = false, showMap = true }) => {
                                                 duration: duration
                                             };
                                             
-                                            const res = await fetch('/api/appointments', {
+                                            const res = await fetch('/api/public/appointments', {
                                                 method: 'POST',
                                                 headers: { 'Content-Type': 'application/json' },
                                                 body: JSON.stringify(payload)

@@ -37,7 +37,7 @@ const Payment = () => {
         }
         
         try {
-            const res = await fetch('/api/appointments', {
+            const res = await fetch('/api/public/appointments', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ appointmentId, status, paymentMethod })
