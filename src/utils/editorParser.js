@@ -13,6 +13,7 @@ const LOGICAL_ORDER = {
 
 function getFieldWeight(key) {
   const lower = key.toLowerCase();
+  if (lower.includes('related')) return 6; // Relacionados van al final
   if (lower.includes('title') || lower.includes('name')) return 1;
   if (lower.includes('subtitle') || lower.includes('role')) return 2;
   if (lower.includes('desc')) return 3;
