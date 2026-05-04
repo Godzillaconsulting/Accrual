@@ -110,7 +110,7 @@ const ArticleDetail = ({ id: propId }) => {
 
                     {/* Content */}
                     <div
-                        className="prose prose-lg max-w-none text-[#233657]/80 leading-relaxed mb-12 article-content"
+                        className="prose prose-lg max-w-none text-[#233657]/80 leading-relaxed mb-12 article-content whitespace-pre-wrap"
                         dangerouslySetInnerHTML={{ __html: finalContent }}
                     />
 
