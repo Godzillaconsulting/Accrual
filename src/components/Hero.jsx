@@ -102,10 +102,6 @@ const Hero = () => {
                             dangerouslySetInnerHTML={{ __html: data.heroBtn3 || 'Solicita un presupuesto' }}
                         />
 
-                        {/* Video Placeholder */}
-                        <div className="w-full max-w-6xl aspect-video bg-[#233657]/50 rounded-[2rem] relative flex items-center justify-center shadow-2xl overflow-hidden group border border-[#D0D0DA]/20 backdrop-blur-sm">
-                            <img src={data.heroImage2 || "https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"} alt="Video thumbnail" className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700" />
-                        </div>
                     </div>
                 )}
             </div>
