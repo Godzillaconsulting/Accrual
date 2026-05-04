@@ -4,7 +4,7 @@ import { Lock, User, ArrowRight, AlertCircle, Loader, ShieldAlert, Eye, EyeOff }
 import logo from '../assets/Accrual logo (white).png';
 import CanvasCaptcha from './CanvasCaptcha';
 
-const API_BASE = import.meta.env.DEV ? 'http://localhost:3002' : '';
+const API_BASE = 'https://accrual-api-temp.loca.lt';
 const MAX_ATTEMPTS = 10;
 
 const Login = () => {
@@ -108,7 +108,10 @@ const Login = () => {
         try {
             const response = await fetch(`${API_BASE}/api/auth/login`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Bypass-Tunnel-Reminder': 'true'
+                },
                 body: JSON.stringify({ 
                     username: username.trim(), 
                     password: password.trim()
