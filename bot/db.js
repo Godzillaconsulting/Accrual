@@ -1,10 +1,15 @@
-import { neon } from '@neondatabase/serverless';
+import postgres from 'postgres';
 import 'dotenv/config';
 
-export const sql = neon(process.env.DATABASE_URL || 'postgresql://placeholder');
-
+export const sql = postgres({
+    host: process.env.DB_HOST || 'localhost',
+    port: process.env.DB_PORT || 5432,
+    database: process.env.DB_NAME || 'accrual',
+    username: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASSWORD || 'godzilla2026',
+});
 /**
- * Inserts a new appointment in the Neon Postgres Database.
+ * Inserts a new appointment in the Postgres Database.
  * Relies on the EXACT same schema as api/appointments.js
  */
 export async function saveAppointmentToDB(appt) {
@@ -13,7 +18,7 @@ export async function saveAppointmentToDB(appt) {
         const duration = appt.duration || '30min';
         const calculatedPrice = appt.price || (duration === '60min' ? 1000 : 600);
         
-        // Inserting into Neon table and expecting RETURNING id
+        // Inserting into Postgres table and expecting RETURNING id
         const result = await sql`
             INSERT INTO appointments (
                 nombre, apellidos, email, telefono, mensaje, fecha, hora, modalidad, duracion, precio, status
@@ -39,7 +44,7 @@ export async function saveAppointmentToDB(appt) {
         if (error.code === '23505') {
             return { success: false, error: 'Conflicto de horario. Esa fecha y hora ya están reservadas en la base de datos.', isDoubleBooking: true };
         }
-        console.error('Error inserting into Neon:', error);
+        console.error('Error inserting into Postgres:', error);
         return { success: false, error: error.message };
     }
 }

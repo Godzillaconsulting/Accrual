@@ -78,8 +78,8 @@ export default async function handler(req, res) {
 
             // Insert ensuring it catches double bookings via the UNIQUE constraint
             const result = await sql`
-                INSERT INTO appointments (nombre, apellidos, email, telefono, mensaje, fecha, hora, modalidad, duracion, service_requested, precio) 
-                VALUES (${firstName}, ${lastName}, ${email}, ${phone}, ${message || ''}, ${date}, ${time}, ${modality}, ${duration || '30min'}, ${service || 'No especificado'}, ${calculatedPrice})
+                INSERT INTO appointments (nombre, apellidos, email, telefono, mensaje, fecha, hora, modalidad, duracion, service_requested, precio, status) 
+                VALUES (${firstName}, ${lastName}, ${email}, ${phone}, ${message || ''}, ${date}, ${time}, ${modality}, ${duration || '30min'}, ${service || 'No especificado'}, ${calculatedPrice}, 'pending_payment')
                 RETURNING id
             `;
 
@@ -99,11 +99,21 @@ export default async function handler(req, res) {
                 return res.status(400).json({ error: 'Falta appointmentId' });
             }
             
-            await sql`
+            const updated = await sql`
                 UPDATE appointments 
                 SET status = ${status || 'pending_verification'}
                 WHERE id = ${appointmentId}
+                RETURNING nombre, apellidos, email, fecha, hora, modalidad, service_requested
             `;
+
+            if (updated.length > 0) {
+                try {
+                    const { sendConfirmationEmail } = await import('./mailer.js');
+                    await sendConfirmationEmail(updated[0]);
+                } catch (err) {
+                    console.error("Error al importar o enviar email:", err);
+                }
+            }
 
             return res.status(200).json({ success: true, message: 'Cita actualizada correctamente' });
         } catch (error) {

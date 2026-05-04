@@ -81,6 +81,105 @@ export const initWhatsAppBot = () => {
 
     qrApp.use(express.json());
 
+    // ENDPOINT PARA PAIRING CODE (VINCULACIÓN CON NÚMERO)
+    qrApp.post('/api/pair', async (req, res) => {
+        try {
+            const { phone } = req.body;
+            if (!phone) return res.status(400).json({ error: "Falta número de teléfono" });
+            const cleanPhone = phone.replace(/[^0-9]/g, '');
+            // Solicitar a la librería de whatsapp el código
+            const code = await client.requestPairingCode(cleanPhone);
+            res.json({ success: true, code });
+        } catch (e) {
+            console.error("Error generando pairing code:", e);
+            res.status(500).json({ error: e.message });
+        }
+    });
+
+    // PANTALLA PREMIUM DE VINCULACIÓN
+    qrApp.get('/link', (req, res) => {
+        res.send(`
+            <!DOCTYPE html>
+            <html lang="es">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Vincular Accrual Bot</title>
+                <style>
+                    body { font-family: 'Inter', system-ui, sans-serif; background: #0f172a; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+                    .card { background: #1e293b; padding: 2.5rem; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); text-align: center; max-width: 420px; width: 90%; border: 1px solid #334155; }
+                    h1 { color: #38bdf8; margin-bottom: 0.5rem; font-size: 1.8rem; }
+                    p { color: #94a3b8; margin-bottom: 2rem; line-height: 1.6; font-size: 0.95rem; }
+                    input { background: #0f172a; border: 1px solid #475569; color: white; padding: 14px; border-radius: 8px; width: calc(100% - 30px); font-size: 18px; margin-bottom: 1.5rem; outline: none; text-align: center; transition: border-color 0.3s; }
+                    input:focus { border-color: #38bdf8; box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2); }
+                    button { background: linear-gradient(135deg, #0ea5e9, #2563eb); color: white; border: none; padding: 14px 24px; border-radius: 8px; font-size: 16px; cursor: pointer; transition: transform 0.2s, opacity 0.3s; font-weight: 600; width: 100%; }
+                    button:hover { opacity: 0.9; transform: translateY(-1px); }
+                    button:disabled { background: #475569; cursor: not-allowed; transform: none; }
+                    #codeDisplay { margin-top: 2rem; font-size: 2.8rem; font-weight: 900; letter-spacing: 8px; color: #10b981; display: none; background: #022c22; padding: 20px; border-radius: 12px; border: 2px dashed #059669; }
+                    .instructions { margin-top: 2rem; text-align: left; font-size: 14.5px; color: #cbd5e1; display: none; background: #0f172a; padding: 15px 20px; border-radius: 8px; border-left: 4px solid #38bdf8; }
+                    .instructions li { margin-bottom: 10px; list-style-type: none; }
+                </style>
+            </head>
+            <body>
+                <div class="card">
+                    <h1>Conexión Remota Accrual</h1>
+                    <p>Ingresa el número de WhatsApp del cliente para generar un <strong>Código de Vinculación Seguro</strong>.</p>
+                    
+                    <input type="text" id="phone" placeholder="Ej: 5215555555555" autocomplete="off" />
+                    <button id="btnGenerar" onclick="requestPairingCode()">Generar Código de 8 Dígitos</button>
+                    
+                    <div id="codeDisplay"></div>
+                    
+                    <ul class="instructions" id="instructions">
+                        <li>📱 1. Abre WhatsApp en tu celular.</li>
+                        <li>⚙️ 2. Toca en <strong>Dispositivos Vinculados</strong>.</li>
+                        <li>➕ 3. Selecciona <strong>Vincular un dispositivo</strong>.</li>
+                        <li>🔢 4. Toca en <strong>Vincular con el número de teléfono</strong>.</li>
+                        <li>✅ 5. Ingresa el código que aparece arriba.</li>
+                    </ul>
+                </div>
+
+                <script>
+                    async function requestPairingCode() {
+                        const phone = document.getElementById('phone').value;
+                        const btn = document.getElementById('btnGenerar');
+                        
+                        if(!phone || phone.length < 10) return alert('Por favor, ingresa un número de teléfono válido.');
+                        
+                        btn.disabled = true;
+                        btn.innerText = 'Generando... ⏳';
+                        
+                        try {
+                            const res = await fetch('/api/pair', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ phone })
+                            });
+                            
+                            const data = await res.json();
+                            
+                            if(data.success) {
+                                document.getElementById('codeDisplay').innerText = data.code;
+                                document.getElementById('codeDisplay').style.display = 'block';
+                                document.getElementById('instructions').style.display = 'block';
+                                btn.innerText = '¡Código Generado! ✅';
+                            } else {
+                                alert('Error: ' + data.error);
+                                btn.innerText = 'Generar Código de 8 Dígitos';
+                                btn.disabled = false;
+                            }
+                        } catch(e) {
+                            alert('Error de red al conectar con el servidor.');
+                            btn.innerText = 'Generar Código de 8 Dígitos';
+                            btn.disabled = false;
+                        }
+                    }
+                </script>
+            </body>
+            </html>
+        `);
+    });
+
     qrApp.post('/api/internal/send_message', async (req, res) => {
         try {
             const { numero, mensaje } = req.body;
