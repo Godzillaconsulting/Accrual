@@ -15,7 +15,8 @@ const SESSIONS_BASE = 'C:\\Users\\GODZILLA.IA\\Accrual\\Accrual\\bot_sessions';
 const DEBOUNCE_TIME_MS = 8000; // 8 segundos de buffer (jitter de lectura)
 const messageQueues = new Map();
 const pausedChats = new Map(); // Para dormir al bot cuando un humano interviene
-const PAUSE_DURATION_MS = 30 * 60 * 1000; // 30 minutos de pausa
+const rescueTimers = new Map(); // Para retomar la plática si el admin olvida contestar
+const PAUSE_DURATION_MS = 1 * 60 * 1000; // 1 minuto de pausa
 
 // O(1) RAM Cache para Lista Negra
 let blacklistSet = new Set();
@@ -340,10 +341,18 @@ export const initWhatsAppBot = async () => {
         if (msg.key.fromMe) {
             if (msgText.trim().toLowerCase() === '/bot') {
                 pausedChats.delete(senderId);
+                clearTimeout(rescueTimers.get(senderId));
                 console.log(`🤖 Bot DESPERTADO manualmente para el chat: ${senderId.split('@')[0]}`);
             } else {
                 pausedChats.set(senderId, Date.now());
-                console.log(`💤 Humano intervino. Bot PAUSADO por 30 min para: ${senderId.split('@')[0]}`);
+                console.log(`💤 Humano intervino. Bot PAUSADO por 1 min para: ${senderId.split('@')[0]}`);
+                
+                // Activar Rescue Timer para 2 minutos
+                clearTimeout(rescueTimers.get(senderId));
+                rescueTimers.set(senderId, setTimeout(() => {
+                    pausedChats.delete(senderId);
+                    processFullMessage(senderId, "(Mensaje de sistema invisible: Han pasado 2 minutos desde que el administrador intervino y el chat se quedó en pausa. Retoma la plática con el cliente de forma natural, como si fueras el experto continuando la idea.)", sock);
+                }, 2 * 60 * 1000));
             }
             return;
         }
@@ -352,12 +361,21 @@ export const initWhatsAppBot = async () => {
         if (pausedChats.has(senderId)) {
             const pausedAt = pausedChats.get(senderId);
             if (Date.now() - pausedAt < PAUSE_DURATION_MS) {
+                // El cliente escribió, pero el bot está pausado.
+                clearTimeout(rescueTimers.get(senderId));
+                rescueTimers.set(senderId, setTimeout(() => {
+                    pausedChats.delete(senderId);
+                    processFullMessage(senderId, msgText + "\n\n(Mensaje de sistema: El cliente escribió esto hace 2 minutos y el admin no respondió. Retoma la plática amablemente.)", sock);
+                }, 2 * 60 * 1000));
                 return; // Silencio, el bot está dormido
             } else {
                 pausedChats.delete(senderId); // Tiempo expirado, bot despierta
+                clearTimeout(rescueTimers.get(senderId));
                 console.log(`⏰ Pausa terminada. Bot DESPIERTO para: ${senderId.split('@')[0]}`);
             }
         }
+
+        clearTimeout(rescueTimers.get(senderId)); // Si el bot procesa normalmente, cancelamos el rescate
 
         try { await sock.readMessages([msg.key]); } catch (e) {}
 
