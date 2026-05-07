@@ -3,6 +3,7 @@ import { Briefcase } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import FloatingWhatsApp from '../components/FloatingWhatsApp';
+import { Helmet } from 'react-helmet-async';
 import ContactScheduler from '../components/ContactScheduler';
 
 import EmprendedoresVideo from '../assets/Emprendedores_video.mov';
@@ -23,6 +24,12 @@ const LandingEmprendedores = () => {
 
     return (
         <div className="min-h-screen bg-[#D0D0DA] font-sans">
+            <Helmet>
+                <title>Accrual - Soluciones para Emprendedores y Startups</title>
+                <meta name="description" content="Estrategias contables y fiscales diseñadas específicamente para emprendedores. Simplifica tu vida fiscal, aprovecha RESICO y haz crecer tu negocio sin riesgos ante el SAT." />
+                <meta property="og:title" content="Accrual - Soluciones para Emprendedores" />
+                <meta property="og:description" content="Estrategias contables y fiscales diseñadas específicamente para emprendedores. Simplifica tu vida fiscal y aprovecha RESICO." />
+            </Helmet>
             <Navbar />
             
             {/* Hero Section */}

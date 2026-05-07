@@ -117,6 +117,7 @@ export default React.memo(function CMCalendar({ adminProfile }) {
     // ─── Drag-and-Drop ────────────────────────────────────────────────────
     const [draggingEventId, setDraggingEventId] = useState(null);
     const [dragOverDay, setDragOverDay] = useState(null);
+    const [expandedDay, setExpandedDay] = useState(null);
 
     const [newCampaign, setNewCampaign] = useState({
         empresa: 'accrual',
@@ -958,7 +959,7 @@ export default React.memo(function CMCalendar({ adminProfile }) {
                                     {dayEvents.length > (calendarView === 'week' ? 12 : 3) && (
                                         <button
                                             className="text-[8px] text-neutral-600 hover:text-white font-bold text-left px-1 transition-colors"
-                                            onClick={() => {/* TODO: expandir día */}}
+                                            onClick={(e) => { e.stopPropagation(); setExpandedDay(dayKey); }}
                                         >
                                             +{dayEvents.length - (calendarView === 'week' ? 12 : 3)} más
                                         </button>
@@ -2026,6 +2027,17 @@ export default React.memo(function CMCalendar({ adminProfile }) {
                                     {sheetsImporting ? <><span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"/>Importando...</> : `📥 Importar ${sheetsPreview.total} eventos`}
                                 </button>
                             )}
+                        </div>
+                    </div>
+                </div>
+            )}
+            {expandedDay && (
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                    <div className="bg-[#111111] border border-white/10 p-6 rounded-2xl w-full max-w-lg shadow-2xl relative max-h-[80vh] flex flex-col">
+                        <button onClick={() => setExpandedDay(null)} className="absolute top-4 right-4 text-neutral-500 hover:text-white text-2xl font-black">×</button>
+                        <h3 className="text-lg font-black text-white uppercase tracking-widest mb-4">Eventos del día</h3>
+                        <div className="overflow-y-auto space-y-2 flex-1 pr-2">
+                            {(dayEventsMap[expandedDay] || []).map(ev => renderNeuronCard(ev))}
                         </div>
                     </div>
                 </div>

@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: "accrual-bot",
-      script: "./bot/index.js",
+      script: "./bot/whatsappBot.js",
       interpreter: "node",
       node_args: "--env-file=.env",
       autorestart: true,

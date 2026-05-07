@@ -3,6 +3,7 @@ import { Shield, Globe } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import FloatingWhatsApp from '../components/FloatingWhatsApp';
+import { Helmet } from 'react-helmet-async';
 import ContactScheduler from '../components/ContactScheduler';
 
 import CorporativoVideo from '../assets/Corporativo_video.mov';
@@ -23,6 +24,12 @@ const LandingCorporativo = () => {
 
     return (
         <div className="min-h-screen bg-[#D0D0DA] font-sans">
+            <Helmet>
+                <title>Accrual - Estrategia Fiscal Binacional Corporativa</title>
+                <meta name="description" content="Sincronizamos su operación México-USA mediante ingeniería fiscal avanzada, precios de transferencia y blindaje legal preventivo. Diseñado para altos volúmenes de facturación." />
+                <meta property="og:title" content="Accrual - Estrategia Fiscal Binacional" />
+                <meta property="og:description" content="Sincronizamos su operación México-USA mediante ingeniería fiscal avanzada y precios de transferencia." />
+            </Helmet>
             <Navbar />
             
             {/* Hero Section */}

@@ -17,13 +17,13 @@ const Articles = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetch('/api/articles')
+        fetch('/api/public/articles')
             .then(res => {
                 if (!res.ok) throw new Error('Error de conexión con la API');
                 return res.json();
             })
             .then(data => {
-                setArticles(data);
+                setArticles(data.articles || []);
                 setLoading(false);
             })
             .catch(err => {

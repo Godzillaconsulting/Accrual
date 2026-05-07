@@ -1,339 +1,387 @@
-import pkg from 'whatsapp-web.js';
-const { Client, LocalAuth } = pkg;
+import 'dotenv/config';
+import { makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion } from '@whiskeysockets/baileys';
+import pino from 'pino';
 import qrcode from 'qrcode-terminal';
 import qrcodeLib from 'qrcode';
 import express from 'express';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import pool from './config/db.js';
-import { agendarEnGoogleCalendar, cancelarEnGoogleCalendar } from './services/calendarService.js';
+import { agendarEnGoogleCalendar } from './services/calendarService.js';
 import { SYSTEM_PROMPT, chatTools, withTimeout } from './config/zilla-prompt.js';
 import fs from 'fs';
-import os from 'os';
 import path from 'path';
 
-// Usa el path de .env si lo necesitas. 
-const sessionPath = process.env.WWEBJS_SESSION_DIR || 'E:\\accrual_bot_sessions';
+const SESSIONS_BASE = 'C:\\Users\\GODZILLA.IA\\Accrual\\Accrual\\bot_sessions';
+const DEBOUNCE_TIME_MS = 8000; // 8 segundos de buffer (jitter de lectura)
+const messageQueues = new Map();
+const pausedChats = new Map(); // Para dormir al bot cuando un humano interviene
+const PAUSE_DURATION_MS = 30 * 60 * 1000; // 30 minutos de pausa
 
-export const initWhatsAppBot = () => {
-    console.log("🟢 Iniciando Cliente de WhatsApp Local (whatsapp-web.js)...");
-    
+// ===============================================
+// CASCADA DE IA (WATERFALL: GEMINI -> SAMBANOVA)
+// ===============================================
+async function callAIWaterfall(safeHistory, messageText, dynamicPrompt) {
+    let resultText = "";
+    let functionCalls = [];
+
     try {
-        if (!fs.existsSync(sessionPath)) {
-            fs.mkdirSync(sessionPath, { recursive: true, mode: 0o700 });
-        } else {
-            console.log(`🔒 Directorio de sesión disponible en ${sessionPath}`);
+        // INTENTO 1: GEMINI (Principal - Ultra Rápido y Económico)
+        const apiKey = (process.env.GEMINI_API_KEY || "").trim();
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({
+            model: "gemini-2.0-flash",
+            systemInstruction: dynamicPrompt,
+            tools: [{ functionDeclarations: chatTools }]
+        });
+
+        const chat = model.startChat({ history: safeHistory });
+        let result = await withTimeout(
+            chat.sendMessage(messageText), 
+            "Lo lamento, la señal de Gemini está débil. Intentando con servidor de respaldo..."
+        );
+        
+        resultText = result.response.text();
+        functionCalls = result.response.functionCalls() || [];
+        
+        return { chat, sambaMessages: null, resultText, functionCalls, engine: 'gemini' };
+
+    } catch (err) {
+        console.warn("⚠️ Falló Gemini. Entrando a Cascada de IA (SAMBANOVA)...", err.message);
+        
+        try {
+            // INTENTO 2: SAMBANOVA (Fallback)
+            const sambaKey = (process.env.SAMBANOVA_API_KEY || "").trim();
+            if (!sambaKey) throw new Error("Falta llave de SambaNova");
+
+            const openaiTools = chatTools.map(tool => ({
+                type: "function",
+                function: {
+                    name: tool.name,
+                    description: tool.description,
+                    parameters: {
+                        type: "object",
+                        properties: tool.parameters?.properties || {},
+                        required: Object.keys(tool.parameters?.properties || {})
+                    }
+                }
+            }));
+
+            let sambaMessages = [
+                { role: "system", content: dynamicPrompt }
+            ];
+            for (const msg of safeHistory) {
+                sambaMessages.push({
+                    role: msg.role === "model" ? "assistant" : "user",
+                    content: msg.parts[0].text
+                });
+            }
+            sambaMessages.push({ role: "user", content: messageText });
+
+            const response = await fetch("https://api.sambanova.ai/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${sambaKey}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    model: "Meta-Llama-3.1-70B-Instruct",
+                    messages: sambaMessages,
+                    temperature: 0.1,
+                    tools: openaiTools
+                })
+            });
+
+            if (!response.ok) throw new Error("Fallo en API SambaNova");
+            const data = await response.json();
+            const msgObj = data.choices[0].message;
+
+            if (msgObj.tool_calls && msgObj.tool_calls.length > 0) {
+                functionCalls = msgObj.tool_calls.map(tc => ({
+                    id: tc.id,
+                    name: tc.function.name,
+                    args: JSON.parse(tc.function.arguments)
+                }));
+                sambaMessages.push(msgObj);
+                return { chat: null, sambaMessages, resultText: "", functionCalls, engine: 'sambanova' };
+            } else {
+                return { chat: null, sambaMessages: null, resultText: msgObj.content, functionCalls: [], engine: 'sambanova' };
+            }
+
+        } catch (sambaErr) {
+            console.error("❌ Falló Cascada completa (Gemini y SambaNova):", sambaErr.message);
+            resultText = "Disculpa, nuestros servidores fiscales están saturados en este momento. Por favor, ¿podrías enviarme tu duda nuevamente en 2 minutos?";
+            return { chat: null, sambaMessages: null, resultText, functionCalls: [], engine: 'fallback' };
         }
-    } catch (e) {
-        console.warn(`⚠️ Error en permisos de guardado: ${e.message}`);
     }
-    
-    const client = new Client({
-        authStrategy: new LocalAuth({ dataPath: sessionPath }),
-        puppeteer: {
-            args: [
-                '--no-sandbox', 
-                '--disable-setuid-sandbox',
-                '--disable-gpu'
-            ],
-            headless: 'new'
+}
+
+// ===============================================
+// PROCESAMIENTO DE MENSAJES CON DEBOUNCING
+// ===============================================
+const processFullMessage = async (senderId, messageText, sock) => {
+    const maskedSender = senderId.substring(0, 4) + "****" + senderId.substring(senderId.length - 15, senderId.length - 11);
+    console.log(`\n🚀 WA Msg bloque completo [${maskedSender}]: ${messageText}`);
+
+    try {
+        // Escribiendo (Typing) de Baileys
+        await sock.presenceSubscribe(senderId);
+        await sock.sendPresenceUpdate('composing', senderId);
+
+        let sessionStateResult;
+        try {
+            sessionStateResult = await pool.query(
+                "SELECT contexto_ia FROM wa_workflow_states WHERE numero_contacto = $1",
+                [senderId]
+            );
+        } catch (err) { }
+
+        let historial_mensajes = [];
+        let contexto_ia = {};
+
+        if (sessionStateResult && sessionStateResult.rows.length > 0) {
+            contexto_ia = sessionStateResult.rows[0].contexto_ia || {};
+            historial_mensajes = contexto_ia.historial_mensajes || [];
         }
+
+        historial_mensajes.push({ role: 'user', contenido: messageText });
+        if(historial_mensajes.length > 20) {
+             historial_mensajes = historial_mensajes.slice(-20);
+        }
+
+        let safeHistory = [];
+        for (const msg of historial_mensajes.slice(0, -1)) {
+            if (safeHistory.length > 0 && safeHistory[safeHistory.length - 1].role === (msg.role === 'assistant' ? 'model' : msg.role)) {
+                safeHistory[safeHistory.length - 1].parts[0].text += `\n ${msg.contenido}`;
+            } else {
+                safeHistory.push({
+                    role: msg.role === "assistant" ? "model" : msg.role,
+                    parts: [{ text: msg.contenido }]
+                });
+            }
+        }
+
+        // Generar contexto de tiempo real en Ciudad Juárez
+        const formatter = new Intl.DateTimeFormat("es-MX", { timeZone: "America/Ciudad_Juarez", dateStyle: 'full', timeStyle: 'short' });
+        const currentDateStr = formatter.format(new Date());
+        const dynamicPrompt = SYSTEM_PROMPT + `\n\n[CONTEXTO TEMPORAL CRÍTICO]:\nHoy es: ${currentDateStr} (Hora de Ciudad Juárez, Chihuahua, MX).\nREGLAS DE AGENDA:\n1. Tienes estrictamente prohibido agendar citas en fechas u horas que ya hayan pasado.\n2. Solo puedes agendar de Lunes a Sábado de 9:00 AM a 7:00 PM.\n3. Siempre verifica la disponibilidad antes de confirmar.`;
+
+        let { chat, sambaMessages, resultText: botReply, functionCalls, engine } = await callAIWaterfall(safeHistory, messageText, dynamicPrompt);
+        
+        let resetMemory = false;
+
+        if (functionCalls && functionCalls.length > 0) {
+            for (const call of functionCalls) {
+                let fRes = {};
+                if (call.name === "check_availability") {
+                    const { fecha, hora } = call.args;
+                    try {
+                        const requestedDate = new Date(`${fecha}T${hora}:00-06:00`); // Ciudad Juarez (MDT/MST approx)
+                        if (requestedDate < new Date()) {
+                            fRes = { error: "La fecha/hora solicitada ya pasó. Pide otra fecha." };
+                        } else {
+                            const query = "SELECT COUNT(*) as total FROM appointments WHERE fecha=$1 AND ABS(EXTRACT(EPOCH FROM (hora::time - $2::time))) < 3600 AND status!='cancelada'";
+                            const r = await pool.query(query, [fecha, hora]);
+                            fRes = { disponible: parseInt(r.rows[0].total) === 0 };
+                        }
+                    } catch (e) { fRes = { error: 'Error consultando BD' }; }
+                } else if (call.name === "save_appointment") {
+                    const { nombre, correo, telefono, servicio, fecha, hora, notas } = call.args;
+                    try {
+                        const requestedDate = new Date(`${fecha}T${hora}:00-06:00`);
+                        if (requestedDate < new Date()) {
+                            fRes = { success: false, error: "La fecha es en el pasado." };
+                        } else {
+                            // GUARDAR JUNTO A LA VEZ (Google Calendar y BD local)
+                            let gRes = await agendarEnGoogleCalendar({ nombre, correo, telefono, servicio, fecha, hora, notas }).catch(e => null);
+                            let calendarId = gRes ? gRes.id : null;
+                            
+                            const r = await pool.query(
+                                "INSERT INTO appointments (nombre, email, telefono, mensaje, service_requested, fecha, hora, status, modalidad, google_calendar_id) VALUES ($1,$2,$3,$4,$5,$6,$7,'confirmada','whatsapp',$8) RETURNING id",
+                                [nombre, correo || 'sin-correo@wa.com', telefono, notas, servicio, fecha, hora, calendarId]
+                            );
+                            fRes = { success: true, id: r.rows[0].id, alert: "Cita guardada." };
+                            resetMemory = true; // Liberar memoria tras el éxito
+                        }
+                    } catch (err) {
+                        fRes = { success: false, error: "Error interno de base de datos." };
+                    }
+                }
+
+                // Enviar el resultado de la función de vuelta a la IA correspondiente
+                if (engine === 'gemini') {
+                    let result2 = await withTimeout(
+                        chat.sendMessage([{ functionResponse: { name: call.name, response: fRes } }]),
+                        "Disculpa la demora, el sistema rechazó la solicitud."
+                    );
+                    botReply = result2.response.text();
+                } else if (engine === 'sambanova') {
+                    sambaMessages.push({ role: "tool", tool_call_id: call.id, name: call.name, content: JSON.stringify(fRes) });
+                    const sambaKey = process.env.SAMBANOVA_API_KEY.trim();
+                    const response = await fetch("https://api.sambanova.ai/v1/chat/completions", {
+                        method: "POST",
+                        headers: { "Authorization": `Bearer ${sambaKey}`, "Content-Type": "application/json" },
+                        body: JSON.stringify({ model: "Meta-Llama-3.1-70B-Instruct", messages: sambaMessages, temperature: 0.1 })
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        botReply = data.choices[0].message.content;
+                    } else {
+                        botReply = "Ocurrió un error al confirmar con SambaNova. Por favor, intenta nuevamente.";
+                    }
+                }
+            }
+        }
+
+        // JITTER: 8 Segundos extra simulando que un humano escribe despacio
+        await new Promise(r => setTimeout(r, 8000));
+
+        await sock.sendPresenceUpdate('paused', senderId);
+        await sock.sendMessage(senderId, { text: botReply });
+        
+        // Manejo de Memoria Optimizada
+        if (resetMemory) {
+            historial_mensajes = []; // Vaciamos para no matar la BD tras la cita
+            contexto_ia.historial_mensajes = [];
+        } else {
+            historial_mensajes.push({ role: 'assistant', contenido: botReply });
+            contexto_ia.historial_mensajes = historial_mensajes;
+        }
+
+        await pool.query(
+            "CALL sp_process_incoming_wa_message((SELECT gen_random_uuid()), $1, $2, 'WA_BOT_CONVERSATION', 'CALIFICACION_BOT', $3::JSONB)",
+            [senderId, messageText + " [RESP] " + botReply, JSON.stringify(contexto_ia)]
+        );
+
+    } catch (error) {
+        console.error("❌ Error WA engine:", error);
+    }
+};
+
+// ===============================================
+// INICIALIZACIÓN DE BAILEYS
+// ===============================================
+export const initWhatsAppBot = async () => {
+    console.log("🟢 Iniciando Cliente de WhatsApp (Baileys 24/7) con IA Waterfall...");
+    
+    if (!fs.existsSync(SESSIONS_BASE)) {
+        fs.mkdirSync(SESSIONS_BASE, { recursive: true });
+    }
+
+    const { state, saveCreds } = await useMultiFileAuthState(SESSIONS_BASE);
+    const { version } = await fetchLatestBaileysVersion();
+
+    const sock = makeWASocket({
+        version,
+        logger: pino({ level: 'silent' }),
+        printQRInTerminal: false,
+        auth: state,
+        browser: ['Accrual IA', 'Chrome', '124.0.0.0'],
+        syncFullHistory: false,
+        generateHighQualityLinkPreview: false
     });
+
+    sock.ev.on('creds.update', saveCreds);
 
     let currentQR = null;
 
-    client.on('qr', (qr) => {
-        currentQR = qr;
-        console.log('\n=============================================');
-        console.log('📱 CÓDIGO QR GENERADO. DISPONIBLE EN WEB Y TERMINAL 📱');
-        console.log('=============================================');
-        qrcode.generate(qr, { small: true });
+    sock.ev.on('connection.update', (update) => {
+        const { connection, lastDisconnect, qr } = update;
+
+        if (qr) {
+            currentQR = qr;
+            console.log('\n=============================================');
+            console.log('📱 NUEVO QR DISPONIBLE PARA ESCANEO 📱');
+            console.log('=============================================');
+            qrcode.generate(qr, { small: true });
+        }
+
+        if (connection === 'close') {
+            const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
+            console.log(`⚠️ Desconectado. Reconectar: ${shouldReconnect}`);
+            if (shouldReconnect) {
+                setTimeout(initWhatsAppBot, 5000);
+            } else {
+                console.error('❌ Sesión cerrada desde el celular. Usa la Opción 6 del Gestor para borrar la sesión y escanear un nuevo QR.');
+            }
+        } else if (connection === 'open') {
+            currentQR = null;
+            console.log('✅ Neurona Accrual (Baileys) conectada y lista 24/7!');
+        }
     });
 
-    client.on('ready', () => {
-        currentQR = null;
-        console.log('✅ Neurona Accrual (WhatsApp Web) conectada y lista!');
+    sock.ev.on('messages.upsert', async ({ messages, type }) => {
+        if (type !== 'notify') return;
+        const msg = messages[0];
+        if (!msg.message) return;
+
+        const senderId = msg.key.remoteJid;
+        if (senderId.endsWith('@g.us') || senderId === 'status@broadcast') return;
+
+        const msgText = msg.message.conversation || msg.message.extendedTextMessage?.text || '';
+
+        // Si el humano envía un mensaje desde su celular (WhatsApp Web/App)
+        if (msg.key.fromMe) {
+            if (msgText.trim().toLowerCase() === '/bot') {
+                pausedChats.delete(senderId);
+                console.log(`🤖 Bot DESPERTADO manualmente para el chat: ${senderId.split('@')[0]}`);
+            } else {
+                pausedChats.set(senderId, Date.now());
+                console.log(`💤 Humano intervino. Bot PAUSADO por 30 min para: ${senderId.split('@')[0]}`);
+            }
+            return;
+        }
+
+        // Verificar si el bot está pausado para este cliente
+        if (pausedChats.has(senderId)) {
+            const pausedAt = pausedChats.get(senderId);
+            if (Date.now() - pausedAt < PAUSE_DURATION_MS) {
+                return; // Silencio, el bot está dormido
+            } else {
+                pausedChats.delete(senderId); // Tiempo expirado, bot despierta
+                console.log(`⏰ Pausa terminada. Bot DESPIERTO para: ${senderId.split('@')[0]}`);
+            }
+        }
+
+        try { await sock.readMessages([msg.key]); } catch (e) {}
+
+        if (!msgText) return;
+
+        console.log(`⏳ Recibido de ${senderId.split('@')[0]} (Debounce): ${msgText.substring(0,30)}`);
+
+        if (!messageQueues.has(senderId)) {
+            messageQueues.set(senderId, { timer: null, texts: [] });
+        }
+        
+        const q = messageQueues.get(senderId);
+        q.texts.push(msgText);
+
+        clearTimeout(q.timer);
+        q.timer = setTimeout(async () => {
+            messageQueues.delete(senderId);
+            const combinedText = q.texts.join(' \n ');
+            await processFullMessage(senderId, combinedText, sock);
+        }, DEBOUNCE_TIME_MS);
     });
 
     // EXPRESS SERVER PARA MOSTRAR QR
     const qrApp = express();
-    qrApp.get('/qr', async (req, res) => {
-        if (!currentQR) {
-            return res.send(`
-                <h2 style="font-family: sans-serif; text-align: center; margin-top: 50px;">
-                    ✅ El bot ya está conectado, o el QR aún se está generando (Recarga en 5 segundos).
-                </h2>
-            `);
-        }
+    
+    // Alias para /pair y /qr
+    qrApp.get(['/pair', '/qr'], async (req, res) => {
+        if (!currentQR) return res.send(`<h2>✅ Conectado o cargando QR... (Refresca en 5 segs)</h2>`);
         try {
             const qrImageURL = await qrcodeLib.toDataURL(currentQR);
             res.send(`
                 <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif; background: #000; color: white;">
-                    <h1 style="color: #00ff88;">Accrual WhatsApp Bot</h1>
-                    <p>Abre WhatsApp en tu celular > Dispositivos Vinculados > Vincular</p>
+                    <h1 style="color: #00ff88;">Accrual WhatsApp Bot (Baileys)</h1>
                     <img src="${qrImageURL}" style="width: 350px; height: 350px; border-radius: 10px; padding: 20px; background: white;" />
-                    <p style="margin-top: 20px; opacity: 0.6;">Conexión directa local a PostgreSQL E:</p>
                 </div>
             `);
-        } catch (e) {
-            res.status(500).send("Error generando imagen QR: " + e.message);
-        }
+        } catch (e) { res.send("Error"); }
     });
 
-    qrApp.use(express.json());
-
-    // ENDPOINT PARA PAIRING CODE (VINCULACIÓN CON NÚMERO)
-    qrApp.post('/api/pair', async (req, res) => {
-        try {
-            const { phone } = req.body;
-            if (!phone) return res.status(400).json({ error: "Falta número de teléfono" });
-            const cleanPhone = phone.replace(/[^0-9]/g, '');
-            // Solicitar a la librería de whatsapp el código
-            const code = await client.requestPairingCode(cleanPhone);
-            res.json({ success: true, code });
-        } catch (e) {
-            console.error("Error generando pairing code:", e);
-            res.status(500).json({ error: e.message });
-        }
-    });
-
-    // PANTALLA PREMIUM DE VINCULACIÓN
-    qrApp.get('/link', (req, res) => {
-        res.send(`
-            <!DOCTYPE html>
-            <html lang="es">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Vincular Accrual Bot</title>
-                <style>
-                    body { font-family: 'Inter', system-ui, sans-serif; background: #0f172a; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-                    .card { background: #1e293b; padding: 2.5rem; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); text-align: center; max-width: 420px; width: 90%; border: 1px solid #334155; }
-                    h1 { color: #38bdf8; margin-bottom: 0.5rem; font-size: 1.8rem; }
-                    p { color: #94a3b8; margin-bottom: 2rem; line-height: 1.6; font-size: 0.95rem; }
-                    input { background: #0f172a; border: 1px solid #475569; color: white; padding: 14px; border-radius: 8px; width: calc(100% - 30px); font-size: 18px; margin-bottom: 1.5rem; outline: none; text-align: center; transition: border-color 0.3s; }
-                    input:focus { border-color: #38bdf8; box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2); }
-                    button { background: linear-gradient(135deg, #0ea5e9, #2563eb); color: white; border: none; padding: 14px 24px; border-radius: 8px; font-size: 16px; cursor: pointer; transition: transform 0.2s, opacity 0.3s; font-weight: 600; width: 100%; }
-                    button:hover { opacity: 0.9; transform: translateY(-1px); }
-                    button:disabled { background: #475569; cursor: not-allowed; transform: none; }
-                    #codeDisplay { margin-top: 2rem; font-size: 2.8rem; font-weight: 900; letter-spacing: 8px; color: #10b981; display: none; background: #022c22; padding: 20px; border-radius: 12px; border: 2px dashed #059669; }
-                    .instructions { margin-top: 2rem; text-align: left; font-size: 14.5px; color: #cbd5e1; display: none; background: #0f172a; padding: 15px 20px; border-radius: 8px; border-left: 4px solid #38bdf8; }
-                    .instructions li { margin-bottom: 10px; list-style-type: none; }
-                </style>
-            </head>
-            <body>
-                <div class="card">
-                    <h1>Conexión Remota Accrual</h1>
-                    <p>Ingresa el número de WhatsApp del cliente para generar un <strong>Código de Vinculación Seguro</strong>.</p>
-                    
-                    <input type="text" id="phone" placeholder="Ej: 5215555555555" autocomplete="off" />
-                    <button id="btnGenerar" onclick="requestPairingCode()">Generar Código de 8 Dígitos</button>
-                    
-                    <div id="codeDisplay"></div>
-                    
-                    <ul class="instructions" id="instructions">
-                        <li>📱 1. Abre WhatsApp en tu celular.</li>
-                        <li>⚙️ 2. Toca en <strong>Dispositivos Vinculados</strong>.</li>
-                        <li>➕ 3. Selecciona <strong>Vincular un dispositivo</strong>.</li>
-                        <li>🔢 4. Toca en <strong>Vincular con el número de teléfono</strong>.</li>
-                        <li>✅ 5. Ingresa el código que aparece arriba.</li>
-                    </ul>
-                </div>
-
-                <script>
-                    async function requestPairingCode() {
-                        const phone = document.getElementById('phone').value;
-                        const btn = document.getElementById('btnGenerar');
-                        
-                        if(!phone || phone.length < 10) return alert('Por favor, ingresa un número de teléfono válido.');
-                        
-                        btn.disabled = true;
-                        btn.innerText = 'Generando... ⏳';
-                        
-                        try {
-                            const res = await fetch('/api/pair', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ phone })
-                            });
-                            
-                            const data = await res.json();
-                            
-                            if(data.success) {
-                                document.getElementById('codeDisplay').innerText = data.code;
-                                document.getElementById('codeDisplay').style.display = 'block';
-                                document.getElementById('instructions').style.display = 'block';
-                                btn.innerText = '¡Código Generado! ✅';
-                            } else {
-                                alert('Error: ' + data.error);
-                                btn.innerText = 'Generar Código de 8 Dígitos';
-                                btn.disabled = false;
-                            }
-                        } catch(e) {
-                            alert('Error de red al conectar con el servidor.');
-                            btn.innerText = 'Generar Código de 8 Dígitos';
-                            btn.disabled = false;
-                        }
-                    }
-                </script>
-            </body>
-            </html>
-        `);
-    });
-
-    qrApp.post('/api/internal/send_message', async (req, res) => {
-        try {
-            const { numero, mensaje } = req.body;
-            if (!numero || !mensaje) return res.status(400).json({ error: "Faltan parametros" });
-            
-            // Format for whatsapp-web.js (usually number@c.us)
-            const chatId = numero.includes('@c.us') ? numero : `${numero}@c.us`;
-            await client.sendMessage(chatId, mensaje);
-            
-            res.json({ success: true, message: "Mensaje de WhatsApp disparado correctamente" });
-        } catch (e) {
-            console.error("Error disparando WA remoto:", e);
-            res.status(500).json({ error: e.message });
-        }
-    });
-
-    qrApp.listen(3003, () => {
-        console.log(`🌐 [Enlace de Escaneo Remoto] Accede a: http://localhost:3003/qr`);
-    });
-
-    client.on('message', async (message) => {
-        if (message.isGroupMsg) return;
-        if (!message.body) return;
-
-        const senderId = message.from;
-        const messageText = message.body;
-
-        const maskedSender = senderId.substring(0, 4) + "****" + senderId.substring(senderId.length - 4);
-        console.log(`📩 WA Msg recibido [${maskedSender}]: ...`);
-
-        try {
-            // Guardamos mensaje temporal y bajamos contexto desde SP que ya hemos creado en PostgreSQL
-            // Usamos wa_workflow_states para leer el historial_mensajes localmente.
-            let sessionStateResult;
-            try {
-                // Fetch context
-                sessionStateResult = await pool.query(
-                    "SELECT contexto_ia FROM wa_workflow_states WHERE numero_contacto = $1",
-                    [senderId]
-                );
-            } catch (err) {
-                console.error("No se pudo leer workflow_states", err);
-            }
-
-            let historial_mensajes = [];
-            let contexto_ia = {};
-
-            if (sessionStateResult && sessionStateResult.rows.length > 0) {
-                contexto_ia = sessionStateResult.rows[0].contexto_ia || {};
-                historial_mensajes = contexto_ia.historial_mensajes || [];
-            }
-
-            // Append User Message a memoria local
-            historial_mensajes.push({ role: 'user', contenido: messageText });
-            if(historial_mensajes.length > 20) {
-                 historial_mensajes = historial_mensajes.slice(-20); // Mantener 20 msg máx por performance
-            }
-
-            let safeHistory = [];
-            for (const msg of historial_mensajes.slice(0, -1)) {
-                if (safeHistory.length > 0 && safeHistory[safeHistory.length - 1].role === (msg.role === 'assistant' ? 'model' : msg.role)) {
-                    safeHistory[safeHistory.length - 1].parts[0].text += `\n ${msg.contenido}`;
-                } else {
-                    safeHistory.push({
-                        role: msg.role === "assistant" ? "model" : msg.role,
-                        parts: [{ text: msg.contenido }]
-                    });
-                }
-            }
-
-            const apiKey = (process.env.GEMINI_API_KEY || "").trim();
-            const genAI = new GoogleGenerativeAI(apiKey);
-            const model = genAI.getGenerativeModel({
-                model: "gemini-2.0-flash",
-                systemInstruction: SYSTEM_PROMPT,
-                tools: [{ functionDeclarations: chatTools }]
-            });
-
-            const chat = model.startChat({ history: safeHistory });
-            let result = await withTimeout(
-                chat.sendMessage(messageText), 
-                "Lo lamento, la señal del servidor fiscal es un poco débil ahora mismo. ¿Podemos intentarlo de nuevo en unos minutos?"
-            );
-            
-            let botReply = result.response.text();
-            const functionCalls = result.response.functionCalls();
-
-            if (functionCalls && functionCalls.length > 0) {
-                for (const call of functionCalls) {
-                    let fRes = {};
-                    if (call.name === "check_availability") {
-                        const { fecha, hora } = call.args;
-                        try {
-                            const query = "SELECT COUNT(*) as total FROM appointments WHERE fecha=$1 AND ABS(EXTRACT(EPOCH FROM (hora::time - $2::time))) < 3600 AND status!='cancelada'";
-                            const r = await pool.query(query, [fecha, hora]);
-                            fRes = { disponible: parseInt(r.rows[0].total) === 0 };
-                        } catch (e) { fRes = { error: 'Error consultando BD' }; }
-                    } else if (call.name === "save_appointment") {
-                        const { nombre, correo, telefono, servicio, fecha, hora, notas } = call.args;
-                        try {
-                            const queryConflict = "SELECT COUNT(*) as total FROM appointments WHERE fecha=$1 AND ABS(EXTRACT(EPOCH FROM (hora::time - $2::time))) < 3600 AND status!='cancelada'";
-                            const conflictCheck = await pool.query(queryConflict, [fecha, hora]);
-                            
-                            if (parseInt(conflictCheck.rows[0].total) > 0) {
-                                fRes = { success: false, error: "Horario ocupado." };
-                            } else {
-                                let gRes = await agendarEnGoogleCalendar({ nombre, correo, telefono, servicio, fecha, hora, notas }).catch(e => null);
-                                let calendarId = gRes ? gRes.id : null;
-                                
-                                const r = await pool.query(
-                                    "INSERT INTO appointments (nombre, email, telefono, mensaje, service_requested, fecha, hora, status, modalidad, google_calendar_id) VALUES ($1,$2,$3,$4,$5,$6,$7,'confirmada','whatsapp',$8) RETURNING id",
-                                    [nombre, correo || 'sin-correo@wa.com', telefono, notas, servicio, fecha, hora, calendarId]
-                                );
-                                fRes = { success: true, id: r.rows[0].id, alert: "Cita guardada." };
-                                
-                            }
-                        } catch (err) {
-                            console.error("❌ Fallo crítico WA Insert:", err.message);
-                            fRes = { success: false, error: "Error interno de base de datos." };
-                        }
-                    }
-
-                    result = await withTimeout(
-                        chat.sendMessage([{ functionResponse: { name: call.name, response: fRes } }]),
-                        "Disculpa la demora, mi sistema rechazó la solicitud final. ¿Te ayudo con otra acción?"
-                    );
-                    botReply = result.response.text();
-                }
-            }
-
-            await client.sendMessage(senderId, botReply);
-            
-            // Append assistant msg to Local Context
-            historial_mensajes.push({ role: 'assistant', contenido: botReply });
-            contexto_ia.historial_mensajes = historial_mensajes;
-
-            // Log usando SP en la BD
-            // function syntax: sp_process_incoming_wa_message(p_session_id UUID, p_numero_remitente VARCHAR, p_contenido TEXT, p_clasificacion_ia VARCHAR, p_etapa_workflow VARCHAR, p_contexto_ia JSONB)
-            await pool.query(
-                "CALL sp_process_incoming_wa_message((SELECT gen_random_uuid()), $1, $2, 'WA_BOT_CONVERSATION', 'CALIFICACION_BOT', $3::JSONB)",
-                [senderId, messageText + " [RESP] " + botReply, JSON.stringify(contexto_ia)]
-            );
-
-        } catch (error) {
-            console.error("❌ Error WA engine:", error);
-        }
-    });
-
-    client.initialize();
-
-    process.on('SIGINT', async () => {
-        console.log('🛑 [SIGINT] PM2 deteniendo Bot...');
-        await client.destroy();
-        process.exit(0);
+    qrApp.listen(3001, () => {
+        console.log(`🌐 [Enlace de Escaneo Remoto] Accede a: http://localhost:3001/pair`);
     });
 };
 

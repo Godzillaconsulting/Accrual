@@ -3,6 +3,7 @@ import { TrendingUp } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import FloatingWhatsApp from '../components/FloatingWhatsApp';
+import { Helmet } from 'react-helmet-async';
 import ContactScheduler from '../components/ContactScheduler';
 
 import PymesVideo from '../assets/Pymes_video.mov';
@@ -23,6 +24,12 @@ const LandingPymes = () => {
 
     return (
         <div className="min-h-screen bg-[#D0D0DA] font-sans">
+            <Helmet>
+                <title>Accrual - Ingeniería Fiscal para PYMES y Negocios</title>
+                <meta name="description" content="Optimiza tu nómina y aprovecha los estímulos fronterizos. Estrategias fiscales y contables avanzadas para inyectar flujo de caja a tu operación y blindar tu patrimonio." />
+                <meta property="og:title" content="Accrual - Ingeniería Fiscal para PYMES" />
+                <meta property="og:description" content="Optimiza tu nómina y aprovecha los estímulos fronterizos con estrategias fiscales y contables avanzadas." />
+            </Helmet>
             <Navbar />
             
             {/* Hero Section */}

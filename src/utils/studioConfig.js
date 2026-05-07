@@ -1,16 +1,4 @@
 import { servicesData } from './mockServices';
-import { mockArticles } from './mockArticles';
-
-const articleIdMap = {
-    'articulo-errores': 1,
-    'articulo-beneficios-asesor': 2,
-    'articulo-beneficios-compliance': 3,
-    'articulo-presupuesto': 4,
-    'articulo-implicaciones-delitos': 5,
-    'articulo-suspension-sellos': 6,
-    'articulo-partes-relacionadas': 7,
-    'articulo-acciones-beps': 8
-};
 
 const serviceIdMap = {
     'servicio-consultoria': 'consultoria',
@@ -58,14 +46,14 @@ export const PAGE_SECTIONS = [
  { id:'servicio-ley-federal', label:'Ley federal prev. ilícita', emoji:'🚨', tag:'SERVICIOS' },
 
  { id:'articulos-grid', label:'Artículos Grid', emoji:'📚', tag:'ARTÍCULOS' },
- { id:'articulo-errores', label:'Errores en declaración', emoji:'📄', tag:'ARTÍCULOS' },
- { id:'articulo-beneficios-asesor', label:'Beneficios de asesor fiscal', emoji:'📄', tag:'ARTÍCULOS' },
- { id:'articulo-beneficios-compliance', label:'Beneficios del compliance', emoji:'📄', tag:'ARTÍCULOS' },
- { id:'articulo-presupuesto', label:'Importancia del presupuesto', emoji:'📄', tag:'ARTÍCULOS' },
- { id:'articulo-implicaciones-delitos', label:'Implicaciones delitos fisc.', emoji:'📄', tag:'ARTÍCULOS' },
- { id:'articulo-suspension-sellos', label:'Suspensión de sellos', emoji:'📄', tag:'ARTÍCULOS' },
- { id:'articulo-partes-relacionadas', label:'Partes relacionadas y pre.', emoji:'📄', tag:'ARTÍCULOS' },
- { id:'articulo-acciones-beps', label:'Acciones BEPS', emoji:'📄', tag:'ARTÍCULOS' },
+ { id:'articulo-1', label:'Errores en declaración', emoji:'📄', tag:'ARTÍCULOS' },
+ { id:'articulo-2', label:'Beneficios de asesor fiscal', emoji:'📄', tag:'ARTÍCULOS' },
+ { id:'articulo-3', label:'Beneficios del compliance', emoji:'📄', tag:'ARTÍCULOS' },
+ { id:'articulo-4', label:'Importancia del presupuesto', emoji:'📄', tag:'ARTÍCULOS' },
+ { id:'articulo-5', label:'Implicaciones delitos fisc.', emoji:'📄', tag:'ARTÍCULOS' },
+ { id:'articulo-6', label:'Suspensión de sellos', emoji:'📄', tag:'ARTÍCULOS' },
+ { id:'articulo-7', label:'Partes relacionadas y pre.', emoji:'📄', tag:'ARTÍCULOS' },
+ { id:'articulo-8', label:'Acciones BEPS', emoji:'📄', tag:'ARTÍCULOS' },
 ];
 
 export function injectSectionDefaults(nodeId, draftSource) {
@@ -94,12 +82,6 @@ export function injectSectionDefaults(nodeId, draftSource) {
       if (combinedData.profileBtnText === undefined) combinedData.profileBtnText = 'Contáctame';
       if (combinedData.profileImage === undefined) combinedData.profileImage = '';
   } else if (nodeId.startsWith('articulo-')) {
-      const artId = articleIdMap[nodeId];
-      const localFallback = mockArticles.find(a => a.id === artId) || {};
-
-      if (combinedData.title === undefined) combinedData.title = localFallback.title || 'Título del Artículo';
-      if (combinedData.content === undefined) combinedData.content = localFallback.content || '<p>Contenido completo del artículo. Escribe tu texto aquí.</p>';
-      if (combinedData.imageUrl === undefined) combinedData.imageUrl = localFallback.image || 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80';
       if (combinedData.ctaBtn === undefined) combinedData.ctaBtn = 'Quiero más información';
       if (combinedData.relatedTitle === undefined) combinedData.relatedTitle = 'Continúa Leyendo';
   } else if (nodeId === 'auditoria-cta') {

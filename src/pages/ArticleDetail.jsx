@@ -27,14 +27,15 @@ const ArticleDetail = ({ id: propId }) => {
         setRelatedStartIndex(0);
         setLoading(true);
 
-        fetch('/api/articles')
+        fetch('/api/public/articles')
             .then(res => {
                 if (!res.ok) throw new Error('Error al cargar la base de datos');
                 return res.json();
             })
             .then(data => {
-                setAllArticles(data);
-                const current = data.find(a => a.id === parseInt(id));
+                const articlesArray = data.articles || [];
+                setAllArticles(articlesArray);
+                const current = articlesArray.find(a => a.id === parseInt(id));
                 setArticle(current);
                 setLoading(false);
             })

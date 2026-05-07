@@ -21,7 +21,6 @@ import SqlAtaquesPanel from './SqlAtaquesPanel';
 import { PAGE_SECTIONS, injectSectionDefaults } from '../utils/studioConfig';
 import { detectTextFields, detectMediaFields, toLabel, detectGroupedFields, MEDIA_PATTERNS, getFieldWeight } from '../utils/editorParser';
 import { servicesData } from '../utils/mockServices';
-import { mockArticles } from '../utils/mockArticles';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 
 function EditorField({ fieldKey, onHover, children }) {
@@ -148,6 +147,14 @@ export default function AdminStudio() {
  const [hoveredField, setHoveredField] = useState(null);
  const [isAnalyticsMode, setIsAnalyticsMode] = useState(false);
  const [isLandingMenuOpen, setIsLandingMenuOpen] = useState(false);
+ const [dbArticles, setDbArticles] = useState([]);
+
+ useEffect(() => {
+     fetch('/api/public/articles')
+         .then(res => res.json())
+         .then(data => setDbArticles(data.articles || []))
+         .catch(console.error);
+ }, []);
  const [isOpsMenuOpen, setIsOpsMenuOpen] = useState(false);
  const [bugReporterPos, setBugReporterPos] = useState(null);
  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -1098,7 +1105,7 @@ export default function AdminStudio() {
           <EditorField fieldKey="heroImageUrl" onHover={setHoveredField}>
              <MediaPicker label="Portada de la página (Hero)" value={draftData.heroImageUrl || ''} onChange={url => change('heroImageUrl', url)} accept="image" />
           </EditorField>
-          {mockArticles.map(art => (
+          {dbArticles.map(art => (
               <EditorField key={art.id} fieldKey={`img_articulo_${art.id}`} onHover={setHoveredField}>
                   <MediaPicker label={`Artículo: ${art.title}`} value={draftData[`img_articulo_${art.id}`] || ''} onChange={url => change(`img_articulo_${art.id}`, url)} accept="image" />
               </EditorField>
