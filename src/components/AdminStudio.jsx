@@ -17,6 +17,7 @@ import BugTrackerUI from './BugTrackerUI';
 import CeoEstudioPanel from './CeoEstudioPanel';
 import PanelMaestroPanel from './PanelMaestroPanel';
 import SqlAtaquesPanel from './SqlAtaquesPanel';
+import BlackListPanel from './BlackListPanel';
 // ── Hover field wrapper → activa resaltado en preview ──────────────────────
 import { PAGE_SECTIONS, injectSectionDefaults } from '../utils/studioConfig';
 import { detectTextFields, detectMediaFields, toLabel, detectGroupedFields, MEDIA_PATTERNS, getFieldWeight } from '../utils/editorParser';
@@ -124,6 +125,7 @@ export default function AdminStudio() {
     if (location.pathname.includes('/ceo')) return 'ceo_estudio';
     if (location.pathname.includes('/master')) return 'panel_maestro';
     if (location.pathname.includes('/sql')) return 'sql_ataques';
+    if (location.pathname.includes('/blacklist')) return 'blacklist';
     if (location.pathname.includes('/ai-planner')) return 'ai-planner';
     if (location.pathname.includes('/automation-flow')) return 'automation-flow';
     return 'editor';
@@ -315,6 +317,7 @@ export default function AdminStudio() {
  const canSeeDBEstudio    = isCEO;
  const canSeePanelMaestro = isCEO;
  const canSeeSqlAtaques   = isCEO;
+ const canSeeBlackList    = isCEO;
  const canSeeCeoEstudio   = isEditor;
 
  // Sync draftData → preview
@@ -624,11 +627,18 @@ export default function AdminStudio() {
         <span className="text-xs mr-2 drop-shadow-sm">🛡️</span> Ataques SQL
         </button>
     )}
+
+    {canSeeBlackList && (
+        <button onClick={() => { window.location.href = '/admin/blacklist'; }}
+        className={`w-full text-[10px] py-2 shadow-sm rounded-xl transition-all font-black uppercase flex items-center justify-center border ${ activeSection ==='blacklist' ?'bg-neutral-900 text-[#ef4444] border-[#ef4444]/50 shadow-[0_0_15px_rgba(239,68,68,0.2)]' :'text-neutral-300 border-transparent hover:border-[#ef4444]/40 hover:bg-[#ef4444]/5 hover:text-white' }`}>
+        <span className="text-xs mr-2 drop-shadow-sm">🚫</span> Black List
+        </button>
+    )}
     
     <button onClick={() => { window.location.href = '/admin/profile'; }}
     className={`w-full p-2 flex items-center gap-3 transition-colors rounded-xl shadow-sm border border-transparent ${ activeSection ==='profile' ?'bg-white/70 border-[#0099CC]/50 shadow-[0_4px_15px_rgba(255,255,255,0.8)]' :'hover:bg-[#152033]/40 hover:border-[#0099CC]/20' }`}>
        <div className="w-6 h-6 rounded-full bg-[#152033]/60 overflow-hidden shrink-0 border border-[#0099CC]/50">
-           {adminProfile?.photo_url ? <img src={adminProfile.photo_url} className="w-full h-full object-cover"/> : <span className="text-xs flex items-center justify-center w-full h-full drop-shadow">🦖</span>}
+           {adminProfile?.photo_url ? <img src={adminProfile.photo_url} className="w-full h-full object-cover"/> : <span className="text-xs flex items-center justify-center w-full h-full drop-shadow">💼</span>}
        </div>
        <div className="flex-1 text-left min-w-0">
            <p className={`text-xs font-black truncate drop-shadow-sm transition-colors ${ activeSection ==='profile' ?'text-[#0099CC]' :'text-white' }`}>{adminProfile?.username || 'Usuario'}</p>
@@ -692,6 +702,8 @@ export default function AdminStudio() {
       <PanelMaestroPanel adminProfile={adminProfile} />
   ) : activeSection === 'sql_ataques' ? (
       <SqlAtaquesPanel adminProfile={adminProfile} />
+  ) : activeSection === 'blacklist' ? (
+      <BlackListPanel adminProfile={adminProfile} />
   ) : activeSection === 'bugs' ? (
       <BugTrackerUI />
   ) : (<>

@@ -255,7 +255,7 @@ export default function AdminProfile({ profile, onProfileUpdate }) {
                                     {photoUrl ? (
                                         <img src={photoUrl} alt="Avatar" className="w-full h-full object-cover" />
                                     ) : (
-                                        <span className="text-4xl">🦖</span>
+                                        <span className="text-4xl">💼</span>
                                     )}
                                 </div>
                                 <div className="flex-1 space-y-2">

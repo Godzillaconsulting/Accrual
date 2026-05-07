@@ -86,7 +86,7 @@ export default React.memo(function GoyiAdmin() {
                 {isOpen ? (
                     <span className="text-xl drop-shadow-md text-black">✖</span>
                 ) : (
-                    <span className="text-2xl drop-shadow-md">🦖</span>
+                    <span className="text-2xl drop-shadow-md">🪙</span>
                 )}
             </button>
 
@@ -103,7 +103,7 @@ export default React.memo(function GoyiAdmin() {
                         <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-16 -mt-16"></div>
                         
                         <div className="w-10 h-10 rounded-full bg-[#152033]/40 border border-white/20 flex items-center justify-center shadow-inner relative z-10 transition-transform group-hover:scale-105">
-                            <span className="text-sm">🦖</span>
+                            <span className="text-sm">🪙</span>
                         </div>
                         <div className="relative z-10 flex-1">
                             <h3 className="font-black text-sm text-black tracking-widest uppercase">Goyi Experto</h3>

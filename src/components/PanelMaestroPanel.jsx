@@ -274,7 +274,7 @@ export default function PanelMaestroPanel({ adminProfile }) {
                                             <tr key={u.id} className="hover:bg-neutral-800/20 transition-colors group">
                                                 <td className="px-6 py-4 flex items-center gap-4">
                                                     <div className="w-10 h-10 rounded-full bg-[#152033] border border-neutral-800 overflow-hidden shrink-0 shadow-inner">
-                                                        {u.photo_url ? <img src={u.photo_url} alt="" className="w-full h-full object-cover"/> : <div className="w-full h-full flex justify-center items-center text-sm bg-neutral-900">🦖</div>}
+                                                        {u.photo_url ? <img src={u.photo_url} alt="" className="w-full h-full object-cover"/> : <div className="w-full h-full flex justify-center items-center text-sm bg-neutral-900">💼</div>}
                                                     </div>
                                                     <div>
                                                         <span className="font-black text-white block text-sm">{u.username}</span>

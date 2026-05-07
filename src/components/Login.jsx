@@ -75,7 +75,7 @@ const Login = () => {
     if (checking) {
         return (
             <div className="fixed inset-0 bg-[#111111] flex flex-col items-center justify-center gap-4">
-                <span className="text-5xl animate-bounce">🦖</span>
+                <span className="text-5xl animate-bounce">💼</span>
                 <p className="text-neutral-400 text-sm font-bold tracking-widest">Verificando sesión...</p>
             </div>
         );

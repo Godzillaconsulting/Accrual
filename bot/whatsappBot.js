@@ -17,6 +17,19 @@ const messageQueues = new Map();
 const pausedChats = new Map(); // Para dormir al bot cuando un humano interviene
 const PAUSE_DURATION_MS = 30 * 60 * 1000; // 30 minutos de pausa
 
+// O(1) RAM Cache para Lista Negra
+let blacklistSet = new Set();
+const refreshBlacklist = async () => {
+    try {
+        const result = await pool.query('SELECT phone_number FROM wa_blacklist');
+        blacklistSet = new Set(result.rows.map(row => row.phone_number));
+    } catch (error) {
+        // Ignorar en caso de que la base de datos se esté reiniciando
+    }
+};
+// Refrescar cada 60 segundos
+setInterval(refreshBlacklist, 60000);
+
 // ===============================================
 // CASCADA DE IA (WATERFALL: GEMINI -> SAMBANOVA)
 // ===============================================
@@ -261,6 +274,7 @@ const processFullMessage = async (senderId, messageText, sock) => {
 // INICIALIZACIÓN DE BAILEYS
 // ===============================================
 export const initWhatsAppBot = async () => {
+    await refreshBlacklist();
     console.log("🟢 Iniciando Cliente de WhatsApp (Baileys 24/7) con IA Waterfall...");
     
     if (!fs.existsSync(SESSIONS_BASE)) {
@@ -316,6 +330,9 @@ export const initWhatsAppBot = async () => {
 
         const senderId = msg.key.remoteJid;
         if (senderId.endsWith('@g.us') || senderId === 'status@broadcast') return;
+
+        // Búsqueda en 0.001 milisegundos gracias a Hash Set
+        if (blacklistSet.has(senderId)) return;
 
         const msgText = msg.message.conversation || msg.message.extendedTextMessage?.text || '';
 

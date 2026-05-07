@@ -308,7 +308,7 @@ export default function NewsletterPanel() {
                                 type="text"
                                 value={subject}
                                 onChange={e => setSubject(e.target.value)}
-                                placeholder="ej. 🦖 Estrategias de IA para esta semana"
+                                placeholder="ej. 💼 Estrategias de IA para esta semana"
                                 className="w-full p-3 bg-[#152033] border border-neutral-700 rounded-xl text-white text-sm focus:border-[#0099CC] outline-none"
                             />
                         </div>

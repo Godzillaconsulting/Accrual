@@ -1774,7 +1774,7 @@ export default React.memo(function CMCalendar({ adminProfile }) {
                                 <div>
                                     <label className="block text-xs font-black text-neutral-500 uppercase mb-2">Empresa *</label>
                                     <select value={newCampaign.empresa} onChange={e => setNewCampaign({...newCampaign, empresa: e.target.value})} className="w-full bg-[#152033]/50 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-[#0099CC] transition-colors">
-                                        <option value="accrual">🦖 Accrual</option>
+                                        <option value="accrual">💼 Accrual</option>
                                         <option value="accrual" disabled>🏢 Accrual (Próximamente)</option>
                                     </select>
                                 </div>
@@ -1964,7 +1964,7 @@ export default React.memo(function CMCalendar({ adminProfile }) {
                                         onChange={e => setSheetsEmpresa(e.target.value)}
                                         className="w-full bg-[#152033] border border-white/20 text-white text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:border-green-500/60"
                                     >
-                                        <option value="accrual">🦖 Accrual</option>
+                                        <option value="accrual">💼 Accrual</option>
                                         <option value="cliente1">📁 Cliente 1</option>
                                         <option value="cliente2">📁 Cliente 2</option>
                                         <option value="cockers">🎬 Cockers Studio</option>
