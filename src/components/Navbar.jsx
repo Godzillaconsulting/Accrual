@@ -10,6 +10,17 @@ const Navbar = () => {
     const location = useLocation();
     const [isServicesOpen, setIsServicesOpen] = React.useState(false);
 
+    const handleScrollToTop = (e) => {
+        setIsMobileMenuOpen(false);
+        if (location.pathname === '/') {
+            e.preventDefault();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+    };
+
     const handleScrollToAbout = (e) => {
         e.preventDefault();
         setIsMobileMenuOpen(false);
@@ -75,7 +86,7 @@ const Navbar = () => {
                 <div className="flex items-center gap-3">
                     <Link
                         to="/"
-                        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                        onClick={handleScrollToTop}
                         className={`relative group flex items-center justify-center transition-all duration-300 transform hover:scale-105 ${isScrolled ? 'h-10' : 'h-14'}`}
                     >
                         {/* Main Logo - Shown as is for maximum quality */}
@@ -150,7 +161,7 @@ const Navbar = () => {
 
                 {/* Desktop Menu */}
                 <div className="hidden lg:flex items-center gap-8 text-sm font-medium tracking-wide">
-                    <Link to="/" className="text-[#D0D0DA] hover:text-white transition-colors nav-link flex items-center h-11">INICIO</Link>
+                    <Link to="/" onClick={handleScrollToTop} className="text-[#D0D0DA] hover:text-white transition-colors nav-link flex items-center h-11">INICIO</Link>
                     <a href="/#quienes-somos" onClick={handleScrollToAbout} className="text-[#D0D0DA] hover:text-white transition-colors whitespace-nowrap nav-link flex items-center h-11 cursor-pointer">QUIÉNES SOMOS</a>
 
                     {/* Services Dropdown */}
@@ -264,7 +275,7 @@ const Navbar = () => {
                             ))}
                         </div>
                     )}
-                    <Link to="/" className="text-[#D0D0DA] hover:text-white transition-colors" onClick={() => setIsMobileMenuOpen(false)}>INICIO</Link>
+                    <Link to="/" onClick={handleScrollToTop} className="text-[#D0D0DA] hover:text-white transition-colors">INICIO</Link>
                     <a href="/#quienes-somos" onClick={handleScrollToAbout} className="text-[#D0D0DA] hover:text-white transition-colors cursor-pointer">QUIÉNES SOMOS</a>
                     <Link to="/cumplimiento-tributario" className="text-[#D0D0DA] hover:text-white transition-colors" onClick={() => setIsMobileMenuOpen(false)}>SERVICIOS</Link>
                     <Link to="/articulos" className="text-[#D0D0DA] hover:text-white transition-colors" onClick={() => setIsMobileMenuOpen(false)}>ARTÍCULOS</Link>
