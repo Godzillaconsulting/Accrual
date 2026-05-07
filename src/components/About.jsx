@@ -1,14 +1,26 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Image as ImageIcon } from 'lucide-react';
 import { useSiteData } from '../context/SiteContext';
 
 const About = () => {
     const { getNodeData } = useSiteData();
     const data = getNodeData('quienes-somos') || {};
+    const location = useLocation();
+
+    useEffect(() => {
+        if (location.hash === '#quienes-somos') {
+            const el = document.getElementById('quienes-somos');
+            if (el) {
+                setTimeout(() => {
+                    el.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            }
+        }
+    }, [location]);
 
     return (
-        <section className="bg-[#D0D0DA] py-20 px-4">
+        <section id="quienes-somos" className="bg-[#D0D0DA] py-20 px-4">
             <div className="max-w-6xl mx-auto">
                 <h2 
                     className="text-4xl md:text-5xl font-black text-center text-[#233657] mb-16 uppercase"

@@ -1,13 +1,33 @@
 import React from 'react';
 import { Search, Menu, ChevronDown, ChevronRight } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import accrualLogo from '../assets/Accrual logo (sin slogan).png';
 import logoBlue from '../assets/logo-completo-azul.svg';
 import { searchIndex } from '../data/searchIndex';
 
 const Navbar = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const [isServicesOpen, setIsServicesOpen] = React.useState(false);
+
+    const handleScrollToAbout = (e) => {
+        e.preventDefault();
+        setIsMobileMenuOpen(false);
+        if (location.pathname === '/') {
+            const el = document.getElementById('quienes-somos');
+            if (el) {
+                const navHeight = 80; // approximate navbar height
+                const elementPosition = el.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.scrollY - navHeight;
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        } else {
+            navigate('/#quienes-somos');
+        }
+    };
     const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
     const [isScrolled, setIsScrolled] = React.useState(false);
     const [searchQuery, setSearchQuery] = React.useState('');
@@ -131,7 +151,7 @@ const Navbar = () => {
                 {/* Desktop Menu */}
                 <div className="hidden lg:flex items-center gap-8 text-sm font-medium tracking-wide">
                     <Link to="/" className="text-[#D0D0DA] hover:text-white transition-colors nav-link flex items-center h-11">INICIO</Link>
-                    <Link to="/quienes-somos" className="text-[#D0D0DA] hover:text-white transition-colors whitespace-nowrap nav-link flex items-center h-11">QUIÉNES SOMOS</Link>
+                    <a href="/#quienes-somos" onClick={handleScrollToAbout} className="text-[#D0D0DA] hover:text-white transition-colors whitespace-nowrap nav-link flex items-center h-11 cursor-pointer">QUIÉNES SOMOS</a>
 
                     {/* Services Dropdown */}
                     <div className="relative group services-dropdown flex items-center h-11">
@@ -245,7 +265,7 @@ const Navbar = () => {
                         </div>
                     )}
                     <Link to="/" className="text-[#D0D0DA] hover:text-white transition-colors" onClick={() => setIsMobileMenuOpen(false)}>INICIO</Link>
-                    <Link to="/quienes-somos" className="text-[#D0D0DA] hover:text-white transition-colors" onClick={() => setIsMobileMenuOpen(false)}>QUIÉNES SOMOS</Link>
+                    <a href="/#quienes-somos" onClick={handleScrollToAbout} className="text-[#D0D0DA] hover:text-white transition-colors cursor-pointer">QUIÉNES SOMOS</a>
                     <Link to="/cumplimiento-tributario" className="text-[#D0D0DA] hover:text-white transition-colors" onClick={() => setIsMobileMenuOpen(false)}>SERVICIOS</Link>
                     <Link to="/articulos" className="text-[#D0D0DA] hover:text-white transition-colors" onClick={() => setIsMobileMenuOpen(false)}>ARTÍCULOS</Link>
                     <Link to="/contacto" className="text-[#D0D0DA] hover:text-white transition-colors" onClick={() => setIsMobileMenuOpen(false)}>CONTACTO</Link>
