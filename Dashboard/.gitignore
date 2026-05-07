@@ -1,0 +1,83 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+.vercel
+
+# Large media files (exceed GitHub's 100MB limit)
+# *.mp4 — permitidos (< 100MB)
+# *.mov — permitidos (< 100MB)
+src/assets/SabiaQueVolverias_Esp.mp4
+*.avi
+*.webm
+*.mkv
+.env*.local
+.env
+.env.vercel
+server/.env
+server/.env.local
+server/uploads/
+
+# Instagram / WhatsApp bot — session & cache (generados localmente)
+server/.wwebjs_auth/
+server/.wwebjs_cache/
+.wwebjs_cache/
+
+# TikTok bot — session data (archivos binarios bloqueados por Chrome)
+tiktok_session/
+server/tiktok_session/
+
+# IG Neurona bot — session data de Chrome
+ig-neurona/session_data/
+
+# Backups de base de datos
+backups/
+server/backups/
+
+# Volcados HTML de scraping
+*.html
+server/*.html
+
+# Python cache
+server/core_engine/__pycache__/
+*.pyc
+
+# Scripts de diagnóstico temporales (no son parte del servicio)
+server/diag_*.js
+server/send_test_*.js
+server/upload_*.mjs
+ig_setup.mjs
+server/ig_setup.mjs
+
+# Puppeteer IG session
+server/.puppeteer_ig_profile/
+
+# Archivos temporales / test scripts — NUNCA subir al repositorio
+tmp/
+*.test.js
+*.spec.js
+test_*.js
+*_test.js
+debug_*.js
+.vercel

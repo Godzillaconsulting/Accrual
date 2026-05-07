@@ -93,7 +93,7 @@ const Footer = () => {
                     </div>
 
                     {/* Col 4: Logo & Newsletter (Moved from Left) */}
-                    <div className="flex flex-col items-center md:items-center gap-6">
+                    <div className="flex flex-col items-center md:items-center md:self-center gap-6">
                         <div className="w-full max-w-xs flex justify-center">
                             <Link
                                 to="/"
