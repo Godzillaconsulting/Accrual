@@ -24,7 +24,7 @@ export default function PanelMaestroPanel({ adminProfile }) {
     const [loadingBlacklist, setLoadingBlacklist] = useState(false);
 
     const fetchBlacklist = async () => {
-    wwwwwwwwwww    setLoadingBlacklist(true);
+        setLoadingBlacklist(true);
         try {
             const token = localStorage.getItem('adminToken');
             const res = await fetch(`${API}/api/whatsapp/blacklist`, {
