@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { User, Lock, Unlock } from 'lucide-react';
 
 const API_BASE = import.meta.env.DEV ? 'http://localhost:3000' : '';
 
@@ -8,14 +9,40 @@ export default function BlackListPanel({ adminProfile }) {
     const [newPhone, setNewPhone] = useState('');
     const [newReason, setNewReason] = useState('');
     const [error, setError] = useState(null);
+    const [isUnlocked, setIsUnlocked] = useState(false);
 
     const token = localStorage.getItem('adminToken');
+
+    const handleUnlock = async () => {
+        const pass = prompt('Ingresa la Contraseña Maestra (adrianaccrual) para ver los números completos:');
+        if (!pass) return;
+        setLoading(true);
+        try {
+            const res = await fetch(`${API_BASE}/api/whatsapp/blacklist/verify-master`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` 
+                },
+                body: JSON.stringify({ masterPass: pass })
+            });
+            const data = await res.json();
+            if (data.success) {
+                setIsUnlocked(true);
+            } else {
+                alert('Contraseña incorrecta. Se ha registrado el intento en los logs de seguridad.');
+            }
+        } catch (e) {
+            alert('Error de conexión');
+        }
+        setLoading(false);
+    };
 
     const fetchBlacklist = async () => {
         setLoading(true);
         setError(null);
         try {
-            const res = await fetch(`${API_BASE}/api/blacklist`, {
+            const res = await fetch(`${API_BASE}/api/whatsapp/blacklist`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await res.json();
@@ -40,7 +67,7 @@ export default function BlackListPanel({ adminProfile }) {
         if (!newPhone.trim()) return;
         setLoading(true);
         try {
-            const res = await fetch(`${API_BASE}/api/blacklist`, {
+            const res = await fetch(`${API_BASE}/api/whatsapp/blacklist`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -66,13 +93,11 @@ export default function BlackListPanel({ adminProfile }) {
         if (!window.confirm(`¿Seguro que quieres quitar ${phone} de la lista negra?`)) return;
         setLoading(true);
         try {
-            const res = await fetch(`${API_BASE}/api/blacklist`, {
+            const res = await fetch(`${API_BASE}/api/whatsapp/blacklist/${encodeURIComponent(phone)}`, {
                 method: 'DELETE',
                 headers: { 
-                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}` 
-                },
-                body: JSON.stringify({ phone_number: phone })
+                }
             });
             const data = await res.json();
             if (data.success) {
@@ -135,7 +160,18 @@ export default function BlackListPanel({ adminProfile }) {
                 <div className="col-span-1 md:col-span-2">
                     <div className="bg-[#152033] border border-neutral-800 rounded-xl overflow-hidden shadow-lg">
                         <div className="px-6 py-4 border-b border-neutral-800 bg-[#0d0d0d] flex items-center justify-between">
-                            <h3 className="text-sm font-bold text-gray-300 tracking-widest uppercase">Números Bloqueados</h3>
+                            <h3 className="text-sm font-bold text-gray-300 tracking-widest uppercase flex items-center gap-2">
+                                Números Bloqueados 
+                                {!isUnlocked ? (
+                                    <button onClick={handleUnlock} className="ml-3 text-[10px] bg-red-500/10 hover:bg-red-500/30 text-red-400 px-2 py-1 rounded flex items-center gap-1 transition-colors">
+                                        <Lock size={12} /> Desbloquear Vista
+                                    </button>
+                                ) : (
+                                    <span className="ml-3 text-[10px] bg-green-500/10 text-green-400 px-2 py-1 rounded flex items-center gap-1">
+                                        <Unlock size={12} /> Vista Desbloqueada
+                                    </span>
+                                )}
+                            </h3>
                             <div className="text-[10px] font-bold text-neutral-500 bg-neutral-800/50 px-2.5 py-1 rounded-full">{blacklist.length} Registros</div>
                         </div>
                         
@@ -157,21 +193,35 @@ export default function BlackListPanel({ adminProfile }) {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-neutral-800/60 font-medium">
-                                        {blacklist.map(item => (
-                                            <tr key={item.phone_number} className="hover:bg-neutral-800/20 transition-colors">
-                                                <td className="px-6 py-4 text-red-400 font-mono">{item.phone_number}</td>
-                                                <td className="px-6 py-4 text-neutral-400">{item.reason || 'Spam'}</td>
-                                                <td className="px-6 py-4 text-neutral-500 text-xs">{new Date(item.added_at).toLocaleString()}</td>
-                                                <td className="px-6 py-4 text-right">
-                                                    <button 
-                                                        onClick={() => handleDelete(item.phone_number)}
-                                                        className="px-3 py-1 bg-green-500/10 text-green-500 border border-green-500/30 rounded text-xs hover:bg-green-500 hover:text-white transition-colors"
-                                                    >
-                                                        Desbloquear
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
+                                        {blacklist.map(item => {
+                                            const rawPhone = item.phone_number.split('@')[0];
+                                            const maskedPhone = isUnlocked ? rawPhone : `(•••) ••• •${rawPhone.slice(-4)}`;
+                                            return (
+                                                <tr key={item.phone_number} className="hover:bg-neutral-800/20 transition-colors group">
+                                                    <td className="px-6 py-4">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="w-8 h-8 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center text-neutral-400 group-hover:border-red-500/50 transition-colors">
+                                                                <User size={14} />
+                                                            </div>
+                                                            <div className="flex flex-col">
+                                                                <span className="text-sm text-gray-200 font-bold">{item.reason || 'Desconocido'}</span>
+                                                                <span className="text-[11px] text-red-400/80 font-mono tracking-wider">{maskedPhone}</span>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-6 py-4 text-neutral-400 text-xs hidden md:table-cell">{item.reason || 'Spam'}</td>
+                                                    <td className="px-6 py-4 text-neutral-500 text-xs">{new Date(item.added_at).toLocaleString()}</td>
+                                                    <td className="px-6 py-4 text-right">
+                                                        <button 
+                                                            onClick={() => handleDelete(item.phone_number)}
+                                                            className="px-3 py-1 bg-green-500/10 text-green-500 border border-green-500/30 rounded text-xs hover:bg-green-500 hover:text-white transition-colors"
+                                                        >
+                                                            Desbloquear
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
                                     </tbody>
                                 </table>
                             )}

@@ -116,8 +116,10 @@ export default function AdminProfile({ profile, onProfileUpdate }) {
     const canManageUsers = profile?.is_superadmin || profile?.role === 'admin' || ['jareg', 'oscar', 'accrual_admin', 'dani'].includes(profile?.username?.toLowerCase());
 
     useEffect(() => {
-        if (subTab === 'personal' && canManageUsers) {
+        if (subTab === 'alerts' && canManageUsers) {
             fetchSecurityAlerts();
+        }
+        if (subTab === 'personal' && canManageUsers) {
             fetchChangelogs();
         }
     }, [subTab, profile, canManageUsers]);
@@ -236,7 +238,14 @@ export default function AdminProfile({ profile, onProfileUpdate }) {
                 >
                     ✅ Mis Tareas
                 </button>
-
+                {canManageUsers && (
+                    <button 
+                        onClick={() => setSubTab('alerts')}
+                        className={`pb-4 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 ${subTab === 'alerts' ? 'border-rose-500 text-white' : 'border-transparent text-neutral-500 hover:text-gray-300'}`}
+                    >
+                        🚨 Alertas (Seguridad)
+                    </button>
+                )}
             </div>
 
             <div className="p-8 max-w-5xl mx-auto w-full">
@@ -311,47 +320,52 @@ export default function AdminProfile({ profile, onProfileUpdate }) {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                )}
 
-                        {/* Reporte de Intentos de Inyección (Solo SuperAdmins) */}
-                        {canManageUsers && securityAlerts.length > 0 && (
-                            <div className="mt-8 bg-blue-950/20 border border-blue-500/30 rounded-2xl overflow-hidden shadow-[0_0_20px_rgba(0,153,204,0.15)] animate-in fade-in slide-in-from-bottom-4">
-                                <div className="px-6 py-4 border-b border-blue-900/30 bg-[#0099CC]/10 flex items-center justify-between">
+                {subTab === 'alerts' && canManageUsers && (
+                    <div className="animate-in fade-in space-y-6">
+                        <div>
+                            <h2 className="text-2xl font-black text-rose-500">Alertas de Seguridad</h2>
+                            <p className="text-sm text-neutral-400 mt-1">Historial de accesos fallidos y violaciones de seguridad.</p>
+                        </div>
+                        
+                        {securityAlerts.length === 0 ? (
+                            <div className="mt-8 bg-green-950/20 border border-green-500/30 rounded-2xl p-6 text-center animate-in fade-in shadow-[0_0_20px_rgba(34,197,94,0.1)]">
+                                <span className="text-2xl mb-2 block">✅</span>
+                                <p className="text-green-500 text-sm font-bold uppercase tracking-widest">Sin amenazas o intrusiones registradas</p>
+                            </div>
+                        ) : (
+                            <div className="mt-8 bg-rose-950/20 border border-rose-500/30 rounded-2xl overflow-hidden shadow-[0_0_20px_rgba(244,63,94,0.15)] animate-in fade-in slide-in-from-bottom-4">
+                                <div className="px-6 py-4 border-b border-rose-900/30 bg-rose-500/10 flex items-center justify-between">
                                     <div className="flex items-center gap-3">
-                                        <span className="text-xl">🛡️</span>
-                                        <h3 className="text-sm font-bold text-blue-500 uppercase tracking-widest">Reporte de Amenazas Detección de Intrusos</h3>
+                                        <span className="text-xl">🚨</span>
+                                        <h3 className="text-sm font-bold text-rose-500 uppercase tracking-widest">Registro de Amenazas de Seguridad</h3>
                                     </div>
                                     <span className="text-xs font-black text-rose-500 bg-rose-500/10 px-2 py-1 rounded border border-rose-500/20">{securityAlerts.length} Eventos</span>
                                 </div>
                                 <div className="overflow-x-auto">
                                     <table className="w-full text-left text-sm whitespace-nowrap">
-                                        <thead className="bg-[#233657] text-xs text-blue-500 font-black uppercase">
+                                        <thead className="bg-[#233657] text-xs text-rose-400 font-black uppercase">
                                             <tr>
-                                                <th className="px-6 py-4 border-b border-blue-900/30">Fecha / Hora</th>
-                                                <th className="px-6 py-4 border-b border-blue-900/30">Intento de Payload</th>
-                                                <th className="px-6 py-4 border-b border-blue-900/30">IP Atacante</th>
-                                                <th className="px-6 py-4 border-b border-blue-900/30">Alerta</th>
-                                                <th className="px-6 py-4 border-b border-blue-900/30">Usuario Logeado</th>
+                                                <th className="px-6 py-4 border-b border-rose-900/30">Fecha / Hora</th>
+                                                <th className="px-6 py-4 border-b border-rose-900/30">Acción Detectada</th>
+                                                <th className="px-6 py-4 border-b border-rose-900/30">Detalles (IP / Contexto)</th>
+                                                <th className="px-6 py-4 border-b border-rose-900/30">Usuario Relacionado</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-blue-900/20">
+                                        <tbody className="divide-y divide-rose-900/20">
                                             {securityAlerts.map(alert => (
-                                                <tr key={alert.id} className="hover:bg-blue-900/10 transition">
+                                                <tr key={alert.id} className="hover:bg-rose-900/10 transition">
                                                     <td className="px-6 py-3 text-neutral-400 text-xs font-mono">{new Date(alert.created_at).toLocaleString('es-MX')}</td>
-                                                    <td className="px-6 py-3 font-mono text-xs text-blue-300 max-w-[200px] truncate" title={alert.payload}>{alert.payload}</td>
-                                                    <td className="px-6 py-3 font-mono text-rose-400 font-bold">{alert.ip_address}</td>
-                                                    <td className="px-6 py-3 text-blue-500 font-black text-[10px] uppercase tracking-widest">{alert.attempt_type}</td>
-                                                    <td className="px-6 py-3 text-gray-300 font-bold">{alert.username}</td>
+                                                    <td className="px-6 py-3 text-rose-500 font-black text-[10px] uppercase tracking-widest">{alert.action}</td>
+                                                    <td className="px-6 py-3 font-mono text-xs text-rose-300 max-w-[300px] truncate" title={JSON.stringify(alert.details)}>{JSON.stringify(alert.details)}</td>
+                                                    <td className="px-6 py-3 text-gray-300 font-bold">{alert.details?.username || 'Desconocido'}</td>
                                                 </tr>
                                             ))}
                                         </tbody>
                                     </table>
                                 </div>
-                            </div>
-                        )}
-                        {canManageUsers && securityAlerts.length === 0 && (
-                            <div className="mt-8 bg-green-950/20 border border-green-500/30 rounded-2xl p-6 text-center animate-in fade-in">
-                                <span className="text-2xl mb-2 block">✅</span>
-                                <p className="text-green-500 text-sm font-bold uppercase tracking-widest">Sin amenazas de inyección SQL registradas</p>
                             </div>
                         )}
 
