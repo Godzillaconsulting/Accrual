@@ -43,7 +43,7 @@ async function callAIWaterfall(safeHistory, messageText, dynamicPrompt) {
         const apiKey = (process.env.GEMINI_API_KEY || "").trim();
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({
-            model: "gemini-2.0-flash",
+            model: "gemini-1.5-flash",
             systemInstruction: dynamicPrompt,
             tools: [{ functionDeclarations: chatTools }]
         });
@@ -262,7 +262,7 @@ const processFullMessage = async (senderId, messageText, sock) => {
         }
 
         await pool.query(
-            "CALL sp_process_incoming_wa_message((SELECT gen_random_uuid()), $1, $2, 'WA_BOT_CONVERSATION', 'CALIFICACION_BOT', $3::JSONB)",
+            "CALL sp_process_incoming_wa_message(gen_random_uuid(), $1, $2, 'WA_BOT_CONVERSATION', 'CALIFICACION_BOT', $3::JSONB)",
             [senderId, messageText + " [RESP] " + botReply, JSON.stringify(contexto_ia)]
         );
 
