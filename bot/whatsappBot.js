@@ -16,7 +16,7 @@ const DEBOUNCE_TIME_MS = 8000; // 8 segundos de buffer (jitter de lectura)
 const messageQueues = new Map();
 const pausedChats = new Map(); // Para dormir al bot cuando un humano interviene
 const rescueTimers = new Map(); // Para retomar la plática si el admin olvida contestar
-const PAUSE_DURATION_MS = 1 * 60 * 1000; // 1 minuto de pausa
+const PAUSE_DURATION_MS = 5 * 60 * 1000; // 5 minutos de pausa
 
 // O(1) RAM Cache para Lista Negra
 let blacklistSet = new Set();
@@ -43,7 +43,7 @@ async function callAIWaterfall(safeHistory, messageText, dynamicPrompt) {
         const apiKey = (process.env.GEMINI_API_KEY || "").trim();
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({
-            model: "gemini-1.5-flash",
+            model: "gemini-2.5-flash",
             systemInstruction: dynamicPrompt,
             tools: [{ functionDeclarations: chatTools }]
         });
@@ -345,14 +345,14 @@ export const initWhatsAppBot = async () => {
                 console.log(`🤖 Bot DESPERTADO manualmente para el chat: ${senderId.split('@')[0]}`);
             } else {
                 pausedChats.set(senderId, Date.now());
-                console.log(`💤 Humano intervino. Bot PAUSADO por 1 min para: ${senderId.split('@')[0]}`);
+                console.log(`💤 Humano intervino. Bot PAUSADO por 5 mins para: ${senderId.split('@')[0]}`);
                 
-                // Activar Rescue Timer para 2 minutos
+                // Activar Rescue Timer para 5 minutos
                 clearTimeout(rescueTimers.get(senderId));
                 rescueTimers.set(senderId, setTimeout(() => {
                     pausedChats.delete(senderId);
-                    processFullMessage(senderId, "(Mensaje de sistema invisible: Han pasado 2 minutos desde que el administrador intervino y el chat se quedó en pausa. Retoma la plática con el cliente de forma natural, como si fueras el experto continuando la idea.)", sock);
-                }, 2 * 60 * 1000));
+                    processFullMessage(senderId, "(Mensaje de sistema invisible: Han pasado 5 minutos desde que el administrador intervino y el chat se quedó en pausa. Retoma la plática con el cliente de forma natural, como si fueras el experto continuando la idea.)", sock);
+                }, 5 * 60 * 1000));
             }
             return;
         }
@@ -365,8 +365,8 @@ export const initWhatsAppBot = async () => {
                 clearTimeout(rescueTimers.get(senderId));
                 rescueTimers.set(senderId, setTimeout(() => {
                     pausedChats.delete(senderId);
-                    processFullMessage(senderId, msgText + "\n\n(Mensaje de sistema: El cliente escribió esto hace 2 minutos y el admin no respondió. Retoma la plática amablemente.)", sock);
-                }, 2 * 60 * 1000));
+                    processFullMessage(senderId, msgText + "\n\n(Mensaje de sistema: El cliente escribió esto hace 5 minutos y el admin no respondió. Retoma la plática amablemente.)", sock);
+                }, 5 * 60 * 1000));
                 return; // Silencio, el bot está dormido
             } else {
                 pausedChats.delete(senderId); // Tiempo expirado, bot despierta
