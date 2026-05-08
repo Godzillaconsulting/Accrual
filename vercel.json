@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://lid-guitars-innovative-assembly.trycloudflare.com/api/$1"
+      "destination": "https://quest-subscription-emotions-losses.trycloudflare.com/api/$1"
     },
     {
       "source": "/(.*)",
