@@ -29,6 +29,7 @@ if (!isDocker) {
 console.log(`🔌 [API Server DB] Conectando a Postgres en ${process.env.DB_HOST || 'localhost'}:${process.env.DB_PORT || 5432} / ${process.env.DB_NAME || 'accrual'}`);
 
 const app = express();
+app.set('trust proxy', 1);
 app.use(cors());
 app.use(helmet({
     contentSecurityPolicy: false,  // React SPA maneja su propio CSP
