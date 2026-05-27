@@ -117,42 +117,48 @@ const LANDING_IDS = new Set(['paquete-posicionamiento-social','paquete-expansion
 // ── Hook: inyecta CSS de resaltado en el head ─────────────────────────────────
 function useHighlightInjector(nodeId, hoveredField, previewContainerId) {
  useEffect(() => {
- const styleId ='studio-highlight-css';
- let el = document.getElementById(styleId);
- if (!el) {
- el = document.createElement('style');
- el.id = styleId;
- document.head.appendChild(el);
- }
+  const styleId ='studio-highlight-css';
+  let el = document.getElementById(styleId);
+  if (!el) {
+   el = document.createElement('style');
+   el.id = styleId;
+   document.head.appendChild(el);
+  }
 
- if (!hoveredField || !nodeId) { el.textContent =''; return; }
+  if (!hoveredField || !nodeId) { el.textContent =''; return; }
 
- const isLanding = LANDING_IDS.has(nodeId);
- const map = isLanding ? LANDING_HIGHLIGHT : (HIGHLIGHT_MAP[nodeId] || {});
+  const isLanding = LANDING_IDS.has(nodeId);
+  const map = isLanding ? LANDING_HIGHLIGHT : (HIGHLIGHT_MAP[nodeId] || {});
 
- // Siempre resaltar la sección completa como mínimo
- let selectors = [];
- const sectionSel = map['section'];
- if (sectionSel) selectors.push(...sectionSel.map(s => `#${previewContainerId} ${s}`));
+  // Siempre resaltar la sección completa como mínimo
+  let selectors = [];
+  const sectionSel = map['section'];
+  if (sectionSel) selectors.push(...sectionSel.map(s => `#${previewContainerId} ${s}`));
 
- // Añadir selectores específicos del campo
- const fieldSel = map[hoveredField] || [];
- selectors.push(...fieldSel.map(s => `#${previewContainerId} ${s}`));
+  // Añadir selectores específicos del campo
+  const fieldSel = map[hoveredField] || [];
+  selectors.push(...fieldSel.map(s => `#${previewContainerId} ${s}`));
 
- if (selectors.length === 0) { el.textContent =''; return; }
+  if (selectors.length === 0) { el.textContent =''; return; }
 
- const unique = [...new Set(selectors)].join(',\n');
- el.textContent = `
- ${unique} {
- outline: 2.5px solid rgba(204, 0, 0, 0.9) !important;
- outline-offset: 4px !important;
- box-shadow: 0 0 0 6px rgba(0,153,204,0.08), 0 0 24px rgba(0,153,204,0.4) !important;
- border-radius: 6px !important;
- }
- `;
-
- return () => { if (el) el.textContent =''; };
+  const unique = [...new Set(selectors)].join(',\n');
+  el.textContent = `
+  ${unique} {
+  outline: 2.5px solid rgba(204, 0, 0, 0.9) !important;
+  outline-offset: 4px !important;
+  box-shadow: 0 0 0 6px rgba(0,153,204,0.08), 0 0 24px rgba(0,153,204,0.4) !important;
+  border-radius: 6px !important;
+  }
+  `;
  }, [hoveredField, nodeId, previewContainerId]);
+
+ useEffect(() => {
+  return () => {
+   const styleId ='studio-highlight-css';
+   const el = document.getElementById(styleId);
+   if (el) el.textContent ='';
+  };
+ }, []);
 }
 
 // ── Hook: inyecta colores y tipografía dinámica ──────────────────────────────
@@ -208,9 +214,15 @@ function useColorInjector(draftData, previewContainerId) {
         }
 
         el.textContent = cssRules.join('\n');
-
-        return () => { if (el) el.textContent = ''; };
     }, [draftData, previewContainerId]);
+
+    useEffect(() => {
+        return () => {
+            const styleId = 'studio-color-injector-css';
+            const el = document.getElementById(styleId);
+            if (el) el.textContent = '';
+        };
+    }, []);
 }
 
 // ── Componentes mapa ──────────────────────────────────────────────────────────
@@ -287,13 +299,19 @@ function ScaledSection({ nodeId }) {
  const [scale, setScale] = useState(0.4);
 
  useEffect(() => {
- const calc = () => {
- if (wrapperRef.current) setScale(wrapperRef.current.clientWidth / 1440);
- };
- calc();
- const ro = new ResizeObserver(calc);
- if (wrapperRef.current) ro.observe(wrapperRef.current);
- return () => ro.disconnect();
+  const calc = () => {
+   if (wrapperRef.current) {
+    const width = wrapperRef.current.clientWidth;
+    if (width > 0) {
+     const newScale = width / 1440;
+     setScale(prev => Math.abs(prev - newScale) > 0.001 ? newScale : prev);
+    }
+   }
+  };
+  calc();
+  const ro = new ResizeObserver(calc);
+  if (wrapperRef.current) ro.observe(wrapperRef.current);
+  return () => ro.disconnect();
  }, []);
 
  const Component = COMPONENT_MAP[nodeId];
