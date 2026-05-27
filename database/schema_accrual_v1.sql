@@ -219,6 +219,7 @@ CREATE TABLE IF NOT EXISTS accrual_admin_users (
     email VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     role VARCHAR(50) NOT NULL CHECK (role IN ('super_admin', 'admin', 'editor')),
+    photo_url VARCHAR(500) DEFAULT '',
     is_active BOOLEAN DEFAULT TRUE,
     last_login TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
