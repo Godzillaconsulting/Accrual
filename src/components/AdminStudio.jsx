@@ -622,34 +622,34 @@ export default function AdminStudio() {
    <div className="mt-8 px-2 pb-16 space-y-1 shrink-0 border-t border-[#0099CC]/20 pt-4">
 
     {canSeePanelMaestro && (
-        <button onClick={() => { window.location.href = '/admin/master'; }}
+        <button onClick={() => { navigate('/admin/master'); }}
         className={`w-full text-[10px] py-2 shadow-sm rounded-xl transition-all font-black uppercase flex items-center justify-center border ${ activeSection ==='panel_maestro' ?'bg-neutral-900 text-[#fbbf24] border-[#fbbf24]/50 shadow-[0_0_15px_rgba(251,191,36,0.2)]' :'text-neutral-300 border-transparent hover:border-[#fbbf24]/40 hover:bg-[#fbbf24]/5 hover:text-white' }`}>
         <span className="text-xs mr-2 drop-shadow-sm">🏛️</span> Panel Maestro
         </button>
     )}
 
     {canSeeDBEstudio && (
-        <button onClick={() => { window.location.href = '/admin/db'; }}
+        <button onClick={() => { navigate('/admin/db'); }}
         className={`w-full text-[10px] py-2 shadow-sm rounded-xl transition-all font-black uppercase flex items-center justify-center border ${ activeSection ==='db_estudio' ?'bg-neutral-900 text-[#0099CC] border-[#0099CC]/50 shadow-[0_0_15px_rgba(0,153,204,0.2)]' :'text-neutral-300 border-transparent hover:border-[#0099CC]/40 hover:bg-[#0099CC]/5 hover:text-white' }`}>
         <span className="text-xs mr-2 drop-shadow-sm">🗄️</span> DB Studio
         </button>
     )}
 
     {canSeeSqlAtaques && (
-        <button onClick={() => { window.location.href = '/admin/sql'; }}
+        <button onClick={() => { navigate('/admin/sql'); }}
         className={`w-full text-[10px] py-2 shadow-sm rounded-xl transition-all font-black uppercase flex items-center justify-center border ${ activeSection ==='sql_ataques' ?'bg-neutral-900 text-[#ef4444] border-[#ef4444]/50 shadow-[0_0_15px_rgba(239,68,68,0.2)]' :'text-neutral-300 border-transparent hover:border-[#ef4444]/40 hover:bg-[#ef4444]/5 hover:text-white' }`}>
         <span className="text-xs mr-2 drop-shadow-sm">🛡️</span> Ataques SQL
         </button>
     )}
 
     {canSeeBlackList && (
-        <button onClick={() => { window.location.href = '/admin/blacklist'; }}
+        <button onClick={() => { navigate('/admin/blacklist'); }}
         className={`w-full text-[10px] py-2 shadow-sm rounded-xl transition-all font-black uppercase flex items-center justify-center border ${ activeSection ==='blacklist' ?'bg-neutral-900 text-[#ef4444] border-[#ef4444]/50 shadow-[0_0_15px_rgba(239,68,68,0.2)]' :'text-neutral-300 border-transparent hover:border-[#ef4444]/40 hover:bg-[#ef4444]/5 hover:text-white' }`}>
         <span className="text-xs mr-2 drop-shadow-sm">🚫</span> Black List
         </button>
     )}
     
-    <button onClick={() => { window.location.href = '/admin/profile'; }}
+    <button onClick={() => { navigate('/admin/profile'); }}
     className={`w-full p-2 flex items-center gap-3 transition-colors rounded-xl shadow-sm border border-transparent ${ activeSection ==='profile' ?'bg-white/70 border-[#0099CC]/50 shadow-[0_4px_15px_rgba(255,255,255,0.8)]' :'hover:bg-[#152033]/40 hover:border-[#0099CC]/20' }`}>
        <div className="w-6 h-6 rounded-full bg-[#152033]/60 overflow-hidden shrink-0 border border-[#0099CC]/50">
            {adminProfile?.photo_url ? <img src={adminProfile.photo_url} className="w-full h-full object-cover"/> : <span className="text-xs flex items-center justify-center w-full h-full drop-shadow">💼</span>}
@@ -662,7 +662,7 @@ export default function AdminStudio() {
        </div>
    </button>
    
-  <button onClick={() => { localStorage.clear(); window.location.href ='/login'; }}
+  <button onClick={() => { localStorage.clear(); navigate('/login'); }}
  className="w-full flex items-center justify-center gap-1.5 text-[10px] text-blue-500 font-bold hover:text-white hover:bg-[#0099CC]/10 border border-blue-900/40 hover:border-[#0099CC]/60 py-2 rounded-xl transition-all shadow-sm">
  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-80">
     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
