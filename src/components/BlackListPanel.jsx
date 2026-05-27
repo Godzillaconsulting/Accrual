@@ -81,7 +81,7 @@ export default function BlackListPanel({ adminProfile }) {
         const qrInterval = setInterval(() => {
             setQrTime(Date.now());
             fetchBotStatus();
-        }, 5000);
+        }, 60000);
         
         return () => clearInterval(qrInterval);
     }, []);

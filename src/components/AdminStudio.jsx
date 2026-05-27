@@ -118,7 +118,7 @@ export default function AdminStudio() {
     if (location.pathname.includes('/calendar')) return 'social';
     if (location.pathname.includes('/studio')) return 'social_studio';
     if (location.pathname.includes('/video-editor')) return 'video_editor';
-    if (location.pathname.includes('/db')) return 'db_studio';
+    if (location.pathname.includes('/db')) return 'blacklist';
     if (location.pathname.includes('/profile')) return 'profile';
     if (location.pathname.includes('/bugs')) return 'bugs';
     if (location.pathname.includes('/newsletter')) return 'newsletter';
@@ -313,10 +313,10 @@ export default function AdminStudio() {
  const isEditor = adminProfile?.role === 'admin' || isCEO || ['alex', 'judith'].includes(username);
  const canEditSite = isEditor;
 
- // Lógica explícita de vistas
- const canSeeDBEstudio    = isCEO;
- const canSeePanelMaestro = isCEO;
- const canSeeSqlAtaques   = false; // Removido a petición del usuario (se monitorea en Godzilla)
+  // Lógica explícita de vistas
+  const canSeeDBEstudio    = false;
+  const canSeePanelMaestro = isCEO;
+  const canSeeSqlAtaques   = false; // Removido a petición del usuario (se monitorea en Godzilla)
  const canSeeBlackList    = isCEO;
  const canSeeCeoEstudio   = isEditor;
 
