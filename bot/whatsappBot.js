@@ -10,8 +10,12 @@ import { agendarEnGoogleCalendar } from './services/calendarService.js';
 import { SYSTEM_PROMPT, chatTools, withTimeout } from './config/zilla-prompt.js';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-const SESSIONS_BASE = 'C:\\Users\\GODZILLA.IA\\Accrual\\Accrual\\bot_sessions';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const SESSIONS_BASE = process.env.SESSION_PATH || path.join(__dirname, '..', 'bot_sessions');
 const DEBOUNCE_TIME_MS = 8000; // 8 segundos de buffer (jitter de lectura)
 const messageQueues = new Map();
 const pausedChats = new Map(); // Para dormir al bot cuando un humano interviene
@@ -20,15 +24,32 @@ const PAUSE_DURATION_MS = 5 * 60 * 1000; // 5 minutos de pausa
 
 // O(1) RAM Cache para Lista Negra
 let blacklistSet = new Set();
+
+// Normalización robusta para números de WhatsApp
+function normalizeWhatsAppNumber(phone) {
+    if (!phone) return '';
+    let clean = phone.replace(/[^0-9]/g, '');
+    if (clean.startsWith('521') && clean.length === 13) {
+        clean = '52' + clean.substring(3);
+    } else if (clean.length === 10) {
+        clean = '52' + clean;
+    }
+    return clean;
+}
+
 const refreshBlacklist = async () => {
     try {
         const result = await pool.query('SELECT phone_number FROM wa_blacklist');
-        blacklistSet = new Set(result.rows.map(row => row.phone_number));
+        const normalizedList = result.rows.map(row => normalizeWhatsAppNumber(row.phone_number));
+        blacklistSet = new Set(normalizedList);
+        console.log(`🛡️ [Blacklist] Cargada exitosamente. Total números: ${blacklistSet.size}`);
     } catch (error) {
-        // Ignorar en caso de que la base de datos se esté reiniciando
+        console.error('❌ [Blacklist] Error al consultar base de datos para actualizar lista negra:', error.message);
     }
 };
-// Refrescar cada 60 segundos
+
+// Refrescar inmediatamente al inicio y luego cada 60 segundos
+refreshBlacklist();
 setInterval(refreshBlacklist, 60000);
 
 // ===============================================
@@ -274,8 +295,23 @@ const processFullMessage = async (senderId, messageText, sock) => {
 // ===============================================
 // INICIALIZACIÓN DE BAILEYS
 // ===============================================
+async function updateBotStatusInDB(status) {
+    try {
+        await pool.query(`
+            INSERT INTO wa_sessions (numero_telefono, qr_status, ultima_conexion)
+            VALUES ('accrual_bot', $1, CURRENT_TIMESTAMP)
+            ON CONFLICT (numero_telefono)
+            DO UPDATE SET qr_status = EXCLUDED.qr_status, ultima_conexion = CURRENT_TIMESTAMP
+        `, [status]);
+        console.log(`📡 [Accrual Bot DB Status] Estado actualizado a: ${status}`);
+    } catch (err) {
+        console.error('❌ Error actualizando estado del bot en la DB:', err.message);
+    }
+}
+
 export const initWhatsAppBot = async () => {
     await refreshBlacklist();
+    await updateBotStatusInDB('DISCONNECTED');
     console.log("🟢 Iniciando Cliente de WhatsApp (Baileys 24/7) con IA Waterfall...");
     
     if (!fs.existsSync(SESSIONS_BASE)) {
@@ -299,7 +335,7 @@ export const initWhatsAppBot = async () => {
 
     let currentQR = null;
 
-    sock.ev.on('connection.update', (update) => {
+    sock.ev.on('connection.update', async (update) => {
         const { connection, lastDisconnect, qr } = update;
 
         if (qr) {
@@ -308,19 +344,52 @@ export const initWhatsAppBot = async () => {
             console.log('📱 NUEVO QR DISPONIBLE PARA ESCANEO 📱');
             console.log('=============================================');
             qrcode.generate(qr, { small: true });
+
+            // Generar imagen QR en disco para fácil escaneo en el host
+            const qrPath = path.join(SESSIONS_BASE, '..', 'qr_accrual.png');
+            try {
+                await qrcodeLib.toFile(qrPath, qr, {
+                    color: { dark: '#000000', light: '#FFFFFF' },
+                    width: 400
+                });
+                console.log(`💾 Código QR guardado en: ${qrPath}`);
+                await updateBotStatusInDB('QR_READY');
+            } catch (err) {
+                console.error('❌ Error generando qr_accrual.png:', err);
+            }
         }
 
         if (connection === 'close') {
             const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
             console.log(`⚠️ Desconectado. Reconectar: ${shouldReconnect}`);
+            await updateBotStatusInDB('DISCONNECTED');
             if (shouldReconnect) {
                 setTimeout(initWhatsAppBot, 5000);
             } else {
-                console.error('❌ Sesión cerrada desde el celular. Usa la Opción 6 del Gestor para borrar la sesión y escanear un nuevo QR.');
+                console.log("❌ Sesión cerrada por el usuario. Limpiando credenciales locales...");
+                try {
+                    fs.rmSync(SESSIONS_BASE, { recursive: true, force: true });
+                } catch (err) {
+                    console.error("❌ Error al borrar SESSIONS_BASE:", err.message);
+                }
+                setTimeout(initWhatsAppBot, 3000);
             }
         } else if (connection === 'open') {
             currentQR = null;
             console.log('✅ Neurona Accrual (Baileys) conectada y lista 24/7!');
+            await updateBotStatusInDB('CONNECTED');
+            
+            // Sobreescribir el código QR con un estado de "CONECTADO" en verde para mantener el mount intacto
+            const qrPath = path.join(SESSIONS_BASE, '..', 'qr_accrual.png');
+            try {
+                await qrcodeLib.toFile(qrPath, 'AccrualBot CONECTADO exitosamente. Ya puedes cerrar esta imagen.', {
+                    color: { dark: '#00aa00', light: '#FFFFFF' },
+                    width: 400
+                });
+                console.log('💾 QR de estado "CONECTADO" guardado.');
+            } catch (err) {
+                console.error('❌ Error al guardar estado conectado en QR:', err);
+            }
         }
     });
 
@@ -332,8 +401,12 @@ export const initWhatsAppBot = async () => {
         const senderId = msg.key.remoteJid;
         if (senderId.endsWith('@g.us') || senderId === 'status@broadcast') return;
 
-        // Búsqueda en 0.001 milisegundos gracias a Hash Set
-        if (blacklistSet.has(senderId)) return;
+        // Búsqueda en 0.001 milisegundos usando número normalizado
+        const normalizedSender = normalizeWhatsAppNumber(senderId);
+        if (blacklistSet.has(normalizedSender)) {
+            console.log(`🚫 Mensaje de ${senderId} ignorado por estar en la Blacklist (Normalizado: ${normalizedSender}).`);
+            return;
+        }
 
         const msgText = msg.message.conversation || msg.message.extendedTextMessage?.text || '';
 
@@ -420,7 +493,6 @@ export const initWhatsAppBot = async () => {
     });
 };
 
-import { fileURLToPath } from 'url';
 const isPM2 = process.env.pm_id !== undefined;
 if (isPM2 || process.argv[1] === fileURLToPath(import.meta.url)) {
     initWhatsAppBot();

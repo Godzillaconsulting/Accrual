@@ -21,6 +21,30 @@ import {
 
 const router = express.Router();
 
+// ─── Helper: Validación y parseo de fechas ───────────────────────────────────
+/**
+ * Valida que una cadena sea una fecha válida y retorna un objeto Date.
+ * Lanza un Error con mensaje descriptivo si la fecha es inválida.
+ */
+function parseAndValidateDate(dateStr, fieldName) {
+    if (!dateStr) return null;
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) {
+        throw new Error(`${fieldName} no es una fecha válida (recibido: "${dateStr}")`);
+    }
+    return d;
+}
+
+/**
+ * Valida que start_date y end_date sean coherentes.
+ * end_date debe ser >= start_date.
+ */
+function validateDateRange(startDate, endDate) {
+    if (endDate && endDate < startDate) {
+        throw new Error('end_date no puede ser anterior a start_date');
+    }
+}
+
 // ─── SSE: Registro de clientes conectados ────────────────────────────────────
 const sseClients = new Set();
 
@@ -156,9 +180,25 @@ router.post('/events', authenticateToken, requireCM, async (req, res) => {
             start_date, end_date, empresa, assigned_to
         } = req.body;
 
-        if (!title || !start_date) {
-            return res.status(400).json({ success: false, error: 'title y start_date son requeridos' });
+        if (!title?.trim()) {
+            return res.status(400).json({ success: false, error: 'title es requerido' });
         }
+        if (!start_date) {
+            return res.status(400).json({ success: false, error: 'start_date es requerido' });
+        }
+
+        // ✅ Validar fechas antes de tocar la DB
+        const parsedStart = parseAndValidateDate(start_date, 'start_date');
+        const parsedEnd   = parseAndValidateDate(end_date || start_date, 'end_date');
+        validateDateRange(parsedStart, parsedEnd);
+
+        // Validar plataforma permitida
+        const validPlatforms = ['ALL', 'facebook', 'instagram', 'tiktok'];
+        const safePlatform = validPlatforms.includes(platform) ? platform : 'ALL';
+
+        // Validar status permitido
+        const validStatuses = ['warning', 'urgent', 'success'];
+        const safeStatus = validStatuses.includes(status) ? status : 'warning';
 
         const created_by = req.user?.username || 'admin';
 
@@ -168,14 +208,14 @@ router.post('/events', authenticateToken, requireCM, async (req, res) => {
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
              RETURNING *`,
             [
-                title,
-                platform || 'ALL',
-                status || 'warning',
-                caption || null,
+                title.trim(),
+                safePlatform,
+                safeStatus,
+                caption?.trim() || null,
                 media_url || null,
                 provider || null,
-                start_date,
-                end_date || start_date,
+                parsedStart.toISOString(),
+                parsedEnd.toISOString(),
                 empresa || 'accrual',
                 assigned_to || null,
                 created_by
@@ -190,7 +230,9 @@ router.post('/events', authenticateToken, requireCM, async (req, res) => {
         res.status(201).json({ success: true, event: newEvent });
     } catch (err) {
         console.error('[Calendar] POST /events error:', err.message);
-        res.status(500).json({ success: false, error: err.message });
+        // Errores de validación de fechas son 400, errores de DB son 500
+        const isValidationError = err.message.includes('fecha') || err.message.includes('date');
+        res.status(isValidationError ? 400 : 500).json({ success: false, error: err.message });
     }
 });
 
@@ -207,12 +249,17 @@ router.put('/events/:id/reschedule', authenticateToken, requireCM, async (req, r
             return res.status(400).json({ success: false, error: 'start_date requerido' });
         }
 
+        // ✅ Validar fechas del reagendamiento
+        const parsedStart = parseAndValidateDate(start_date, 'start_date');
+        const parsedEnd   = parseAndValidateDate(end_date || start_date, 'end_date');
+        validateDateRange(parsedStart, parsedEnd);
+
         const result = await pool.query(
             `UPDATE calendar_events
              SET start_date = $1, end_date = $2, is_rescheduled = TRUE, updated_at = NOW()
              WHERE id = $3
              RETURNING *`,
-            [start_date, end_date || start_date, id]
+            [parsedStart.toISOString(), parsedEnd.toISOString(), id]
         );
 
         if (result.rows.length === 0) {
@@ -225,7 +272,8 @@ router.put('/events/:id/reschedule', authenticateToken, requireCM, async (req, r
         res.json({ success: true, event: updated });
     } catch (err) {
         console.error('[Calendar] PUT /events/:id/reschedule error:', err.message);
-        res.status(500).json({ success: false, error: err.message });
+        const isValidationError = err.message.includes('fecha') || err.message.includes('date');
+        res.status(isValidationError ? 400 : 500).json({ success: false, error: err.message });
     }
 });
 

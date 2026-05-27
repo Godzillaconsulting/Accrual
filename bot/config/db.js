@@ -1,7 +1,24 @@
 import pkg from 'pg';
 const { Pool } = pkg;
 import dotenv from 'dotenv';
-dotenv.config({ path: '../../.env' }); // Assuming bot/config/db.js and .env is at Accrual/Accrual/.env
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const isDocker = fs.existsSync('/.dockerenv') || fs.existsSync('/run/.containerenv');
+
+if (!isDocker) {
+    // Si corre directamente en host (Windows), cargar el .env raíz sobreescribiendo DB_HOST a localhost
+    dotenv.config({ path: path.resolve(__dirname, '../../../.env'), override: true });
+} else {
+    // Si corre en Docker, respetar variables
+    dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+}
+
+console.log(`🔌 [Bot DB] Conectando a Postgres en ${process.env.DB_HOST || 'localhost'}:${process.env.DB_PORT || 5432} / ${process.env.DB_NAME || 'accrual'}`);
 
 const pool = new Pool({
     host: process.env.DB_HOST || 'localhost',

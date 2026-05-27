@@ -188,3 +188,43 @@ export function injectSectionDefaults(nodeId, draftSource) {
 
   return combinedData;
 }
+
+export function replaceBrWithNewline(val) {
+  if (val === null || val === undefined) return val;
+  if (typeof val === 'string') {
+    return val.replace(/<br\s*\/?>/gi, '\n');
+  }
+  if (Array.isArray(val)) {
+    return val.map(replaceBrWithNewline);
+  }
+  if (typeof val === 'object') {
+    const res = {};
+    for (const key in val) {
+      if (Object.prototype.hasOwnProperty.call(val, key)) {
+        res[key] = replaceBrWithNewline(val[key]);
+      }
+    }
+    return res;
+  }
+  return val;
+}
+
+export function replaceNewlineWithBr(val) {
+  if (val === null || val === undefined) return val;
+  if (typeof val === 'string') {
+    return val.replace(/\n/g, '<br />');
+  }
+  if (Array.isArray(val)) {
+    return val.map(replaceNewlineWithBr);
+  }
+  if (typeof val === 'object') {
+    const res = {};
+    for (const key in val) {
+      if (Object.prototype.hasOwnProperty.call(val, key)) {
+        res[key] = replaceNewlineWithBr(val[key]);
+      }
+    }
+    return res;
+  }
+  return val;
+}

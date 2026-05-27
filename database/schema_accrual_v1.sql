@@ -233,3 +233,81 @@ CREATE TRIGGER trg_audit_admin_users
 AFTER INSERT OR UPDATE OR DELETE ON accrual_admin_users
 FOR EACH ROW EXECUTE FUNCTION log_accrual_changes();
 
+-- ==========================================
+-- FASE 5: CALENDARIO COLABORATIVO (CM / Marketing)
+-- ==========================================
+
+-- 5.1 Tabla principal de eventos del calendario
+CREATE TABLE IF NOT EXISTS calendar_events (
+    id              SERIAL PRIMARY KEY,
+    title           TEXT NOT NULL,
+    platform        VARCHAR(20) DEFAULT 'ALL'
+                        CHECK (platform IN ('ALL', 'facebook', 'instagram', 'tiktok')),
+    status          VARCHAR(20) DEFAULT 'warning'
+                        CHECK (status IN ('warning', 'urgent', 'success')),
+    caption         TEXT,
+    media_url       TEXT,
+    provider        TEXT,
+    -- ✅ VALIDACIÓN DE FECHAS: start_date es obligatorio, end_date >= start_date
+    start_date      TIMESTAMPTZ NOT NULL,
+    end_date        TIMESTAMPTZ,
+    CONSTRAINT chk_calendar_dates CHECK (end_date IS NULL OR end_date >= start_date),
+    empresa         VARCHAR(50) DEFAULT 'accrual',
+    assigned_to     VARCHAR(100),
+    created_by      VARCHAR(100),
+    comments        JSONB DEFAULT '[]'::jsonb,
+    is_rescheduled  BOOLEAN DEFAULT FALSE,
+    created_at      TIMESTAMPTZ DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 5.2 Índices de alta velocidad para queries del calendario
+CREATE INDEX IF NOT EXISTS idx_calendar_events_start_date  ON calendar_events(start_date);
+CREATE INDEX IF NOT EXISTS idx_calendar_events_platform    ON calendar_events(platform);
+CREATE INDEX IF NOT EXISTS idx_calendar_events_empresa     ON calendar_events(empresa);
+CREATE INDEX IF NOT EXISTS idx_calendar_events_assigned_to ON calendar_events(assigned_to);
+CREATE INDEX IF NOT EXISTS idx_calendar_events_status      ON calendar_events(status);
+
+-- 5.3 Función genérica para auto-actualizar updated_at en cualquier tabla
+CREATE OR REPLACE FUNCTION set_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- 5.4 Trigger: Actualiza updated_at automáticamente al editar un evento
+CREATE OR REPLACE TRIGGER trg_calendar_events_updated_at
+BEFORE UPDATE ON calendar_events
+FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+-- 5.5 Trigger de auditoría (reutiliza la función global log_accrual_changes)
+CREATE OR REPLACE TRIGGER trg_audit_calendar_events
+AFTER INSERT OR UPDATE OR DELETE ON calendar_events
+FOR EACH ROW EXECUTE FUNCTION log_accrual_changes();
+
+-- 5.6 Vista: Eventos próximos con nivel de urgencia para el panel admin
+CREATE OR REPLACE VIEW view_calendar_upcoming AS
+SELECT
+    ce.id,
+    ce.title,
+    ce.platform,
+    ce.status,
+    ce.empresa,
+    ce.assigned_to,
+    ce.start_date,
+    ce.end_date,
+    ce.is_rescheduled,
+    CASE
+        WHEN ce.start_date < NOW()                         THEN 'VENCIDO'
+        WHEN ce.start_date <= NOW() + INTERVAL '24 hours' THEN 'HOY'
+        WHEN ce.start_date <= NOW() + INTERVAL '3 days'   THEN 'ESTA_SEMANA'
+        ELSE 'PLANIFICADO'
+    END AS urgencia_ui,
+    jsonb_array_length(COALESCE(ce.comments, '[]'::jsonb)) AS total_comentarios
+FROM calendar_events ce
+WHERE ce.start_date >= NOW() - INTERVAL '7 days'
+ORDER BY ce.start_date ASC;
+
+

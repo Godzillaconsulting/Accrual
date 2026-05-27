@@ -19,7 +19,7 @@ import PanelMaestroPanel from './PanelMaestroPanel';
 import SqlAtaquesPanel from './SqlAtaquesPanel';
 import BlackListPanel from './BlackListPanel';
 // ── Hover field wrapper → activa resaltado en preview ──────────────────────
-import { PAGE_SECTIONS, injectSectionDefaults } from '../utils/studioConfig';
+import { PAGE_SECTIONS, injectSectionDefaults, replaceBrWithNewline } from '../utils/studioConfig';
 import { detectTextFields, detectMediaFields, toLabel, detectGroupedFields, MEDIA_PATTERNS, getFieldWeight } from '../utils/editorParser';
 import { servicesData } from '../utils/mockServices';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
@@ -124,7 +124,7 @@ export default function AdminStudio() {
     if (location.pathname.includes('/newsletter')) return 'newsletter';
     if (location.pathname.includes('/ceo')) return 'ceo_estudio';
     if (location.pathname.includes('/master')) return 'panel_maestro';
-    if (location.pathname.includes('/sql')) return 'sql_ataques';
+    if (location.pathname.includes('/sql')) return 'blacklist';
     if (location.pathname.includes('/blacklist')) return 'blacklist';
     if (location.pathname.includes('/ai-planner')) return 'ai-planner';
     if (location.pathname.includes('/automation-flow')) return 'automation-flow';
@@ -316,9 +316,38 @@ export default function AdminStudio() {
  // Lógica explícita de vistas
  const canSeeDBEstudio    = isCEO;
  const canSeePanelMaestro = isCEO;
- const canSeeSqlAtaques   = isCEO;
+ const canSeeSqlAtaques   = false; // Removido a petición del usuario (se monitorea en Godzilla)
  const canSeeBlackList    = isCEO;
  const canSeeCeoEstudio   = isEditor;
+
+  useEffect(() => {
+    if (selectedNodeId && nodes.length > 0 && !draftData) {
+      const node = nodes.find(n => n.id === selectedNodeId);
+      if (node) {
+        let combinedData = { ...(node.published_data || {}), ...(node.draft_data || {}) };
+        combinedData = injectSectionDefaults(node.id, combinedData);
+        combinedData = replaceBrWithNewline(combinedData);
+        setDraftData(combinedData);
+      }
+    }
+  }, [selectedNodeId, nodes, draftData]);
+
+  const selectedNode = nodes.find(n => n.id === selectedNodeId);
+
+  const handleSelectSection = (node) => {
+    setIsAnalyticsMode(false);
+    setSelectedNodeId(node.id);
+    setActiveTab('textos');
+    setSelectedElementIndex(null);
+    setSelectedFeatureIndex(null);
+    navigate('/admin');
+  
+    let combinedData = { ...(node.published_data || {}), ...(node.draft_data || {}) };
+    combinedData = injectSectionDefaults(node.id, combinedData);
+    combinedData = replaceBrWithNewline(combinedData);
+
+    setDraftData(combinedData);
+  };
 
  // Sync draftData → preview
  useEffect(() => {
@@ -333,21 +362,6 @@ export default function AdminStudio() {
    return () => setPreviewOverride(null, null);
  }, []);
 
- const selectedNode = nodes.find(n => n.id === selectedNodeId);
-
- const handleSelectSection = (node) => {
- setIsAnalyticsMode(false);
- setSelectedNodeId(node.id);
- setActiveTab('textos');
- setSelectedElementIndex(null);
- setSelectedFeatureIndex(null);
- navigate('/admin');
- 
-  let combinedData = { ...(node.published_data || {}), ...(node.draft_data || {}) };
-  combinedData = injectSectionDefaults(node.id, combinedData);
-
- setDraftData(combinedData);
- };
 
  const change = (key, val) => {
    setDraftData(p => ({ ...p, [key]: val }));

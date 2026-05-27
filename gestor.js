@@ -1,24 +1,32 @@
 import { execSync, spawn } from 'child_process';
 import readline from 'readline';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Cambiar al directorio raíz de la workspace para que docker-compose funcione
+process.chdir(path.join(__dirname, '..'));
 
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
 
-const PM2_CMD = 'C:/Users/GODZILLA.IA/AppData/Roaming/npm/pm2.cmd';
-
 const menu = `
 \x1b[36m=============================================\x1b[0m
-\x1b[1m  🤖 ACCRUAL - GESTOR DE IA (BAILEYS 24/7)   \x1b[0m
+\x1b[1m  🤖 ACCRUAL - GESTOR DOCKER (SISTEMA + BOT)  \x1b[0m
 \x1b[36m=============================================\x1b[0m
 
-\x1b[32m[1]\x1b[0m Iniciar/Actualizar Accrual Bot
-\x1b[32m[2]\x1b[0m Detener Bot
-\x1b[32m[3]\x1b[0m Reiniciar Bot (Aplicar Cambios)
-\x1b[32m[4]\x1b[0m Ver Consola/Logs en Vivo
-\x1b[32m[5]\x1b[0m Estado de Memoria y Procesos
-\x1b[32m[6]\x1b[0m Borrar Sesión (Desvincular WhatsApp)
+\x1b[32m[1]\x1b[0m Levantar/Actualizar Todo el Sistema (Build)
+\x1b[32m[2]\x1b[0m Detener Todo el Sistema
+\x1b[32m[3]\x1b[0m Reiniciar Sistema (Aplicar Cambios)
+\x1b[32m[4]\x1b[0m Ver Logs del Bot de WhatsApp en Vivo
+\x1b[32m[5]\x1b[0m Ver Logs del API / Servidor Web
+\x1b[32m[6]\x1b[0m Estado de los Contenedores (Docker PS)
+\x1b[32m[7]\x1b[0m Borrar Sesión (Desvincular WhatsApp)
 \x1b[31m[0]\x1b[0m Salir
 
 Elige una opción: `;
@@ -38,40 +46,58 @@ const showMenu = () => {
         console.log('\n');
         switch (opcion.trim()) {
             case '1':
-                console.log('\x1b[32mIniciando Accrual Bot en segundo plano...\x1b[0m');
-                // Borramos la versión vieja genérica si existe
-                runCommand(`${PM2_CMD} delete whatsapp-bot`, false);
-                runCommand(`${PM2_CMD} start bot/whatsappBot.js --name accrual-bot --update-env`);
-                console.log('\x1b[36mVe a http://localhost:3003/link para vincular tu número.\x1b[0m');
+                console.log('\x1b[32mConstruyendo y levantando contenedores Docker...\x1b[0m');
+                runCommand('docker compose up --build -d');
+                console.log('\x1b[36mMonitorea la imagen qr_accrual.png para escanear el QR.\x1b[0m');
                 setTimeout(showMenu, 1500);
                 break;
             case '2':
-                console.log('\x1b[33mDeteniendo Bot...\x1b[0m');
-                runCommand(`${PM2_CMD} stop accrual-bot`);
+                console.log('\x1b[33mDeteniendo contenedores Docker...\x1b[0m');
+                runCommand('docker compose down');
                 setTimeout(showMenu, 1500);
                 break;
             case '3':
-                console.log('\x1b[36mReiniciando Bot para aplicar cambios...\x1b[0m');
-                runCommand(`${PM2_CMD} delete whatsapp-bot`, false);
-                runCommand(`${PM2_CMD} restart accrual-bot --update-env || ${PM2_CMD} start bot/whatsappBot.js --name accrual-bot --update-env`);
+                console.log('\x1b[36mReiniciando servicios...\x1b[0m');
+                runCommand('docker compose restart');
                 setTimeout(showMenu, 1500);
                 break;
             case '4':
-                console.log('\x1b[35mConectando a la consola en vivo... (Presiona CTRL+C para salir de los logs)\x1b[0m');
-                const logs = spawn(PM2_CMD, ['logs', 'accrual-bot'], { stdio: 'inherit' });
-                logs.on('close', () => {
+                console.log('\x1b[35mConectando a logs del BOT... (Presiona CTRL+C para salir)\x1b[0m');
+                const botLogs = spawn('docker', ['compose', 'logs', '-f', 'accrual-bot'], { stdio: 'inherit', shell: true });
+                botLogs.on('close', () => {
                     showMenu();
                 });
                 break;
             case '5':
-                runCommand(`${PM2_CMD} list`);
-                setTimeout(showMenu, 1500);
+                console.log('\x1b[35mConectando a logs del API... (Presiona CTRL+C para salir)\x1b[0m');
+                const apiLogs = spawn('docker', ['compose', 'logs', '-f', 'accrual-api'], { stdio: 'inherit', shell: true });
+                apiLogs.on('close', () => {
+                    showMenu();
+                });
                 break;
             case '6':
+                console.log('\x1b[36mEstado actual de los contenedores:\x1b[0m');
+                runCommand('docker compose ps');
+                setTimeout(showMenu, 1500);
+                break;
+            case '7':
                 console.log('\x1b[31mBorrando sesión de WhatsApp...\x1b[0m');
-                runCommand(`${PM2_CMD} stop accrual-bot`, false);
-                runCommand(`rmdir /S /Q "C:\\Users\\GODZILLA.IA\\Accrual\\Accrual\\bot_sessions"`, false);
-                console.log('\x1b[32mSesión borrada. Reinicia el bot (Opción 3) para generar un nuevo código.\x1b[0m');
+                runCommand('docker compose stop accrual-bot', false);
+                
+                // Borrar carpeta bot_sessions en el host
+                const sessionsPath = path.join('Accrual', 'bot_sessions');
+                if (fs.existsSync(sessionsPath)) {
+                    runCommand(`rmdir /S /Q "${sessionsPath}"`, false);
+                }
+                
+                // Sobreescribir el QR en el host para limpiarlo
+                const qrPath = path.join('Accrual', 'qr_accrual.png');
+                if (fs.existsSync(qrPath)) {
+                    try { fs.writeFileSync(qrPath, ''); } catch(e) {}
+                }
+                
+                console.log('\x1b[32mSesión borrada. Iniciando bot de nuevo para generar código QR...\x1b[0m');
+                runCommand('docker compose start accrual-bot');
                 setTimeout(showMenu, 1500);
                 break;
             case '0':

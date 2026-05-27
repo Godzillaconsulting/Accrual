@@ -1,0 +1,32 @@
+# ─── Dockerfile.bot — Solo para el Bot de WhatsApp (Baileys) ───────────────
+# Imagen liviana: solo instala dependencias del bot, sin React ni Vite.
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Dependencias de sistema necesarias para Baileys (ffmpeg, sharp)
+RUN apk add --no-cache git python3 make g++
+
+# Instalar pnpm globalmente
+RUN npm install -g pnpm
+
+# Copiar solo el package.json del bot (sin lockfile)
+COPY package.bot.json ./package.json
+
+# Instalar dependencias del bot
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+RUN pnpm install --no-frozen-lockfile --ignore-scripts
+
+# Copiar el código del bot y archivos necesarios
+COPY bot/ ./bot/
+COPY api/ ./api/
+COPY database/ ./database/
+COPY credentials.json ./
+
+# Crear directorios necesarios
+RUN mkdir -p bot_sessions media-uploads
+
+# Puerto del QR scanner del bot
+EXPOSE 3001
+
+CMD ["node", "bot/whatsappBot.js"]

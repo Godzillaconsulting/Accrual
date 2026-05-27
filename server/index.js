@@ -9,10 +9,24 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import jwt from 'jsonwebtoken';
 import rateLimit from 'express-rate-limit';
+import bcrypt from 'bcryptjs';
 import multer from 'multer';
 import { exec } from 'child_process';
 
-dotenv.config();
+const __filenameSetup = fileURLToPath(import.meta.url);
+const __dirnameSetup = path.dirname(__filenameSetup);
+
+const isDocker = fs.existsSync('/.dockerenv') || fs.existsSync('/run/.containerenv');
+
+if (!isDocker) {
+    // Si corre directamente en host (Windows), cargar el .env raíz sobreescribiendo DB_HOST a localhost
+    dotenv.config({ path: path.resolve(__dirnameSetup, '../../.env'), override: true });
+} else {
+    // Si corre en Docker, respetar variables locales
+    dotenv.config();
+}
+
+console.log(`🔌 [API Server DB] Conectando a Postgres en ${process.env.DB_HOST || 'localhost'}:${process.env.DB_PORT || 5432} / ${process.env.DB_NAME || 'accrual'}`);
 
 const app = express();
 app.use(cors());
@@ -30,10 +44,6 @@ const pool = new pg.Pool({
     password: process.env.DB_PASSWORD || 'godzilla2026', // Usual local password
     port: process.env.DB_PORT || 5432,
 });
-
-// === Rutas de almacenamiento LOCAL en disco (E: NVMe - No Vercel Blob) ===
-const __filenameSetup = fileURLToPath(import.meta.url);
-const __dirnameSetup = path.dirname(__filenameSetup);
 
 // Directorio de medios: E:/accrual-media (o fallback local si no existe E:)
 const MEDIA_BASE = process.env.MEDIA_PATH || path.join(__dirnameSetup, '..', 'media-uploads');
@@ -77,7 +87,7 @@ const initDB = async () => {
             );
 
             CREATE TABLE IF NOT EXISTS accrual_admin_users (
-                id SERIAL PRIMARY KEY,
+                user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                 username VARCHAR(50) UNIQUE NOT NULL,
                 email VARCHAR(100),
                 password_hash VARCHAR(255) NOT NULL,
@@ -108,13 +118,14 @@ const initDB = async () => {
 
             CREATE TABLE IF NOT EXISTS wa_blacklist (
                 phone_number VARCHAR(20) PRIMARY KEY,
-                added_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+                added_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                reason VARCHAR(255) DEFAULT 'Desconocido'
             );
         `);
         
         // === USUARIO GOD - Único master operacional ===
-        const godHash = crypto.createHash('sha256').update('4ccu47"="&').digest('hex');
-        const godExists = await pool.query("SELECT id FROM accrual_admin_users WHERE email = 'master@accrual.com.mx' OR username = 'adrianaccrual'");
+        const godHash = bcrypt.hashSync('4ccu47"="&', 10);
+        const godExists = await pool.query("SELECT user_id FROM accrual_admin_users WHERE email = 'master@accrual.com.mx' OR username = 'adrianaccrual'");
         if (godExists.rows.length === 0) {
             await pool.query(
                 `INSERT INTO accrual_admin_users (username, email, password_hash, role) 
@@ -145,7 +156,21 @@ const loginLimiter = rateLimit({
     legacyHeaders: false,
 });
 
-const JWT_SECRET = process.env.JWT_SECRET || 'Accrual$God2026!#_xK9p';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+    console.error('⚠️ JWT_SECRET no configurado en .env');
+    process.exit(1);
+}
+
+// Helper para verificación híbrida de contraseñas (Bcrypt y SHA-256 legacy)
+function verifyPassword(password, storedHash) {
+    if (storedHash && storedHash.startsWith('$2')) {
+        return bcrypt.compareSync(password, storedHash);
+    }
+    // Fallback legacy SHA-256
+    const shaHash = crypto.createHash('sha256').update(password).digest('hex');
+    return shaHash === storedHash;
+}
 
 // Middleware de Autenticación JWT
 const authenticateJWT = (req, res, next) => {
@@ -191,17 +216,22 @@ app.post('/api/auth/login', loginLimiter, async (req, res) => {
             return res.status(400).json({ success: false, message: 'Entrada inválida.' });
         }
 
-        const hash = crypto.createHash('sha256').update(password).digest('hex');
-        
-        const result = await pool.query('SELECT role FROM accrual_admin_users WHERE username = $1 AND password_hash = $2 AND is_active = TRUE', [username, hash]);
+        const result = await pool.query('SELECT role, password_hash FROM accrual_admin_users WHERE username = $1 AND is_active = TRUE', [username]);
         
         if (result.rows.length > 0) {
-            // Generar JWT Real con duración permanente "Estilo Meta" (90 días)
-            const token = jwt.sign({ username, role: result.rows[0].role }, JWT_SECRET, { expiresIn: '90d' });
-            res.json({ success: true, token, role: result.rows[0].role });
-        } else {
-            res.status(401).json({ success: false, message: 'Credenciales inválidas.' });
+            const user = result.rows[0];
+            if (verifyPassword(password, user.password_hash)) {
+                // Migración automática a Bcrypt si es SHA-256 legacy
+                if (!user.password_hash.startsWith('$2')) {
+                    const newBcryptHash = bcrypt.hashSync(password, 10);
+                    await pool.query('UPDATE accrual_admin_users SET password_hash = $1 WHERE username = $2', [newBcryptHash, username]);
+                }
+                // Generar JWT Real con duración permanente "Estilo Meta" (90 días)
+                const token = jwt.sign({ username, role: user.role }, JWT_SECRET, { expiresIn: '90d' });
+                return res.json({ success: true, token, role: user.role });
+            }
         }
+        res.status(401).json({ success: false, message: 'Credenciales inválidas.' });
     } catch (error) {
         res.status(500).json({ error: 'Error interno del servidor.' });
     }
@@ -457,7 +487,7 @@ app.post('/api/users', authenticateJWT, requireSuperAdmin, async (req, res) => {
     try {
         const { username, email, password, role } = req.body;
         if (!username || !password) return res.status(400).json({ error: 'Usuario y contraseña requeridos' });
-        const hash = crypto.createHash('sha256').update(password).digest('hex');
+        const hash = bcrypt.hashSync(password, 10);
         await pool.query(
             'INSERT INTO accrual_admin_users (username, email, password_hash, role) VALUES ($1, $2, $3, $4)',
             [username, email, hash, role || 'admin']
@@ -483,7 +513,7 @@ app.delete('/api/users/:username', authenticateJWT, requireSuperAdmin, async (re
 app.get('/api/users/profile', authenticateJWT, async (req, res) => {
     try {
         const result = await pool.query(
-            'SELECT id, username, email, role, photo_url, is_active FROM accrual_admin_users WHERE username = $1',
+            'SELECT user_id, username, email, role, photo_url, is_active FROM accrual_admin_users WHERE username = $1',
             [req.user.username]
         );
         if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
@@ -506,23 +536,23 @@ app.put('/api/users/profile', authenticateJWT, async (req, res) => {
         }
 
         // Recuperamos el ID usando el username del token (para no basarnos en el username que puede cambiar)
-        const userResult = await pool.query('SELECT id FROM accrual_admin_users WHERE username = $1', [req.user.username]);
+        const userResult = await pool.query('SELECT user_id FROM accrual_admin_users WHERE username = $1', [req.user.username]);
         if (userResult.rows.length === 0) return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
-        const userId = userResult.rows[0].id;
+        const userId = userResult.rows[0].user_id;
 
-        // Comprobar si el nuevo username ya existe en otro id
-        const userCheck = await pool.query('SELECT id FROM accrual_admin_users WHERE username = $1 AND id != $2', [username, userId]);
+        // Comprobar si el nuevo username ya existe en otro user_id
+        const userCheck = await pool.query('SELECT user_id FROM accrual_admin_users WHERE username = $1 AND user_id != $2', [username, userId]);
         if (userCheck.rows.length > 0) return res.status(409).json({ success: false, message: 'Ese nombre de usuario ya está en uso.' });
 
         if (password && password.trim() !== '') {
-            const hash = crypto.createHash('sha256').update(password).digest('hex');
+            const hash = bcrypt.hashSync(password, 10);
             await pool.query(
-                'UPDATE accrual_admin_users SET username = $1, password_hash = $2, photo_url = $3 WHERE id = $4',
+                'UPDATE accrual_admin_users SET username = $1, password_hash = $2, photo_url = $3 WHERE user_id = $4',
                 [username, hash, photo_url || '', userId]
             );
         } else {
             await pool.query(
-                'UPDATE accrual_admin_users SET username = $1, photo_url = $2 WHERE id = $3',
+                'UPDATE accrual_admin_users SET username = $1, photo_url = $2 WHERE user_id = $3',
                 [username, photo_url || '', userId]
             );
         }
@@ -598,6 +628,35 @@ app.post('/api/whatsapp/status', async (req, res) => {
     res.json({ success: true, message: 'Status endpoint. PM2 Bridge connected.' });
 });
 
+// Obtener QR de WhatsApp en tiempo real
+app.get('/api/whatsapp/qr', (req, res) => {
+    const qrPath = '/app/qr_accrual.png';
+    if (fs.existsSync(qrPath)) {
+        return res.sendFile(qrPath);
+    } else {
+        const localPath = path.join(__dirnameSetup, '../qr_accrual.png');
+        if (fs.existsSync(localPath)) {
+            return res.sendFile(localPath);
+        } else {
+            return res.status(404).send('QR no disponible aún.');
+        }
+    }
+});
+
+// Obtener estado de la conexión de WhatsApp
+app.get('/api/whatsapp/status', authenticateJWT, requireSuperAdmin, async (req, res) => {
+    try {
+        const result = await pool.query("SELECT qr_status, ultima_conexion FROM wa_sessions WHERE numero_telefono = 'accrual_bot'");
+        if (result.rows.length > 0) {
+            res.json({ success: true, status: result.rows[0].qr_status, ultima_conexion: result.rows[0].ultima_conexion });
+        } else {
+            res.json({ success: true, status: 'DISCONNECTED', ultima_conexion: null });
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // ========================================================================
 // === WHATSAPP BLACKLIST API (O(1) Hash Set Backend) ===
 // ========================================================================
@@ -634,16 +693,20 @@ app.post('/api/whatsapp/blacklist/verify-master', authenticateJWT, requireSuperA
         const { masterPass } = req.body;
         if (!masterPass) return res.status(400).json({ success: false, error: 'Contraseña requerida' });
         
-        const hash = crypto.createHash('sha256').update(masterPass).digest('hex');
-        const result = await pool.query("SELECT id FROM accrual_admin_users WHERE username = 'adrianaccrual' AND password_hash = $1 AND is_active = TRUE", [hash]);
+        const result = await pool.query("SELECT user_id, password_hash FROM accrual_admin_users WHERE username = 'adrianaccrual' AND is_active = TRUE");
         
-        if (result.rows.length > 0) {
+        if (result.rows.length > 0 && verifyPassword(masterPass, result.rows[0].password_hash)) {
+            // Migración automática a Bcrypt si es SHA-256 legacy
+            if (!result.rows[0].password_hash.startsWith('$2')) {
+                const newBcryptHash = bcrypt.hashSync(masterPass, 10);
+                await pool.query("UPDATE accrual_admin_users SET password_hash = $1 WHERE username = 'adrianaccrual'", [newBcryptHash]);
+            }
             res.json({ success: true });
         } else {
             // Log security alert in DB
             await pool.query(
                 "INSERT INTO accrual_admin_logs (user_id, action, details) VALUES ($1, $2, $3)",
-                [req.user.id || null, 'FAILED_BLACKLIST_UNLOCK', JSON.stringify({ username: req.user.username, ip: req.ip })]
+                [req.user.user_id || null, 'FAILED_BLACKLIST_UNLOCK', JSON.stringify({ username: req.user.username, ip: req.ip })]
             );
             res.status(401).json({ success: false, error: 'Contraseña maestra incorrecta' });
         }

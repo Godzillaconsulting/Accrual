@@ -1,0 +1,14 @@
+node_modules
+dist
+bot_sessions
+media-uploads
+.env
+.git
+.vercel
+.wwebjs_cache
+npm-debug.log
+pnpm-debug.log
+*.log
+.pm2
+*.bat
+*.cjs

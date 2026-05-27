@@ -10,6 +10,8 @@ export default function BlackListPanel({ adminProfile }) {
     const [newReason, setNewReason] = useState('');
     const [error, setError] = useState(null);
     const [isUnlocked, setIsUnlocked] = useState(false);
+    const [qrTime, setQrTime] = useState(Date.now());
+    const [botStatus, setBotStatus] = useState({ status: 'DISCONNECTED', ultima_conexion: null });
 
     const token = localStorage.getItem('adminToken');
 
@@ -38,6 +40,20 @@ export default function BlackListPanel({ adminProfile }) {
         setLoading(false);
     };
 
+    const fetchBotStatus = async () => {
+        try {
+            const res = await fetch(`${API_BASE}/api/whatsapp/status`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (data.success) {
+                setBotStatus({ status: data.status, ultima_conexion: data.ultima_conexion });
+            }
+        } catch (e) {
+            console.error('Error fetching bot status', e);
+        }
+    };
+
     const fetchBlacklist = async () => {
         setLoading(true);
         setError(null);
@@ -60,6 +76,14 @@ export default function BlackListPanel({ adminProfile }) {
 
     useEffect(() => {
         fetchBlacklist();
+        fetchBotStatus();
+        
+        const qrInterval = setInterval(() => {
+            setQrTime(Date.now());
+            fetchBotStatus();
+        }, 5000);
+        
+        return () => clearInterval(qrInterval);
     }, []);
 
     const handleAdd = async (e) => {
@@ -154,6 +178,84 @@ export default function BlackListPanel({ adminProfile }) {
                             </button>
                         </div>
                     </form>
+                    
+{/* Tarjeta de Conexión de WhatsApp */}
+                    <div className="bg-[#152033] border border-neutral-800 rounded-xl p-6 shadow-lg mt-6">
+                        <h3 className="font-bold text-gray-300 mb-4 tracking-widest uppercase text-sm flex items-center justify-between">
+                            <span className="flex items-center gap-2">📲 Conexión WhatsApp</span>
+                            {botStatus.status === 'CONNECTED' ? (
+                                <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-green-500/20 text-green-400 border border-green-500/30 animate-pulse">
+                                    🟢 CONECTADO
+                                </span>
+                            ) : botStatus.status === 'QR_READY' ? (
+                                <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
+                                    🟡 QR LISTO
+                                </span>
+                            ) : (
+                                <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/30">
+                                    🔴 DESCONECTADO
+                                </span>
+                            )}
+                        </h3>
+
+                        {botStatus.status === 'CONNECTED' ? (
+                            <div className="flex flex-col items-center justify-center p-6 bg-green-500/5 rounded-lg border border-green-500/20 text-center">
+                                <div className="w-16 h-16 rounded-full bg-green-500/10 flex items-center justify-center text-green-400 mb-3 border border-green-500/30">
+                                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                                <h4 className="text-sm font-bold text-green-400 uppercase tracking-wider">Bot en Línea</h4>
+                                <p className="text-xs text-neutral-300 mt-2 max-w-xs">
+                                    La Neurona WhatsApp está vinculada y operando correctamente en segundo plano.
+                                </p>
+                                {botStatus.ultima_conexion && (
+                                    <span className="text-[10px] text-neutral-400 mt-3 bg-neutral-900/60 px-2 py-1 rounded">
+                                        Última Actividad: {new Date(botStatus.ultima_conexion).toLocaleString()}
+                                    </span>
+                                )}
+                            </div>
+                        ) : botStatus.status === 'QR_READY' ? (
+                            <div className="flex flex-col items-center">
+                                <p className="text-xs text-neutral-400 mb-4 text-center">
+                                    Escanea este código QR desde tu celular para conectar el Bot de WhatsApp.
+                                </p>
+                                <div className="flex flex-col items-center justify-center p-4 bg-white rounded-lg border border-neutral-700 w-full max-w-[210px] aspect-square">
+                                    <img 
+                                        src={`${API_BASE}/api/whatsapp/qr?t=${qrTime}`} 
+                                        alt="Código QR de WhatsApp"
+                                        className="w-48 h-48 object-contain"
+                                        onError={(e) => { 
+                                            e.target.style.display = 'none'; 
+                                            e.target.nextSibling.style.display = 'block'; 
+                                        }}
+                                        onLoad={(e) => {
+                                            e.target.style.display = 'block'; 
+                                            e.target.nextSibling.style.display = 'none'; 
+                                        }}
+                                    />
+                                    <div className="hidden text-neutral-500 text-xs text-center p-8">
+                                        Cargando QR...
+                                    </div>
+                                </div>
+                                <div className="text-[10px] text-neutral-500 mt-3 text-center animate-pulse">
+                                    🔄 Sincronizando QR en tiempo real (5s)
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="flex flex-col items-center justify-center p-6 bg-red-500/5 rounded-lg border border-red-500/20 text-center">
+                                <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center text-red-400 mb-3 border border-red-500/30 animate-pulse">
+                                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                    </svg>
+                                </div>
+                                <h4 className="text-sm font-bold text-red-400 uppercase tracking-wider">Sesión Inactiva</h4>
+                                <p className="text-xs text-neutral-300 mt-2 max-w-xs">
+                                    El bot de WhatsApp está desconectado o el contenedor se está reiniciando. Por favor, espera unos segundos.
+                                </p>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* Table */}

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import i18n from '../i18n';
-import { injectSectionDefaults } from '../utils/studioConfig';
+import { injectSectionDefaults, replaceNewlineWithBr } from '../utils/studioConfig';
 
 const SiteContext = createContext();
 
@@ -65,12 +65,12 @@ export function SiteProvider({ children }) {
   // devuelve el draft (en tiempo real) en lugar del published_data.
   const getNodeData = (id) => {
     if (previewOverride && previewOverride.nodeId === id) {
-      return previewOverride.data;
+      return replaceNewlineWithBr(previewOverride.data);
     }
     const nodesArray = Array.isArray(nodes) ? nodes : [];
     const node = nodesArray.find(n => n.id === id);
     if (!node || !node.published_data) return null;
-    return injectSectionDefaults(id, node.published_data);
+    return replaceNewlineWithBr(injectSectionDefaults(id, node.published_data));
   };
 
   // Llamado por AdminStudio al seleccionar un nodo y editar el draft
