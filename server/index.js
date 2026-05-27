@@ -630,17 +630,34 @@ app.post('/api/whatsapp/status', async (req, res) => {
 });
 
 // Obtener QR de WhatsApp en tiempo real
-app.get('/api/whatsapp/qr', (req, res) => {
-    const qrPath = '/app/qr_accrual.png';
-    if (fs.existsSync(qrPath)) {
-        return res.sendFile(qrPath);
-    } else {
-        const localPath = path.join(__dirnameSetup, '../qr_accrual.png');
-        if (fs.existsSync(localPath)) {
-            return res.sendFile(localPath);
-        } else {
-            return res.status(404).send('QR no disponible aún.');
+app.get('/api/whatsapp/qr', async (req, res) => {
+    try {
+        const result = await pool.query("SELECT qr_status, token_sesion FROM wa_sessions WHERE numero_telefono = 'accrual_bot'");
+        if (result.rows.length > 0) {
+            const { qr_status, token_sesion } = result.rows[0];
+            if (qr_status === 'QR_READY' && token_sesion && token_sesion.startsWith('data:image/')) {
+                const base64Data = token_sesion.split(',')[1];
+                const imgBuffer = Buffer.from(base64Data, 'base64');
+                res.type('image/png');
+                return res.send(imgBuffer);
+            }
         }
+        
+        // Fallback al sistema de archivos local si no hay datos en DB
+        const qrPath = '/app/qr_accrual.png';
+        if (fs.existsSync(qrPath)) {
+            return res.sendFile(qrPath);
+        } else {
+            const localPath = path.join(__dirnameSetup, '../qr_accrual.png');
+            if (fs.existsSync(localPath)) {
+                return res.sendFile(localPath);
+            } else {
+                return res.status(404).send('QR no disponible aún.');
+            }
+        }
+    } catch (err) {
+        console.error('❌ Error al obtener QR desde la DB:', err.message);
+        return res.status(500).send('Error interno del servidor.');
     }
 });
 

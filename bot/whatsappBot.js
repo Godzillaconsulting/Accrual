@@ -295,14 +295,14 @@ const processFullMessage = async (senderId, messageText, sock) => {
 // ===============================================
 // INICIALIZACIÓN DE BAILEYS
 // ===============================================
-async function updateBotStatusInDB(status) {
+async function updateBotStatusInDB(status, tokenSesion = null) {
     try {
         await pool.query(`
-            INSERT INTO wa_sessions (numero_telefono, qr_status, ultima_conexion)
-            VALUES ('accrual_bot', $1, CURRENT_TIMESTAMP)
+            INSERT INTO wa_sessions (numero_telefono, qr_status, token_sesion, ultima_conexion)
+            VALUES ('accrual_bot', $1, $2, CURRENT_TIMESTAMP)
             ON CONFLICT (numero_telefono)
-            DO UPDATE SET qr_status = EXCLUDED.qr_status, ultima_conexion = CURRENT_TIMESTAMP
-        `, [status]);
+            DO UPDATE SET qr_status = EXCLUDED.qr_status, token_sesion = EXCLUDED.token_sesion, ultima_conexion = CURRENT_TIMESTAMP
+        `, [status, tokenSesion]);
         console.log(`📡 [Accrual Bot DB Status] Estado actualizado a: ${status}`);
     } catch (err) {
         console.error('❌ Error actualizando estado del bot en la DB:', err.message);
@@ -348,14 +348,16 @@ export const initWhatsAppBot = async () => {
             // Generar imagen QR en disco para fácil escaneo en el host
             const qrPath = path.join(SESSIONS_BASE, '..', 'qr_accrual.png');
             try {
+                const qrDataURL = await qrcodeLib.toDataURL(qr, { width: 400 });
                 await qrcodeLib.toFile(qrPath, qr, {
                     color: { dark: '#000000', light: '#FFFFFF' },
                     width: 400
                 });
                 console.log(`💾 Código QR guardado en: ${qrPath}`);
-                await updateBotStatusInDB('QR_READY');
+                await updateBotStatusInDB('QR_READY', qrDataURL);
             } catch (err) {
                 console.error('❌ Error generando qr_accrual.png:', err);
+                await updateBotStatusInDB('QR_READY', null);
             }
         }
 
