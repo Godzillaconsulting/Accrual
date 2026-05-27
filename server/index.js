@@ -965,6 +965,15 @@ app.post('/api/db-studio/query', authenticateJWT, requireSuperAdmin, async (req,
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Redirigir tráfico del subdominio de la API (visual) hacia el dominio principal de producción
+app.use((req, res, next) => {
+    const host = req.headers.host || '';
+    if (host.includes('api.accrual.com.mx') && !req.path.startsWith('/api/') && !req.path.startsWith('/media-uploads')) {
+        return res.redirect(301, `https://www.accrual.com.mx${req.originalUrl}`);
+    }
+    next();
+});
+
 // Servir archivos de media subidos desde la Biblioteca Local (Sin CDN externo)
 app.use('/media-uploads', express.static(path.join(__dirname, '..', 'media-uploads')));
 
