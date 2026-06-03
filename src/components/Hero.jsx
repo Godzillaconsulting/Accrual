@@ -23,10 +23,15 @@ const Hero = () => {
                     <iframe
                         key={ytId}
                         src={`https://www.youtube.com/embed/${ytId}?controls=0&mute=1&autoplay=1&loop=1&playlist=${ytId}&playsinline=1`}
-                        className="w-full h-full object-cover opacity-60 pointer-events-none"
-                        frameBorder="0"
+                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-60"
+                        style={{
+                            width: '100vw',
+                            height: '56.25vw', // 16:9 aspect ratio
+                            minHeight: '100vh',
+                            minWidth: '177.77vh',
+                            border: 'none'
+                        }}
                         allow="autoplay; encrypted-media"
-                        style={{ border: 'none' }}
                     />
                 ) : (
                     <video
