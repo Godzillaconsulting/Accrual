@@ -11,7 +11,7 @@ export default React.memo(function GoyiAdmin() {
     const [inputValue, setInputValue] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef(null);
-    const API_URL = import.meta.env.DEV ? 'http://localhost:3000' : '';
+    const API_URL = '';
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

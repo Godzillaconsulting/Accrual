@@ -176,7 +176,7 @@ export default function AdminStudio() {
          formData.append('file', file);
          
          const token = localStorage.getItem('adminToken');
-         const API = import.meta.env.DEV ? 'http://localhost:3000' : '';
+         const API = '';
          const res = await fetch(`${API}/api/media/upload`, {
              method: 'POST',
              headers: { 'Authorization': `Bearer ${token}` },
@@ -243,7 +243,7 @@ export default function AdminStudio() {
  useEffect(() => {
     const token = localStorage.getItem('adminToken');
     if (!token) return;
-    const API = import.meta.env.DEV ? 'http://localhost:3000' : '';
+    const API = '';
     const evtSource = new EventSource(`${API}/api/nodes/stream/presence?token=${token}`);
     
     evtSource.onmessage = (event) => {
@@ -261,7 +261,7 @@ export default function AdminStudio() {
  useEffect(() => {
     if (!selectedNodeId || !adminProfile) return;
     const token = localStorage.getItem('adminToken');
-    const API = import.meta.env.DEV ? 'http://localhost:3000' : '';
+    const API = '';
     const user = adminProfile.username || 'admin';
 
     // Usar Beacon para release seguro al desmontar/cambiar tab sin esperar Fetch
@@ -382,7 +382,7 @@ export default function AdminStudio() {
  if (!selectedNodeId) return;
  setSaving(true);
  try {
- const base = '' || (import.meta.env.DEV ? 'http://localhost:3000' : '');
+ const base = '';
  const token = localStorage.getItem('adminToken');
  const res = await fetch(`${base}/api/nodes/${selectedNodeId}/draft`, {
  method:'PUT', headers: {'Content-Type':'application/json', 'Authorization': `Bearer ${token}` },
@@ -406,7 +406,7 @@ export default function AdminStudio() {
      return;
  }
  setIsPublishing(true);
- const base = '' || (import.meta.env.DEV ? 'http://localhost:3000' : '');
+ const base = '';
  const token = localStorage.getItem('adminToken');
  const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` };
  try {

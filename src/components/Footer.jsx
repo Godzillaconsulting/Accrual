@@ -27,9 +27,9 @@ const Footer = () => {
                         <h4 className="font-bold mb-6 uppercase text-[#D0D0DA] tracking-widest text-base">CONTACTO</h4>
                         <ul className="space-y-4 opacity-80 font-light">
                             <li>
-                                <a href="https://wa.me/526563049604" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-[#0F4C82] transition-colors">
+                                <a href="https://wa.me/526561242547" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-[#0F4C82] transition-colors">
                                     <img loading="lazy"  src={phoneIcon} alt="Phone" className="w-5 h-5 object-contain filter invert" />
-                                    <span>+52 656 304 9604</span>
+                                    <span>+52 656 124 2547</span>
                                 </a>
                             </li>
                             <li className="flex items-center gap-2">
@@ -54,7 +54,7 @@ const Footer = () => {
                                 <a href="https://www.facebook.com/profile.php?id=61572307195995" target="_blank" rel="noopener noreferrer">
                                     <Facebook className="w-6 h-6 cursor-pointer hover:text-[#0F4C82] transition-colors" />
                                 </a>
-                                <a href="https://wa.me/526563049604" target="_blank" rel="noopener noreferrer">
+                                <a href="https://wa.me/526561242547" target="_blank" rel="noopener noreferrer">
                                     <img loading="lazy"  src={whatsappLogoFooter} alt="WhatsApp" className="w-6 h-6 object-contain cursor-pointer hover:brightness-0 hover:invert-[0.2] transition-all duration-300" />
                                 </a>
                             </li>

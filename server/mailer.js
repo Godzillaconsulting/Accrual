@@ -70,7 +70,7 @@ export async function sendConfirmationEmail(appointment) {
                 <div style="margin-bottom: 25px;">
                     <a href="https://www.facebook.com/profile.php?id=61572307195995" style="display: inline-block; margin: 0 15px; color: #0F4C82; text-decoration: none; font-size: 14px; font-weight: bold;">📘 Facebook</a>
                     <a href="https://www.instagram.com/accrual.accounting?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" style="display: inline-block; margin: 0 15px; color: #0F4C82; text-decoration: none; font-size: 14px; font-weight: bold;">📸 Instagram</a>
-                    <a href="https://api.whatsapp.com/send/?phone=526563049604&text&type=phone_number&app_absent=0" style="display: inline-block; margin: 0 15px; color: #0F4C82; text-decoration: none; font-size: 14px; font-weight: bold;">💬 WhatsApp</a>
+                    <a href="https://api.whatsapp.com/send/?phone=526561242547&text&type=phone_number&app_absent=0" style="display: inline-block; margin: 0 15px; color: #0F4C82; text-decoration: none; font-size: 14px; font-weight: bold;">💬 WhatsApp</a>
                 </div>
                 <p style="margin: 0 0 10px 0; font-size: 12px; color: #9ca3af; line-height: 1.5;">
                     &copy; ${new Date().getFullYear()} Accrual Consultoría. Todos los derechos reservados.<br/>

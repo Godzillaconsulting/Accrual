@@ -122,6 +122,9 @@ const initDB = async () => {
                 added_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
                 reason VARCHAR(255) DEFAULT 'Desconocido'
             );
+
+            CREATE INDEX IF NOT EXISTS idx_pixel_event_name ON accrual_pixel_events(event_name);
+            CREATE INDEX IF NOT EXISTS idx_pixel_created_at ON accrual_pixel_events(created_at);
         `);
         
         // === USUARIO GOD - Único master operacional ===
@@ -567,7 +570,7 @@ app.put('/api/users/profile', authenticateJWT, async (req, res) => {
 // === CMS ENDPOINTS (Optimizados para NVMe - Disco E:) ===
 
 // Obtener todos los nodos del sitio web (Uso bajo de RAM comparado con Sanity)
-app.get('/api/nodes', authenticateJWT, async (req, res) => {
+app.get('/api/nodes', async (req, res) => {
     try {
         const result = await pool.query('SELECT id, draft_data, published_data FROM accrual_cms_nodes');
         res.json(result.rows);
@@ -681,30 +684,48 @@ app.get('/api/whatsapp/status', authenticateJWT, requireSuperAdmin, async (req, 
 
 app.get('/api/whatsapp/blacklist', authenticateJWT, requireSuperAdmin, async (req, res) => {
     try {
-        const result = await pool.query('SELECT phone_number, added_at, reason FROM wa_blacklist ORDER BY added_at DESC');
+        const result = await pool.query(
+            `SELECT phone_number, added_at, reason 
+             FROM wa_blacklist 
+             WHERE length(phone_number) < 14 
+               AND (reason IS NULL OR (reason NOT LIKE '%LID%' AND reason NOT LIKE '%Mapeado%')) 
+             ORDER BY added_at DESC`
+        );
         res.json({ success: true, blacklist: result.rows });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
+function normalizeWhatsAppNumber(phone) {
+    if (!phone) return '';
+    let clean = phone.replace(/[^0-9]/g, '');
+    if (clean.startsWith('521') && clean.length === 13) {
+        clean = '52' + clean.substring(3);
+    } else if (clean.length === 10) {
+        clean = '52' + clean;
+    }
+    return clean;
+}
+
 app.post('/api/whatsapp/blacklist', authenticateJWT, requireSuperAdmin, async (req, res) => {
     try {
         const { phone_number, reason } = req.body;
         if (!phone_number) return res.status(400).json({ error: 'Falta phone_number' });
         
-        const cleanPhone = phone_number.replace(/[^0-9]/g, '');
+        const cleanPhone = normalizeWhatsAppNumber(phone_number);
         if (cleanPhone.length < 10) return res.status(400).json({ error: 'Número inválido' });
 
         await pool.query(
             'INSERT INTO wa_blacklist (phone_number, reason) VALUES ($1, $2) ON CONFLICT (phone_number) DO NOTHING',
-            [`${cleanPhone}@s.whatsapp.net`, reason || 'Usuario Bloqueado']
+            [cleanPhone, reason || 'Usuario Bloqueado']
         );
         res.json({ success: true, message: 'Número agregado a la lista negra.' });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
+
 
 app.post('/api/whatsapp/blacklist/verify-master', authenticateJWT, requireSuperAdmin, async (req, res) => {
     try {

@@ -8,7 +8,7 @@ export default function DBStudioPanel({ adminProfile }) {
     const [error, setError] = useState(null);
 
     const token = localStorage.getItem('adminToken');
-    const API_BASE = '' || (import.meta.env.DEV ? 'http://localhost:3000' : '');
+    const API_BASE = '';
 
     const isJareg = adminProfile?.username?.toLowerCase() === 'jareg';
 

@@ -36,7 +36,7 @@ export default function MediaPicker({ value, onChange, accept = 'all', label = '
 
     const fetchMedia = async () => {
         try {
-            const token = localStorage.getItem('accrual_auth_token');
+            const token = localStorage.getItem('adminToken');
             const r = await fetch(`${API}/api/media`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -99,7 +99,7 @@ export default function MediaPicker({ value, onChange, accept = 'all', label = '
             };
             xhr.onerror = () => { setUploading(false); alert('Error de red al subir archivo.'); };
             xhr.open('POST', endpoint);
-            const token = localStorage.getItem('accrual_auth_token');
+            const token = localStorage.getItem('adminToken');
             if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`);
             xhr.send(formData);
         } catch (e) {
@@ -113,7 +113,7 @@ export default function MediaPicker({ value, onChange, accept = 'all', label = '
         e.stopPropagation();
         if (!confirm(`⚠️ ALERTA: ¿Seguro que quieres eliminar permanentemente ${filename} de la base de datos? Esto no se puede deshacer.`)) return;
         
-        const token = localStorage.getItem('accrual_auth_token');
+        const token = localStorage.getItem('adminToken');
         await fetch(`${API}/api/media/${type}/${filename}`, { 
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` }

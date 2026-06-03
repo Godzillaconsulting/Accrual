@@ -4,7 +4,7 @@ import { Lock, User, ArrowRight, AlertCircle, Loader, ShieldAlert, Eye, EyeOff }
 import logo from '../assets/Accrual logo (white).png';
 import CanvasCaptcha from './CanvasCaptcha';
 
-const API_BASE = import.meta.env.DEV ? 'http://localhost:3000' : '';
+const API_BASE = '';
 const MAX_ATTEMPTS = 10;
 
 const Login = () => {

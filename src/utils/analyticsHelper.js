@@ -21,7 +21,7 @@ export const trackAccrualEvent = async (eventName, eventData = {}) => {
     }
 
     // 2. Enviar al Backend propio para el Dashboard de Analytics
-    const backendUrl = import.meta.env.DEV ? 'http://localhost:3000' : '';
+    const backendUrl = '';
     let sessionId = sessionStorage.getItem('gz_session_id');
     
     if (!sessionId) {

@@ -22,9 +22,8 @@ export function SiteProvider({ children }) {
       const timeoutId = setTimeout(() => controller.abort(), 4500); // 4.5s límite máximo absoluto
 
       const lng = i18n.resolvedLanguage ? i18n.resolvedLanguage.split('-')[0].toLowerCase() : 'es';
-      const devUrl = `http://localhost:3000/api/nodes?lng=${lng}`;
-      const prodUrl = `/api/nodes?t=${new Date().getTime()}&lng=${lng}`;
-      const res = await fetch(import.meta.env.DEV ? devUrl : prodUrl, {
+      const url = `/api/nodes?lng=${lng}&t=${new Date().getTime()}`;
+      const res = await fetch(url, {
         cache: 'no-store',
         signal: controller.signal,
         headers: {

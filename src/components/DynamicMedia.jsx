@@ -13,7 +13,7 @@ export default function DynamicMedia({ src, alt, className, style, ...props }) {
             finalSrc = finalSrc.replace(/https?:\/\/(www\.)?accrualconsulting\.ai/g, 'https://bot.accrual.ai');
         }
         if (finalSrc.startsWith('/api/media')) {
-            const API_URL = import.meta.env.DEV ? 'http://localhost:3000' : 'https://bot.accrual.ai';
+            const API_URL = '';
             finalSrc = `${API_URL}${finalSrc}`;
         }
         if (finalSrc.includes('/api/media') && !finalSrc.includes('v=cf2')) {

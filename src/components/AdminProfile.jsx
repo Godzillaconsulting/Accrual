@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const API = import.meta.env.DEV ? 'http://localhost:3000' : '';
+const API = '';
 
 export default function AdminProfile({ profile, onProfileUpdate }) {
     const [subTab, setSubTab] = useState('personal'); // 'personal' | 'team'

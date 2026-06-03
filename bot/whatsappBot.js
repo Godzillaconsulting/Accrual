@@ -24,6 +24,7 @@ const PAUSE_DURATION_MS = 5 * 60 * 1000; // 5 minutos de pausa
 
 // O(1) RAM Cache para Lista Negra
 let blacklistSet = new Set();
+let waSock = null;
 
 // Normalización robusta para números de WhatsApp
 function normalizeWhatsAppNumber(phone) {
@@ -51,6 +52,276 @@ const refreshBlacklist = async () => {
 // Refrescar inmediatamente al inicio y luego cada 60 segundos
 refreshBlacklist();
 setInterval(refreshBlacklist, 60000);
+
+/**
+ * Resuelve y bloquea el JID/LID correspondiente a un número de teléfono en la lista negra de Accrual.
+ */
+async function resolveAndBlockLid(phone, reason, waSocket = null) {
+    try {
+        const cleanPhone = phone.replace(/[^0-9]/g, '');
+        if (!cleanPhone) return null;
+
+        // 1. Intentar buscar en los archivos locales de mapeo de Baileys
+        if (fs.existsSync(SESSIONS_BASE)) {
+            try {
+                const files = fs.readdirSync(SESSIONS_BASE);
+                const last10 = cleanPhone.slice(-10);
+                const mappingFile = files.find(f => f.startsWith('lid-mapping-') && f.includes(last10) && !f.includes('_reverse'));
+                if (mappingFile) {
+                    const filePath = path.join(SESSIONS_BASE, mappingFile);
+                    const content = fs.readFileSync(filePath, 'utf8').trim();
+                    let resolvedLid = content;
+                    try {
+                        resolvedLid = JSON.parse(content);
+                    } catch(e) {}
+                    
+                    if (resolvedLid) {
+                        const resolvedPhone = normalizeWhatsAppNumber(resolvedLid);
+                        if (resolvedPhone && resolvedPhone !== cleanPhone) {
+                            console.log(`🤖 [Blacklist Sync - Local File] Se resolvió LID desde archivo local para ${cleanPhone} -> ${resolvedLid} (clean: ${resolvedPhone})`);
+                            await pool.query(
+                                `INSERT INTO wa_blacklist (phone_number, reason) VALUES ($1, $2) ON CONFLICT (phone_number) DO UPDATE SET reason = EXCLUDED.reason`,
+                                [resolvedPhone, `${reason || 'Bloqueado'} (LID de ${cleanPhone})`]
+                            );
+                            return resolvedPhone;
+                        }
+                    }
+                }
+            } catch (fileErr) {
+                console.error("⚠️ Error buscando mapeo local de LID:", fileErr.message);
+            }
+        }
+
+        // 2. Si no se encontró en local, intentar resolver usando WhatsApp socket
+        const socket = waSocket || waSock;
+        if (!socket) {
+            console.log(`⚠️ [Blacklist] No hay conexión de WhatsApp para resolver el LID vía red para: ${phone}`);
+            return null;
+        }
+
+        // Intentar formatear de varias formas para México (con o sin '1' extra de celular en JID de WhatsApp)
+        const jidsToTry = [`${cleanPhone}@s.whatsapp.net`];
+        if (cleanPhone.startsWith('52') && !cleanPhone.startsWith('521') && cleanPhone.length === 12) {
+            jidsToTry.push(`521${cleanPhone.substring(2)}@s.whatsapp.net`);
+        } else if (cleanPhone.startsWith('521') && cleanPhone.length === 13) {
+            jidsToTry.push(`52${cleanPhone.substring(3)}@s.whatsapp.net`);
+        }
+
+        console.log(`🔍 [Blacklist] Buscando JID/LID para el número ${cleanPhone} en WhatsApp...`);
+        for (const jid of jidsToTry) {
+            const result = await socket.onWhatsApp(jid);
+            if (result && result.length > 0 && result[0].exists) {
+                const resolvedJid = result[0].jid;
+                const resolvedPhone = normalizeWhatsAppNumber(resolvedJid);
+                if (resolvedPhone && resolvedPhone !== cleanPhone) {
+                    console.log(`🤖 [Blacklist Sync] Se resolvió JID/LID para ${cleanPhone} -> ${resolvedJid} (clean: ${resolvedPhone})`);
+                    
+                    // Insertar en la lista negra
+                    await pool.query(
+                        `INSERT INTO wa_blacklist (phone_number, reason) VALUES ($1, $2) ON CONFLICT (phone_number) DO UPDATE SET reason = EXCLUDED.reason`,
+                        [resolvedPhone, `${reason || 'Bloqueado'} (LID de ${cleanPhone})`]
+                    );
+                    return resolvedPhone;
+                }
+            }
+        }
+        console.log(`⚠️ [Blacklist] No se encontró ningún LID/JID alternativo en WhatsApp para ${cleanPhone}`);
+        return null;
+    } catch (e) {
+        console.error(`❌ Error resolviendo LID para ${phone}:`, e.message);
+        return null;
+    }
+}
+
+/**
+ * Recorre todos los números de teléfono reales en la lista negra y resuelve sus LIDs asociados.
+ */
+async function syncBlacklistLids(waSocket = null) {
+    try {
+        console.log("🤖 [Blacklist Sync] Iniciando sincronización de LIDs para la lista negra...");
+        const entriesResult = await pool.query("SELECT phone_number, reason FROM wa_blacklist WHERE length(phone_number) < 14");
+        for (const entry of entriesResult.rows) {
+            await resolveAndBlockLid(entry.phone_number, entry.reason, waSocket);
+        }
+        console.log("🤖 [Blacklist Sync] Sincronización de LIDs de lista negra completada.");
+    } catch (e) {
+        console.error("❌ Error en syncBlacklistLids:", e.message);
+    }
+}
+
+const JID_MAP_PATH = path.join(SESSIONS_BASE, 'jid_map.json');
+let jidMap = new Map();
+let globalBotQueue = Promise.resolve();
+
+// Cargar JID Map al inicio
+try {
+    if (!fs.existsSync(SESSIONS_BASE)) {
+        fs.mkdirSync(SESSIONS_BASE, { recursive: true });
+    }
+    if (fs.existsSync(JID_MAP_PATH)) {
+        const data = JSON.parse(fs.readFileSync(JID_MAP_PATH, 'utf8'));
+        jidMap = new Map(Object.entries(data));
+        console.log(`🗺️ [JID Map] Cargado exitosamente. Total registros: ${jidMap.size}`);
+    }
+} catch (e) {
+    console.error("❌ Error cargando jid_map.json:", e.message);
+}
+
+function saveJidMap() {
+    try {
+        if (!fs.existsSync(SESSIONS_BASE)) {
+            fs.mkdirSync(SESSIONS_BASE, { recursive: true });
+        }
+        fs.writeFileSync(JID_MAP_PATH, JSON.stringify(Object.fromEntries(jidMap)), 'utf8');
+    } catch (e) {
+        console.error("❌ Error guardando jid_map.json:", e.message);
+    }
+}
+
+// ── LIMPIADOR PERIÓDICO DE RAM (Garbage Collector cada minuto) ──
+setInterval(() => {
+    if (global.gc) {
+        global.gc();
+        console.log('🧹 [SISTEMA] Garbage Collector forzado ejecutado.');
+    }
+}, 60000);
+
+/**
+ * 🛡️ FILTRO ANTI-SPAM REFORZADO — Detecta mensajes de bots, cupones, publicidad masiva,
+ * redes sociales, tarjetas bancarias, códigos de verificación y emojis de publicidad.
+ * Retorna true si el mensaje es spam y debe ignorarse silenciosamente.
+ */
+function checkIsSpamMessage(text) {
+    if (!text || typeof text !== 'string') return false;
+    const t = text.toLowerCase();
+
+    // ── 1. LINKS DE SPAM / ACORTADORES DE URL ──
+    const spamLinks = [
+        'bit.ly', 'tinyurl.com', 'cutt.ly', 'short.gy', 'ow.ly', 'rb.gy', 't.co',
+        'is.gd', 'buff.ly', 'ift.tt', 'dlvr.it', 'soo.gd', 'clicky.me',
+        'rappi.sng.link', 'rappisng.link', 'rappi.com.mx/coupon',
+        'temu.com/s/', 'temu.com/m/',
+        'didi.onelink.me', 'didifood.com', 'didiglobal.com',
+        'wa.me/message', 'wame.in', 'linktr.ee',
+        'fb.me', 'fb.watch', 'm.facebook.com', 'facebook.com/share',
+        'instagram.com/p/', 'instagr.am', 'ig.me',
+        'tiktok.com/@', 'vm.tiktok.com', 'vt.tiktok.com',
+        'youtube.com/shorts', 'youtu.be',
+        'mercadolibre.com/sec', 'shein.com.mx', 'aliexpress.com',
+        'shopee.com.mx', 'wish.com'
+    ];
+    if (spamLinks.some(link => t.includes(link))) return true;
+
+    // ── 2. PATRONES DE TEXTO DE SPAM (REGEX) ──
+    const spamPatterns = [
+        /\d+%\s*off/i,
+        /\*\d+%\s*off\*/i,
+        /cup[oó]n\s*[:\-]\s*\w+/i,
+        /c[oó]digo\s*[:\-]\s*\w+/i,
+        /promocion\s+exclusiva/i,
+        /oferta\s+(por\s+tiempo\s+limitado|especial|del\s+d[ií]a)/i,
+        /gratis\s+por\s+\d+\s+d[ií]as/i,
+        /solo\s+\d+\s+redenciones/i,
+        /descuento\s+del\s+\d+%/i,
+        /precio\s+especial\s+hoy/i,
+        /hasta\s+\d+%\s*de\s+descuento/i,
+        /env[ií]o\s+gratis/i,
+        /cashback\s+de\s+\d+/i,
+        /gana\s+\$?\d+\s+(pesos|mxn)/i,
+        /reclama\s+tu\s+(bono|premio|reward)/i,
+        /activa\s+tu\s+(tarjeta|cuenta|promo)/i,
+        /descarga\s+(la\s+app|nuestra\s+app|el\s+app)/i,
+        /primer\s+(pedido|compra)\s+gratis/i,
+        /promo\s*v[aá]lida?\s+(solo|hasta)/i,
+        /c[oó]digo\s+de\s+verificaci[oó]n/i,
+        /c[oó]digo\s+de\s+(seguridad|confirmaci[oó]n|recuperaci[oó]n|acceso)/i,
+        /verification\s+(code|pin)/i,
+        /tu\s+c[oó]digo\s+(de\s+)?\w+\s+es[:\s]+\d+/i,
+        /\d{4,8}\s+es\s+tu\s+c[oó]digo/i,
+        /no\s+compartas\s+(este|tu)\s+c[oó]digo/i,
+        /reenvi[aá]\s+(este|el)\s+(c[oó]digo|mensaje)/i,
+    ];
+    if (spamPatterns.some(p => p.test(text))) return true;
+
+    // ── 3. KEYWORDS DE SPAM / BROADCAST / PUBLICIDAD ──
+    const spamKeywords = [
+        'aplica términos y condiciones', 'aplica terminos y condiciones',
+        'válido hasta agotar existencias', 'valido hasta agotar existencias',
+        'consulta términos y condiciones', 'consulta terminos y condiciones',
+        'sujeto a disponibilidad', 'mientras duren existencias',
+        'hola, me interesa recibir', 'te informamos que tu pedido',
+        'tu paquete está en camino', 'tu paquete esta en camino',
+        'temu', 'shein', 'aliexpress', 'shopee', 'wish.com',
+        'rappicard', 'rappi pay', 'rappiprime',
+        'didipay', 'didicard', 'didifood',
+        'plata card', 'platacard', 'platacrd',
+        'nu bank', 'nubank', 'nu.com.mx', 'stori card', 'storicard',
+        'hey banco', 'hey bank', 'spin by oxxo', 'mercado pago',
+        'bbva wallet', 'banamex digital', 'santander plus',
+        'tu código de whatsapp', 'tu codigo de whatsapp',
+        'tu código de facebook', 'tu codigo de facebook',
+        'tu código de instagram', 'tu codigo de instagram',
+        'tu código de tiktok', 'tu codigo de tiktok',
+        'código de recuperación de google', 'codigo de recuperacion de google',
+        'microsoft verification', 'apple id verification',
+        'verification code', 'security code', 'confirm your',
+        'síguenos en facebook', 'siguenos en facebook',
+        'visítanos en instagram', 'visitanos en instagram',
+        'suscríbete a nuestro canal', 'subscribete a nuestro canal',
+        'dale like a nuestra', 'compartenos en facebook',
+        'macstore', 'airpods', 'iphone reacondicionado',
+        'samsung reacondicionado', 'refurbished',
+    ];
+    if (spamKeywords.some(kw => t.includes(kw))) return true;
+
+    // ── 4. DETECCIÓN DE EMOJIS MASIVOS (Publicidad) ──
+    const emojiRegex = /[\u{1F300}-\u{1FFFF}\u{2600}-\u{27BF}]/gu;
+    const emojiMatches = text.match(emojiRegex) || [];
+    if (emojiMatches.length >= 6) {
+        console.log(`🚫 [Filtro Emojis] Mensaje con ${emojiMatches.length} emojis detectado como publicidad masiva.`);
+        return true;
+    }
+
+    // ── 5. DETECCIÓN DE NÚMEROS DE CÓDIGO SMS (4-8 dígitos solos) ──
+    if (/\b\d{6}\b/.test(text) && /(c[oó]digo|code|pin|clave|otp|acceso)/i.test(text)) return true;
+
+    return false;
+}
+
+/**
+ * Registra el mensaje del operador en wa_workflow_states.
+ */
+async function saveOperatorMessage(senderId, msgText) {
+    if (!msgText || !msgText.trim()) return;
+    try {
+        const sessionStateResult = await pool.query(
+            "SELECT contexto_ia FROM wa_workflow_states WHERE numero_contacto = $1",
+            [senderId]
+        );
+        let contexto_ia = {};
+        let historial_mensajes = [];
+        if (sessionStateResult && sessionStateResult.rows.length > 0) {
+            contexto_ia = sessionStateResult.rows[0].contexto_ia || {};
+            historial_mensajes = contexto_ia.historial_mensajes || [];
+        }
+        historial_mensajes.push({ role: 'assistant', contenido: msgText });
+        if (historial_mensajes.length > 20) {
+            historial_mensajes = historial_mensajes.slice(-20);
+        }
+        contexto_ia.historial_mensajes = historial_mensajes;
+
+        await pool.query(`
+            INSERT INTO wa_workflow_states (numero_contacto, contexto_ia, ultimo_mensaje_at)
+            VALUES ($1, $2, CURRENT_TIMESTAMP)
+            ON CONFLICT (numero_contacto)
+            DO UPDATE SET contexto_ia = EXCLUDED.contexto_ia, ultimo_mensaje_at = CURRENT_TIMESTAMP
+        `, [senderId, JSON.stringify(contexto_ia)]);
+        console.log(`👤 [Modo Humano] Registrado mensaje del operador en DB para ${senderId}`);
+    } catch (err) {
+        console.error("❌ Error registrando mensaje del operador en DB:", err.message);
+    }
+}
+
 
 // ===============================================
 // CASCADA DE IA (WATERFALL: GEMINI -> SAMBANOVA)
@@ -153,7 +424,7 @@ async function callAIWaterfall(safeHistory, messageText, dynamicPrompt) {
 // ===============================================
 // PROCESAMIENTO DE MENSAJES CON DEBOUNCING
 // ===============================================
-const processFullMessage = async (senderId, messageText, sock) => {
+const processFullMessage = async (senderId, messageText, sock, typingDelay = null) => {
     const maskedSender = senderId.substring(0, 4) + "****" + senderId.substring(senderId.length - 15, senderId.length - 11);
     console.log(`\n🚀 WA Msg bloque completo [${maskedSender}]: ${messageText}`);
 
@@ -267,8 +538,14 @@ const processFullMessage = async (senderId, messageText, sock) => {
             }
         }
 
-        // JITTER: 8 Segundos extra simulando que un humano escribe despacio
-        await new Promise(r => setTimeout(r, 8000));
+        // JITTER: Retraso de escritura proporcional al largo de la respuesta
+        const baseDelay = botReply.length * 15;
+        const jitter = Math.floor(Math.random() * 800) - 400;
+        let finalTypingDelay = Math.min(Math.max(baseDelay + jitter, 1500), 5000);
+        if (typingDelay) {
+            finalTypingDelay = Math.max(typingDelay, 1500);
+        }
+        await new Promise(r => setTimeout(r, finalTypingDelay));
 
         await sock.sendPresenceUpdate('paused', senderId);
         await sock.sendMessage(senderId, { text: botReply });
@@ -330,6 +607,7 @@ export const initWhatsAppBot = async () => {
         syncFullHistory: false,
         generateHighQualityLinkPreview: false
     });
+    waSock = sock;
 
     sock.ev.on('creds.update', saveCreds);
 
@@ -381,6 +659,12 @@ export const initWhatsAppBot = async () => {
             console.log('✅ Neurona Accrual (Baileys) conectada y lista 24/7!');
             await updateBotStatusInDB('CONNECTED');
             
+            // Sincronizar LIDs en segundo plano al conectar
+            setTimeout(async () => {
+                await syncBlacklistLids(sock);
+                await refreshBlacklist();
+            }, 3000);
+            
             // Sobreescribir el código QR con un estado de "CONECTADO" en verde para mantener el mount intacto
             const qrPath = path.join(SESSIONS_BASE, '..', 'qr_accrual.png');
             try {
@@ -401,13 +685,57 @@ export const initWhatsAppBot = async () => {
         if (!msg.message) return;
 
         const senderId = msg.key.remoteJid;
-        if (senderId.endsWith('@g.us') || senderId === 'status@broadcast') return;
+        if (!senderId || senderId.endsWith('@g.us') || senderId === 'status@broadcast') return;
 
         // Búsqueda en 0.001 milisegundos usando número normalizado
         const normalizedSender = normalizeWhatsAppNumber(senderId);
-        if (blacklistSet.has(normalizedSender)) {
-            console.log(`🚫 Mensaje de ${senderId} ignorado por estar en la Blacklist (Normalizado: ${normalizedSender}).`);
+
+        // 🚫 FILTRO DE NÚMEROS CORTOS (Evitar sistemas automáticos o notificaciones de 5-6 dígitos)
+        if (normalizedSender.length < 8) {
+            console.log(`🚫 [Filtro Shortcode] Ignorando número corto o sospechoso: ${senderId}`);
             return;
+        }
+
+        // 🚫 LISTA NEGRA
+        let blocked = blacklistSet.has(normalizedSender);
+        let realPhone = senderId;
+        if (senderId.includes('@lid') && (msg.participant || msg.key?.participant)) {
+            const participant = msg.participant || msg.key.participant;
+            if (!participant.includes('@lid')) {
+                realPhone = participant;
+                const normalizedRealPhone = normalizeWhatsAppNumber(realPhone);
+                if (blacklistSet.has(normalizedRealPhone)) {
+                    blocked = true;
+                }
+            }
+        }
+
+        if (blocked) {
+            console.log(`🚫 Mensaje de ${senderId} ignorado por estar en la Blacklist (Normalizado: ${normalizedSender}).`);
+            if (senderId.includes('@lid') && realPhone !== senderId) {
+                try {
+                    const cleanLid = normalizeWhatsAppNumber(senderId);
+                    const cleanReal = normalizeWhatsAppNumber(realPhone);
+                    const row = await pool.query('SELECT reason FROM wa_blacklist WHERE phone_number = $1 OR phone_number = $2', [cleanReal, realPhone]);
+                    const reason = row && row.rows.length > 0 ? row.rows[0].reason : 'Bloqueado';
+                    await pool.query(
+                        `INSERT INTO wa_blacklist (phone_number, reason) VALUES ($1, $2) ON CONFLICT (phone_number) DO NOTHING`,
+                        [cleanLid, `${reason} (LID de ${cleanReal})`]
+                    );
+                    await refreshBlacklist();
+                } catch(e) {
+                    console.error("Error auto-guardando LID en blacklist:", e.message);
+                }
+            }
+            return;
+        }
+
+        // Guardar mapeo de teléfono limpio a JID original
+        if (senderId.includes('@lid') || senderId.includes('@s.whatsapp.net')) {
+            if (jidMap.get(normalizedSender) !== senderId) {
+                jidMap.set(normalizedSender, senderId);
+                saveJidMap();
+            }
         }
 
         const msgText = msg.message.conversation || msg.message.extendedTextMessage?.text || '';
@@ -428,7 +756,16 @@ export const initWhatsAppBot = async () => {
                     pausedChats.delete(senderId);
                     processFullMessage(senderId, "(Mensaje de sistema invisible: Han pasado 5 minutos desde que el administrador intervino y el chat se quedó en pausa. Retoma la plática con el cliente de forma natural, como si fueras el experto continuando la idea.)", sock);
                 }, 5 * 60 * 1000));
+
+                // REGISTRAR MENSAJE DEL OPERADOR EN DB
+                await saveOperatorMessage(senderId, msgText);
             }
+            return;
+        }
+
+        // 🚫 FILTRO DE SPAM / CUPONES / PUBLICIDAD
+        if (checkIsSpamMessage(msgText)) {
+            console.log(`🚫 [Filtro Spam] Ignorando mensaje sospechoso de spam/cupón: "${msgText.substring(0, 80)}..." de ${senderId}`);
             return;
         }
 
@@ -452,26 +789,55 @@ export const initWhatsAppBot = async () => {
 
         clearTimeout(rescueTimers.get(senderId)); // Si el bot procesa normalmente, cancelamos el rescate
 
-        try { await sock.readMessages([msg.key]); } catch (e) {}
-
-        if (!msgText) return;
+        if (!msgText || !msgText.trim()) return;
 
         console.log(`⏳ Recibido de ${senderId.split('@')[0]} (Debounce): ${msgText.substring(0,30)}`);
 
         if (!messageQueues.has(senderId)) {
-            messageQueues.set(senderId, { timer: null, texts: [] });
+            messageQueues.set(senderId, { timer: null, texts: [], msgs: [] });
         }
         
         const q = messageQueues.get(senderId);
         q.texts.push(msgText);
+        q.msgs.push(msg);
 
         clearTimeout(q.timer);
         q.timer = setTimeout(async () => {
-            messageQueues.delete(senderId);
             const combinedText = q.texts.join(' \n ');
-            await processFullMessage(senderId, combinedText, sock);
+            const msgsToRead = [...q.msgs];
+            messageQueues.delete(senderId);
+
+            // ── COLA GLOBAL SECUENCIAL ──
+            globalBotQueue = globalBotQueue.then(async () => {
+                try {
+                    // Generar retraso total humano aleatorio entre 6 y 15 segundos
+                    const totalDelay = Math.floor(Math.random() * 9000) + 6000;
+                    const thinkingDelay = Math.floor(totalDelay * 0.6);
+                    const typingDelay = totalDelay - thinkingDelay;
+
+                    // Jitter de pensamiento/lectura
+                    await new Promise(r => setTimeout(r, thinkingDelay));
+
+                    // 👤 VISTO HUMANO: Marcar leído y componer justo antes de empezar a escribir
+                    if (sock && msgsToRead.length > 0) {
+                        try {
+                            const keys = msgsToRead.map(m => m.key);
+                            await sock.readMessages(keys);
+                            await sock.presenceSubscribe(senderId);
+                            await sock.sendPresenceUpdate('composing', senderId);
+                        } catch (readErr) {
+                            // Fallback silencioso
+                        }
+                    }
+
+                    await processFullMessage(senderId, combinedText, sock, typingDelay);
+                } catch (innerErr) {
+                    console.error(`❌ Error en cola secuencial para ${senderId}:`, innerErr.message);
+                }
+            });
         }, DEBOUNCE_TIME_MS);
     });
+
 
     // EXPRESS SERVER PARA MOSTRAR QR
     const qrApp = express();
@@ -494,6 +860,14 @@ export const initWhatsAppBot = async () => {
         console.log(`🌐 [Enlace de Escaneo Remoto] Accede a: http://localhost:3001/pair`);
     });
 };
+
+// Sincronizar LIDs periódicamente (cada 5 minutos)
+setInterval(async () => {
+    if (waSock) {
+        await syncBlacklistLids(waSock);
+        await refreshBlacklist();
+    }
+}, 5 * 60 * 1000);
 
 const isPM2 = process.env.pm_id !== undefined;
 if (isPM2 || process.argv[1] === fileURLToPath(import.meta.url)) {

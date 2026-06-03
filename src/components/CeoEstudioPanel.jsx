@@ -7,7 +7,7 @@ const STATUS_MAP = {
     published:           { label: '🚀 Publicada',   tab: 'aprobadas',  color: 'text-blue-400 bg-blue-500/10 border-blue-500/30' },
 };
 
-const API_URL = import.meta.env.DEV ? 'http://localhost:3000' : 'https://bot.accrual.ai';
+const API_URL = '';
 const resolveMedia = (url) => {
     if (!url) return '';
     // Reemplaza localhost/127.0.0.1 por API_URL (común si se generó en ambiente dev)

@@ -158,7 +158,7 @@ export default function AIContentPlanner({ adminProfile }) {
         setPlan(null);
         try {
             const token = localStorage.getItem('adminToken');
-            const API   = import.meta.env.DEV ? 'http://localhost:3000' : '';
+            const API   = '';
             const res   = await fetch(`${API}/api/studio/generate-monthly-plan`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -181,7 +181,7 @@ export default function AIContentPlanner({ adminProfile }) {
     const handleSendToCalendar = async (day) => {
         try {
             const token = localStorage.getItem('adminToken');
-            const API   = import.meta.env.DEV ? 'http://localhost:3000' : '';
+            const API   = '';
             // Construye un evento con el tema + narracion como caption
             const captions = SCENE_COLUMNS.map(n => day[COL(n).narracion] || '').filter(Boolean).join('\n\n');
             const res = await fetch(`${API}/api/calendar/events`, {

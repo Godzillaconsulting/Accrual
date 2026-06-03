@@ -17,14 +17,14 @@ const Hero = () => {
             {/* Background Video */}
             <div className="absolute inset-0 z-0">
                 <video
+                    key={data.videoUrl || 'default'}
                     autoPlay
                     loop
                     muted
                     playsInline
                     className="w-full h-full object-cover opacity-60"
-                >
-                    <source src={data.videoUrl || heroVideo} type="video/mp4" />
-                </video>
+                    src={data.videoUrl || heroVideo}
+                />
                 {/* Overlay for readability */}
                 <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/40 shadow-inner"></div>
             </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from'react';
 import { Navigate } from'react-router-dom';
 
-const API_BASE = '' || (import.meta.env.DEV ? 'http://localhost:3000' : '');
+const API_BASE = '';
 
 /**
  * PrivateRoute — Protege rutas que requieren autenticación.

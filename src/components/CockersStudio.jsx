@@ -574,7 +574,7 @@ export default React.memo(function CockersStudio({ adminProfile, forceOpenEditor
         // SSE: LIVE SYNC PARA TAREAS (Arte ↔ Calendario)
         // ═══════════════════════════════════════════════════════════════════════
         const token = localStorage.getItem('adminToken');
-        const API = import.meta.env.DEV ? 'http://localhost:3000' : '';
+        const API = '';
         const evtSource = new EventSource(`${API}/api/studio/tasks/stream?token=${token}`);
 
         evtSource.onmessage = (event) => {

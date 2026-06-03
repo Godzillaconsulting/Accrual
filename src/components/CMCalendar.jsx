@@ -36,7 +36,7 @@ export const getYouTubeId = (url) => {
     return (match && match[2].length === 11) ? match[2] : null;
 };
 
-export const API_URL = import.meta.env.DEV ? 'http://localhost:3000' : 'https://bot.accrual.ai';
+export const API_URL = '';
 const getAPI = () => API_URL;
 
 export const resolveMedia = (url) => {
@@ -403,7 +403,7 @@ export default React.memo(function CMCalendar({ adminProfile }) {
     const fetchTrends = async (network = trendsNetwork, niche = trendsNiche) => {
         setLoadingTrends(true);
         try {
-            const url = import.meta.env.DEV ? `http://localhost:3000/api/trends?network=${network}&filter=${niche}` : `/api/trends?network=${network}&filter=${niche}`;
+            const url = `/api/trends?network=${network}&filter=${niche}`;
             const res = await fetch(url, { headers: { Authorization: `Bearer ${localStorage.getItem('adminToken')}` } });
             const data = await res.json();
             if (data.success && data.data) setRealTrends(data.data);

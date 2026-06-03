@@ -234,7 +234,7 @@ const ContactScheduler = ({ showHeader = false, showMap = true }) => {
                                 <div className="bg-white p-2 rounded-full shadow-md">
                                     <Phone className="w-5 h-5 text-[#233657]" />
                                 </div>
-                                <span className="whitespace-nowrap">+52 656 304 9604</span>
+                                <span className="whitespace-nowrap">+52 656 124 2547</span>
                             </div>
                             <div className="flex items-center gap-3">
                                 <div className="bg-white p-2 rounded-full shadow-md">

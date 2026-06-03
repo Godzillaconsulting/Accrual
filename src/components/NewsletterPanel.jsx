@@ -3,7 +3,7 @@ import { Send, Users, Clock, CheckCircle, XCircle, Loader, AlertCircle, Papercli
 import { useSiteData } from '../context/SiteContext';
 import { injectSectionDefaults } from '../utils/studioConfig';
 
-const API_BASE = import.meta.env.DEV ? 'http://localhost:3000' : '';
+const API_BASE = '';
 const getToken = () => localStorage.getItem('adminToken');
 
 const authHeaders = () => ({
