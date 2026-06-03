@@ -1,6 +1,7 @@
 import React, { Suspense, lazy, useEffect, useRef, useState, Component } from'react';
 import { MemoryRouter, Routes, Route } from'react-router-dom';
 import { Eye } from 'lucide-react';
+import { getYouTubeId } from './MediaPicker';
 
 // ── Componentes del sitio (lazy) ──────────────────────────────────────────────
 // Las vistas previas de la landing page pública se han eliminado para enfocarse solo en el Dashboard.
@@ -33,14 +34,25 @@ class PreviewErrorBoundary extends Component {
 function LandingCardPreview({ draftData }) {
  if (!draftData) return null;
  const d = draftData;
+ const videoUrl = d.videoFileUrl || d.videoUrl;
+ const ytId = getYouTubeId(videoUrl);
  return (
  <div className="min-h-screen bg-[#152033] text-white pt-16 pb-10 px-6">
  {/* Hero */}
  <div className="text-center mb-12">
  {d.heroTopText && <p className="text-lg text-gray-300 mb-4 font-medium">{d.heroTopText}</p>}
  <h1 className="text-5xl md:text-7xl font-black leading-tight mb-6 tracking-tighter" dangerouslySetInnerHTML={{ __html: d.heroTitle ||'Plan' }} />
- {d.videoFileUrl || d.videoUrl ? (
- <video src={d.videoFileUrl || d.videoUrl} autoPlay muted loop playsInline className="w-full max-w-md mx-auto rounded-3xl shadow-2xl mb-6 aspect-video object-contain bg-[#152033]" />
+ {ytId ? (
+ <iframe
+ key={ytId}
+ src={`https://www.youtube.com/embed/${ytId}?controls=0&mute=1&autoplay=1&loop=1&playlist=${ytId}&playsinline=1`}
+ className="w-full max-w-md mx-auto rounded-3xl shadow-2xl mb-6 aspect-video object-contain bg-[#152033] pointer-events-none"
+ frameBorder="0"
+ allow="autoplay; encrypted-media"
+ style={{ border: 'none' }}
+ />
+ ) : videoUrl ? (
+ <video src={videoUrl} autoPlay muted loop playsInline className="w-full max-w-md mx-auto rounded-3xl shadow-2xl mb-6 aspect-video object-contain bg-[#152033]" />
  ) : ( <div className="w-full max-w-md mx-auto aspect-video bg-neutral-900 rounded-3xl mb-6 border border-neutral-800 flex items-center justify-center text-neutral-700 text-sm">Sin video</div> )}
  </div>
 

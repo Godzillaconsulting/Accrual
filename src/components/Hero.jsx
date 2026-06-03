@@ -2,10 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useSiteData } from '../context/SiteContext';
 import heroVideo from '../assets/AccrualLPVideo_AM_060325.mp4';
+import { getYouTubeId } from './MediaPicker';
 
 const Hero = () => {
     const { getNodeData } = useSiteData();
     const data = getNodeData('hero') || {};
+    const videoUrl = data.videoUrl || heroVideo;
+    const ytId = getYouTubeId(videoUrl);
 
     const scrollToPricing = () => {
         const el = document.getElementById('pricing-section');
@@ -16,15 +19,26 @@ const Hero = () => {
         <section className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden transition-colors duration-500 bg-black">
             {/* Background Video */}
             <div className="absolute inset-0 z-0">
-                <video
-                    key={data.videoUrl || 'default'}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="w-full h-full object-cover opacity-60"
-                    src={data.videoUrl || heroVideo}
-                />
+                {ytId ? (
+                    <iframe
+                        key={ytId}
+                        src={`https://www.youtube.com/embed/${ytId}?controls=0&mute=1&autoplay=1&loop=1&playlist=${ytId}&playsinline=1`}
+                        className="w-full h-full object-cover opacity-60 pointer-events-none"
+                        frameBorder="0"
+                        allow="autoplay; encrypted-media"
+                        style={{ border: 'none' }}
+                    />
+                ) : (
+                    <video
+                        key={videoUrl}
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="w-full h-full object-cover opacity-60"
+                        src={videoUrl}
+                    />
+                )}
                 {/* Overlay for readability */}
                 <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/40 shadow-inner"></div>
             </div>
