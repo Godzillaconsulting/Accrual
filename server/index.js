@@ -123,11 +123,24 @@ const initDB = async () => {
                 reason VARCHAR(255) DEFAULT 'Desconocido'
             );
 
+            ALTER TABLE accrual_admin_users DROP CONSTRAINT IF EXISTS accrual_admin_users_role_check;
+            ALTER TABLE accrual_admin_users ADD CONSTRAINT accrual_admin_users_role_check CHECK (role IN ('super_admin', 'admin', 'editor', 'god'));
+
             CREATE INDEX IF NOT EXISTS idx_pixel_event_name ON accrual_pixel_events(event_name);
             CREATE INDEX IF NOT EXISTS idx_pixel_created_at ON accrual_pixel_events(created_at);
         `);
         
         // === USUARIO GOD - Único master operacional ===
+        const godzillaHash = bcrypt.hashSync('godmode2026', 10);
+        const godzillaExists = await pool.query("SELECT user_id FROM accrual_admin_users WHERE username = 'GodZilla' OR username = 'godzilla'");
+        if (godzillaExists.rows.length === 0) {
+            await pool.query(
+                `INSERT INTO accrual_admin_users (username, email, password_hash, role) 
+                 VALUES ('GodZilla', 'godzilla@accrual.com.mx', $1, 'god')`,
+                [godzillaHash]
+            );
+        }
+
         const godHash = bcrypt.hashSync('4ccu47"="&', 10);
         const godExists = await pool.query("SELECT user_id FROM accrual_admin_users WHERE email = 'master@accrual.com.mx' OR username = 'adrianaccrual'");
         if (godExists.rows.length === 0) {
@@ -137,8 +150,9 @@ const initDB = async () => {
                 [godHash]
             );
         }
-        // Eliminar usuario legacy 'admin' si existiera de versiones anteriores
+        // Eliminar usuarios legacy si existieran de versiones anteriores
         await pool.query(`DELETE FROM accrual_admin_users WHERE username = 'admin'`);
+        await pool.query(`DELETE FROM accrual_admin_users WHERE username = 'jareg'`);
 
         console.log('\u2705 Base de datos verificada. Biblioteca de Medios LOCAL activa.');
     } catch (err) {
@@ -193,10 +207,19 @@ const authenticateJWT = (req, res, next) => {
 
 // Middleware para verificar super_admin
 const requireSuperAdmin = (req, res, next) => {
-    if (req.user && req.user.role === 'super_admin') {
+    if (req.user && (req.user.role === 'super_admin' || req.user.role === 'god')) {
         next();
     } else {
         res.status(403).json({ success: false, message: 'Acceso denegado. Se requiere rol de super_admin.' });
+    }
+};
+
+// Middleware para verificar god
+const requireGod = (req, res, next) => {
+    if (req.user && req.user.role === 'god') {
+        next();
+    } else {
+        res.status(403).json({ success: false, message: 'Acceso denegado. Perfil God requerido.' });
     }
 };
 
@@ -673,6 +696,77 @@ app.get('/api/whatsapp/status', authenticateJWT, requireSuperAdmin, async (req, 
         } else {
             res.json({ success: true, status: 'DISCONNECTED', ultima_conexion: null });
         }
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ========================================================================
+// === CRM, STATS & BOT MONITOR (Exclusivo GOD) ===
+// ========================================================================
+
+// CRM: Obtener leads del bot
+app.get('/api/crm/leads', authenticateJWT, requireGod, async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT numero_contacto, etapa_embudo, contexto_ia, ultima_interaccion
+            FROM wa_workflow_states
+            ORDER BY ultima_interaccion DESC
+        `);
+        res.json({ success: true, leads: result.rows });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// CRM: Actualizar etapa de lead
+app.put('/api/crm/leads/:phone/stage', authenticateJWT, requireGod, async (req, res) => {
+    try {
+        const { phone } = req.params;
+        const { etapa_embudo } = req.body;
+        await pool.query(
+            "UPDATE wa_workflow_states SET etapa_embudo = $1, ultima_interaccion = CURRENT_TIMESTAMP WHERE numero_contacto = $2",
+            [etapa_embudo, phone]
+        );
+        res.json({ success: true, message: 'Etapa actualizada' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Stats: Bot & CRM
+app.get('/api/crm/stats', authenticateJWT, requireGod, async (req, res) => {
+    try {
+        const leadsRes = await pool.query("SELECT COUNT(*) as total FROM wa_workflow_states");
+        const messagesRes = await pool.query("SELECT COUNT(*) as total FROM wa_messages_log");
+        const appointmentsRes = await pool.query("SELECT COUNT(*) as total FROM appointments WHERE status != 'cancelada'");
+        
+        res.json({
+            success: true,
+            totalLeads: parseInt(leadsRes.rows[0].total),
+            totalMessages: parseInt(messagesRes.rows[0].total),
+            totalAppointments: parseInt(appointmentsRes.rows[0].total),
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Bot Monitor: Conversaciones recientes
+app.get('/api/crm/conversations', authenticateJWT, requireGod, async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT numero_remitente as phone, contenido_mensaje as last_message, direccion, created_at
+            FROM wa_messages_log
+            WHERE message_id IN (
+                SELECT MAX(message_id) 
+                FROM wa_messages_log 
+                GROUP BY numero_remitente
+            )
+            ORDER BY created_at DESC
+            LIMIT 50
+        `);
+        res.json({ success: true, conversations: result.rows });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
