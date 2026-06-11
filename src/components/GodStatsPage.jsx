@@ -61,7 +61,7 @@ export default function GodStatsPage() {
   /* ── Loader skeleton ────────────────────────────────────────────────── */
   if (loading && !stats) {
     return (
-      <div className="p-8 space-y-8 min-h-screen" style={{ background: 'linear-gradient(160deg, #0a0f1a 0%, #111 40%, #152033 100%)' }}>
+      <div className="p-8 space-y-8 min-h-screen bg-transparent">
         <div className="flex justify-between items-center border-b border-white/5 pb-5">
           <div className="h-8 w-64 bg-white/10 rounded-lg animate-pulse" />
           <div className="h-9 w-32 bg-white/10 rounded-lg animate-pulse" />
@@ -92,7 +92,7 @@ export default function GodStatsPage() {
   const chartHeight = svgHeight - paddingTop - paddingBottom;
 
   return (
-    <div className="min-h-screen w-full flex flex-col" style={{ background: 'linear-gradient(160deg, #0a0f1a 0%, #111 40%, #152033 100%)' }}>
+    <div className="min-h-screen w-full flex flex-col bg-transparent">
       {/* Header */}
       <header className="border-b border-white/5 px-6 py-5">
         <div className="mx-auto flex max-w-[1800px] flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

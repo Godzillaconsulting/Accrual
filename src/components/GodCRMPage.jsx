@@ -189,7 +189,7 @@ export default function GodCRMPage() {
 
   /* ── Render ────────────────────────────────────────────────────────── */
   return (
-    <div className="h-full w-full flex flex-col" style={{ background: 'linear-gradient(160deg, #0a0f1a 0%, #111 40%, #152033 100%)' }}>
+    <div className="h-full w-full flex flex-col bg-transparent">
       {/* ── Header ───────────────────────────────────────────────────── */}
       <header className="border-b border-white/5 px-6 py-5 shrink-0">
         <div className="mx-auto flex w-full flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -239,7 +239,7 @@ export default function GodCRMPage() {
 
       {/* ── Kanban Board ─────────────────────────────────────────────── */}
       <main className="flex-1 overflow-hidden p-6">
-        <div className="h-full flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
+        <div className="h-full flex gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/10 hover:scrollbar-thumb-white/20">
           {COLUMNS.map((col) => {
             const colLeads = filtered.filter((l) => l.stage === col.key);
             const isOver = dragOverCol === col.key;

@@ -94,7 +94,7 @@ export default function GodBotMonitor() {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col" style={{ background: 'linear-gradient(160deg, #0a0f1a 0%, #111 40%, #152033 100%)' }}>
+    <div className="min-h-screen w-full flex flex-col bg-transparent">
       
       {/* ── Modal Historial de Conversación ── */}
       {selectedPhone && (
