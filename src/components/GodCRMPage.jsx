@@ -89,8 +89,13 @@ export default function GodCRMPage() {
 
       {/* ── Top Stats Row ────────────────────────────────────────────── */}
       <div className="px-8 grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-[#152033]/60 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex items-center gap-4 hover:border-[#0099CC]/50 transition-colors">
-          <div className="w-12 h-12 rounded-xl bg-[#0099CC]/10 flex items-center justify-center border border-[#0099CC]/30 shrink-0">
+        <div 
+          onClick={() => {
+            document.getElementById('leads-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }}
+          className="bg-[#152033]/60 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex items-center gap-4 hover:border-[#0099CC] hover:bg-[#0099CC]/10 transition-all cursor-pointer group"
+        >
+          <div className="w-12 h-12 rounded-xl bg-[#0099CC]/10 flex items-center justify-center border border-[#0099CC]/30 shrink-0 group-hover:scale-110 transition-transform">
             <Users className="text-[#0099CC]" size={24} />
           </div>
           <div>
@@ -99,8 +104,13 @@ export default function GodCRMPage() {
           </div>
         </div>
 
-        <div className="bg-[#152033]/60 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex items-center gap-4 hover:border-[#0099CC]/50 transition-colors">
-          <div className="w-12 h-12 rounded-xl bg-[#0099CC]/10 flex items-center justify-center border border-[#0099CC]/30 shrink-0">
+        <div 
+          onClick={() => {
+            document.getElementById('agenda-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }}
+          className="bg-[#152033]/60 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex items-center gap-4 hover:border-[#0099CC] hover:bg-[#0099CC]/10 transition-all cursor-pointer group"
+        >
+          <div className="w-12 h-12 rounded-xl bg-[#0099CC]/10 flex items-center justify-center border border-[#0099CC]/30 shrink-0 group-hover:scale-110 transition-transform">
             <Calendar className="text-[#0099CC]" size={24} />
           </div>
           <div>
@@ -127,7 +137,7 @@ export default function GodCRMPage() {
         <div className="lg:col-span-2 space-y-6 flex flex-col">
           
           {/* Citas / Agenda */}
-          <div className="bg-[#152033]/40 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex flex-col min-h-[300px]">
+          <div id="agenda-section" className="bg-[#152033]/40 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex flex-col min-h-[300px]">
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#0099CC]/10">
               <h2 className="text-sm font-bold text-white flex items-center gap-2 uppercase tracking-widest">
                 <Calendar size={16} className="text-[#0099CC]" />
@@ -174,7 +184,7 @@ export default function GodCRMPage() {
           </div>
 
           {/* Actividad de Leads */}
-          <div className="bg-[#152033]/40 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex flex-col min-h-[400px]">
+          <div id="leads-section" className="bg-[#152033]/40 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex flex-col min-h-[400px]">
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#0099CC]/10">
               <h2 className="text-sm font-bold text-white flex items-center gap-2 uppercase tracking-widest">
                 <MessageSquare size={16} className="text-[#0099CC]" />
