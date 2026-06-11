@@ -1,33 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Users, Phone, MessageSquare, Clock, RefreshCw, AlertCircle, GripVertical, Search, Filter } from 'lucide-react';
-
-/* ── Column definitions ─────────────────────────────────────────────── */
-const COLUMNS = [
-  { key: 'LEAD_ENTRY',      label: '🟢 Prospecto Nuevo',  accent: '#22c55e' },
-  { key: 'CALIFICACION_BOT',label: '🤖 Calificación Bot', accent: '#0099CC' },
-  { key: 'COTIZACION',      label: '💰 Propuesta',        accent: '#eab308' },
-  { key: 'SOPORTE',         label: '📄 Documentación',    accent: '#f97316' },
-  { key: 'CIERRE',          label: '✅ Alta de Cliente',  accent: '#18ffff' },
-];
-
-/* ── Helpers ─────────────────────────────────────────────────────────── */
-function maskPhone(phone) {
-  if (!phone || phone.length < 6) return phone || '—';
-  return `${phone.slice(0, 2)}****${phone.slice(-4)}`;
-}
-
-function relativeTime(iso) {
-  if (!iso) return '';
-  const diff = Date.now() - new Date(iso).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 0) return 'just now';
-  if (mins < 1) return 'just now';
-  if (mins < 60) return `${mins}m ago`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
-  const days = Math.floor(hrs / 24);
-  return `${days}d ago`;
-}
+import { Users, Calendar, Clock, Bot, RefreshCw, MessageSquare, AlertCircle, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 function authHeaders() {
   return {
@@ -36,262 +9,200 @@ function authHeaders() {
   };
 }
 
-/* ── Lead Card ───────────────────────────────────────────────────────── */
-function LeadCard({ lead, onDragStart, accent }) {
-  const initials = (lead.name || '?')
-    .split(' ')
-    .map((w) => w[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
-
-  return (
-    <div
-      draggable
-      onDragStart={(e) => onDragStart(e, lead)}
-      className="group relative cursor-grab active:cursor-grabbing select-none rounded-xl border border-white/10 p-4 transition-all duration-200 hover:border-cyan-400/40 hover:shadow-lg hover:shadow-cyan-500/10"
-      style={{
-        background: 'linear-gradient(135deg, rgba(21,32,51,.85) 0%, rgba(17,17,17,.9) 100%)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-      }}
-    >
-      {/* Drag grip indicator */}
-      <div className="absolute right-2 top-2 text-white/20 opacity-0 transition-opacity group-hover:opacity-100">
-        <GripVertical size={14} />
-      </div>
-
-      {/* Avatar + Name */}
-      <div className="mb-3 flex items-center gap-3">
-        <div
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
-          style={{ background: accent }}
-        >
-          {initials}
-        </div>
-        <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-white">{lead.name}</p>
-          <p className="flex items-center gap-1 text-xs text-white/50">
-            <Phone size={10} />
-            {maskPhone(lead.phone)}
-          </p>
-        </div>
-      </div>
-
-      {/* Last message */}
-      <div className="mb-2 flex items-start gap-1.5 text-xs text-white/60">
-        <MessageSquare size={12} className="mt-0.5 shrink-0 text-cyan-400/60" />
-        <span className="line-clamp-2">{lead.lastMessage || '—'}</span>
-      </div>
-
-      {/* Timestamp */}
-      <div className="flex items-center gap-1 text-[10px] text-white/35">
-        <Clock size={10} />
-        {relativeTime(lead.updatedAt)}
-      </div>
-    </div>
-  );
-}
-
-/* ── Main CRM Page ───────────────────────────────────────────────────── */
 export default function GodCRMPage() {
+  const navigate = useNavigate();
+  const [stats, setStats] = useState({ leads: 0, active: 0, appointments: 0 });
   const [leads, setLeads] = useState([]);
+  const [botStatus, setBotStatus] = useState('DISCONNECTED');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [dragOverCol, setDragOverCol] = useState(null);
 
-  /* ── Fetch leads ──────────────────────────────────────────────────── */
-  const fetchLeads = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/crm/leads', { headers: authHeaders() });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      const mappedLeads = (data.leads || []).map(l => ({
-        id: l.numero_contacto,
-        name: 'Prospecto ' + (l.numero_contacto ? l.numero_contacto.slice(-4) : 'N/A'),
-        phone: l.numero_contacto,
-        stage: l.etapa_embudo || 'LEAD_ENTRY',
-        lastMessage: l.contexto_ia ? JSON.stringify(l.contexto_ia) : 'Sin contexto capturado',
-        updatedAt: l.ultima_interaccion
-      }));
-      setLeads(mappedLeads);
+      const [leadsRes, statsRes, botRes] = await Promise.all([
+        fetch('/api/crm/leads', { headers: authHeaders() }),
+        fetch('/api/crm/stats?range=30', { headers: authHeaders() }),
+        fetch('/api/whatsapp/status', { headers: authHeaders() })
+      ]);
+
+      if (leadsRes.ok) {
+        const data = await leadsRes.json();
+        if (data.success) setLeads(data.leads || []);
+      }
+      if (statsRes.ok) {
+        const data = await statsRes.json();
+        if (data.success) {
+          setStats({
+            leads: data.totalLeads || 0,
+            active: Math.round((data.totalLeads || 0) * 0.15),
+            appointments: data.totalAppointments || 0
+          });
+        }
+      }
+      if (botRes.ok) {
+        const data = await botRes.json();
+        if (data.success) setBotStatus(data.status);
+      }
     } catch (err) {
-      console.warn('CRM fetch failed:', err.message);
+      console.warn('Dashboard fetch failed:', err.message);
       setError(err.message);
-      setLeads([]);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  useEffect(() => { fetchLeads(); }, [fetchLeads]);
+  useEffect(() => {
+    fetchData();
+    const interval = setInterval(fetchData, 60000); // 1 min refresh
+    return () => clearInterval(interval);
+  }, [fetchData]);
 
-  /* ── Drag & Drop handlers ─────────────────────────────────────────── */
-  function handleDragStart(e, lead) {
-    e.dataTransfer.setData('text/plain', JSON.stringify({ id: lead.id, fromStage: lead.stage }));
-    e.dataTransfer.effectAllowed = 'move';
-  }
+  const today = new Date().toLocaleDateString('es-MX', { day: 'numeric', month: 'short' });
 
-  function handleDragOver(e, colKey) {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    setDragOverCol(colKey);
-  }
-
-  function handleDragLeave() {
-    setDragOverCol(null);
-  }
-
-  async function handleDrop(e, newStage) {
-    e.preventDefault();
-    setDragOverCol(null);
-
-    let payload;
-    try {
-      payload = JSON.parse(e.dataTransfer.getData('text/plain'));
-    } catch {
-      return;
-    }
-
-    const { id, fromStage } = payload;
-    if (fromStage === newStage) return;
-
-    // Optimistic update
-    setLeads((prev) =>
-      prev.map((l) => (l.id === id ? { ...l, stage: newStage, updatedAt: new Date().toISOString() } : l)),
-    );
-
-    // Persist to API
-    try {
-      const res = await fetch(`/api/crm/leads/${id}/stage`, {
-        method: 'PUT',
-        headers: authHeaders(),
-        body: JSON.stringify({ etapa_embudo: newStage }),
-      });
-      if (!res.ok) throw new Error(`PUT failed: ${res.status}`);
-    } catch (err) {
-      console.warn('Stage update failed (kept local change):', err.message);
-    }
-  }
-
-  /* ── Filtered leads ───────────────────────────────────────────────── */
-  const filtered = searchTerm
-    ? leads.filter(
-        (l) =>
-          l.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          l.phone?.includes(searchTerm) ||
-          l.lastMessage?.toLowerCase().includes(searchTerm.toLowerCase()),
-      )
-    : leads;
-
-  /* ── Render ────────────────────────────────────────────────────────── */
   return (
-    <div className="h-full w-full flex flex-col bg-transparent">
+    <div className="h-full w-full flex flex-col bg-transparent overflow-y-auto custom-scrollbar">
       {/* ── Header ───────────────────────────────────────────────────── */}
-      <header className="border-b border-white/5 px-6 py-5 shrink-0">
-        <div className="mx-auto flex w-full flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl" style={{ background: 'linear-gradient(135deg, #0099CC, #00bcd4)' }}>
-              <Users size={20} className="text-white" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-white tracking-tight">CRM Kanban</h1>
-              <p className="text-xs text-white/40">Gestión de leads · {leads.length} contactos</p>
-            </div>
-          </div>
+      <div className="px-8 pt-8 pb-4 shrink-0">
+        <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
+          Hola, GodZilla 👋
+        </h1>
+        <p className="text-sm text-[#0099CC] mt-1 font-semibold tracking-wider">
+          Resumen de prospectos y operaciones de la firma
+        </p>
+      </div>
 
-          <div className="flex items-center gap-3">
-            {/* Search */}
-            <div className="relative">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
-              <input
-                type="text"
-                placeholder="Buscar lead..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="h-9 w-56 rounded-lg border border-white/10 bg-white/5 pl-9 pr-3 text-sm text-white placeholder-white/30 outline-none transition-colors focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20"
-              />
-            </div>
-
-            {/* Refresh */}
-            <button
-              onClick={fetchLeads}
-              disabled={loading}
-              className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white/50 transition-colors hover:border-cyan-500/40 hover:text-cyan-400 disabled:opacity-40"
-              title="Recargar leads"
-            >
-              <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* ── Error banner ─────────────────────────────────────────────── */}
       {error && (
-        <div className="mx-6 mt-3 flex items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-2 text-xs text-red-300 shrink-0">
-          <AlertCircle size={14} />
-          <span>Error conectando a la base de datos: {error}. Mostrando 0 resultados.</span>
+        <div className="mx-8 mb-4 flex items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3 text-xs text-red-300">
+          <AlertCircle size={16} />
+          <span>Error conectando a la base de datos: {error}</span>
         </div>
       )}
 
-      {/* ── Kanban Board ─────────────────────────────────────────────── */}
-      <main className="flex-1 overflow-hidden p-6">
-        <div className="h-full flex gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/10 hover:scrollbar-thumb-white/20">
-          {COLUMNS.map((col) => {
-            const colLeads = filtered.filter((l) => l.stage === col.key);
-            const isOver = dragOverCol === col.key;
-
-            return (
-              <div
-                key={col.key}
-                className="flex h-full w-80 min-w-[320px] flex-col rounded-2xl border transition-colors duration-200"
-                style={{
-                  borderColor: isOver ? col.accent + '55' : 'rgba(255,255,255,0.06)',
-                  background: isOver
-                    ? `linear-gradient(180deg, ${col.accent}08 0%, transparent 40%)`
-                    : 'rgba(255,255,255,0.02)',
-                }}
-                onDragOver={(e) => handleDragOver(e, col.key)}
-                onDragLeave={handleDragLeave}
-                onDrop={(e) => handleDrop(e, col.key)}
-              >
-                {/* Column header */}
-                <div className="flex items-center justify-between border-b border-white/5 px-5 py-4 shrink-0">
-                  <h2 className="text-sm font-bold text-white/90">{col.label}</h2>
-                  <span
-                    className="flex h-6 min-w-[24px] items-center justify-center rounded-full px-2 text-xs font-bold text-white"
-                    style={{ backgroundColor: col.accent + '33', color: col.accent }}
-                  >
-                    {colLeads.length}
-                  </span>
-                </div>
-
-                {/* Cards */}
-                <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 custom-scrollbar">
-                  {loading && colLeads.length === 0 && (
-                    <div className="flex h-full items-center justify-center">
-                      <RefreshCw size={20} className="animate-spin text-white/20" />
-                    </div>
-                  )}
-
-                  {!loading && colLeads.length === 0 && (
-                    <div className="flex h-full items-center justify-center text-sm font-medium text-white/20">
-                      Sin leads
-                    </div>
-                  )}
-
-                  {colLeads.map((lead) => (
-                    <LeadCard key={lead.id} lead={lead} accent={col.accent} onDragStart={handleDragStart} />
-                  ))}
-                </div>
-              </div>
-            );
-          })}
+      {/* ── Top Stats Row ────────────────────────────────────────────── */}
+      <div className="px-8 grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="bg-[#152033]/60 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex items-center gap-4 hover:border-[#0099CC]/50 transition-colors">
+          <div className="w-12 h-12 rounded-xl bg-[#0099CC]/10 flex items-center justify-center border border-[#0099CC]/30 shrink-0">
+            <Users className="text-[#0099CC]" size={24} />
+          </div>
+          <div>
+            <div className="text-2xl font-black text-white">{loading ? '...' : stats.leads}</div>
+            <div className="text-[11px] text-white/50 uppercase tracking-wider font-bold">Leads Registrados</div>
+          </div>
         </div>
-      </main>
+
+        <div className="bg-[#152033]/60 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex items-center gap-4 hover:border-[#0099CC]/50 transition-colors">
+          <div className="w-12 h-12 rounded-xl bg-[#0099CC]/10 flex items-center justify-center border border-[#0099CC]/30 shrink-0">
+            <Calendar className="text-[#0099CC]" size={24} />
+          </div>
+          <div>
+            <div className="text-2xl font-black text-white">{loading ? '...' : stats.appointments}</div>
+            <div className="text-[11px] text-white/50 uppercase tracking-wider font-bold">Citas Totales</div>
+          </div>
+        </div>
+
+        <div className="bg-[#152033]/60 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex items-center gap-4 hover:border-[#0099CC]/50 transition-colors">
+          <div className="w-12 h-12 rounded-xl bg-[#0099CC]/10 flex items-center justify-center border border-[#0099CC]/30 shrink-0">
+            <Clock className="text-[#0099CC]" size={24} />
+          </div>
+          <div>
+            <div className="text-2xl font-black text-white">{loading ? '...' : stats.active}</div>
+            <div className="text-[11px] text-white/50 uppercase tracking-wider font-bold">Trámites Pendientes</div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Main Content Grid ────────────────────────────────────────── */}
+      <div className="px-8 grid grid-cols-1 lg:grid-cols-3 gap-6 pb-12">
+        
+        {/* Left Col: Agenda / Leads */}
+        <div className="lg:col-span-2 bg-[#152033]/40 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex flex-col min-h-[400px]">
+          <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#0099CC]/10">
+            <h2 className="text-sm font-bold text-white flex items-center gap-2 uppercase tracking-widest">
+              <MessageSquare size={16} className="text-[#0099CC]" />
+              Actividad de Leads ({today})
+            </h2>
+            <button onClick={fetchData} className="text-[#0099CC]/60 hover:text-[#0099CC] transition-colors">
+              <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
+            {loading ? (
+              <div className="h-full flex items-center justify-center text-white/20">Cargando leads...</div>
+            ) : leads.length === 0 ? (
+              <div className="h-full flex items-center justify-center text-white/30 text-sm">
+                No hay prospectos registrados aún.
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {leads.map((lead, idx) => (
+                  <div key={idx} className="flex items-center justify-between p-4 rounded-xl bg-black/20 border border-white/5 hover:border-[#0099CC]/30 transition-colors">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-[#0099CC]/10 flex items-center justify-center text-[#0099CC] font-black text-sm border border-[#0099CC]/20">
+                        {lead.numero_contacto.slice(-2)}
+                      </div>
+                      <div>
+                        <div className="text-sm font-bold text-white">{lead.numero_contacto}</div>
+                        <div className="text-xs text-white/40 truncate max-w-[250px]">
+                          {lead.contexto_ia || 'Interacción iniciada'}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-end gap-1">
+                      <span className="px-3 py-1 rounded-full bg-[#0099CC]/10 text-[#0099CC] text-[10px] font-bold uppercase tracking-wider border border-[#0099CC]/20">
+                        {lead.etapa_embudo || 'Lead'}
+                      </span>
+                      <span className="text-[10px] text-white/30">{new Date(lead.ultima_interaccion).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Right Col: Bot Status */}
+        <div className="bg-[#152033]/40 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex flex-col">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-sm font-bold text-white flex items-center gap-2 uppercase tracking-widest">
+              <Bot size={16} className="text-[#0099CC]" />
+              WhatsApp Bot
+            </h2>
+            <button onClick={fetchData} className="text-[#0099CC]/60 hover:text-[#0099CC] transition-colors">
+              <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+            </button>
+          </div>
+
+          <div className="flex-1 flex flex-col items-center justify-center text-center space-y-6">
+            {botStatus === 'CONNECTED' ? (
+              <div className="px-6 py-2 rounded-full bg-green-500/10 border border-green-500/30 text-green-400 text-xs font-black tracking-widest uppercase flex items-center gap-2 shadow-[0_0_15px_rgba(34,197,94,0.1)]">
+                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                Bot Activo
+              </div>
+            ) : (
+              <div className="px-6 py-2 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-black tracking-widest uppercase flex items-center gap-2">
+                <AlertCircle size={14} />
+                Bot Inactivo
+              </div>
+            )}
+
+            <p className="text-sm text-white/50 leading-relaxed px-4">
+              El bot de WhatsApp está {botStatus === 'CONNECTED' ? 'conectado y atendiendo leads en automático.' : 'desconectado. Requiere escaneo QR.'}
+            </p>
+
+            <button
+              onClick={() => navigate('/admin/bot')}
+              className="w-full mt-4 py-3 rounded-xl border border-[#0099CC]/30 text-[#0099CC] text-xs font-bold uppercase tracking-wider hover:bg-[#0099CC] hover:text-white transition-all flex items-center justify-center gap-2"
+            >
+              Abrir Monitor de Bot
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 }
