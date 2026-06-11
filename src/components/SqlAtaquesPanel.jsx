@@ -1,78 +1,51 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { ShieldAlert, ShieldCheck, Lock } from 'lucide-react';
 
-export default function SqlAtaquesPanel({ adminProfile }) {
-  const [logs, setLogs] = useState([]);
-  const [stats, setStats] = useState({ total24h: 0, ipsBlocked: 0, firewallLoad: 0 });
-
-  useEffect(() => {
-    // Polling en vivo hacia el WAF
-    const fetchWafLogs = async () => {
-      try {
-        const token = localStorage.getItem('adminToken');
-        const res = await fetch('/api/admin/waf/live', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const data = await res.json();
-        if (data.success) {
-          setLogs(data.data.logs);
-          setStats(data.data.stats);
-        }
-      } catch (err) {
-        console.error("WAF Polling error", err);
-      }
-    };
-
-    fetchWafLogs(); // Ejecutar inmediatamente
-    const liveInterval = setInterval(fetchWafLogs, 4000); // Refrescar cada 4 segundos
-    return () => clearInterval(liveInterval);
-  }, []);
-
+export default function SqlAtaquesPanel() {
   return (
     <div className="flex-1 flex flex-col p-6 bg-[#152033] text-blue-500 font-mono overflow-y-auto">
       <div className="mb-6 flex justify-between items-end border-b border-blue-900/50 pb-4">
         <div>
-          <h2 className="text-2xl font-black tracking-widest text-[#ef4444] drop-shadow-[0_0_15px_rgba(239,68,68,0.8)] flex items-center gap-2">
-            <span className="animate-pulse">🛡️</span> CENTRO DE MONITOREO WAF
+          <h2 className="text-2xl font-black tracking-widest text-emerald-500 drop-shadow-[0_0_15px_rgba(16,185,129,0.8)] flex items-center gap-2">
+            <span className="animate-pulse"><ShieldCheck size={28} /></span> RED PROTEGIDA
           </h2>
-          <p className="text-xs text-blue-400 mt-1 uppercase tracking-widest">Ataques SQL y Prevención de Intrusiones</p>
+          <p className="text-xs text-blue-400 mt-1 uppercase tracking-widest">WAF Delegado a Cloudflare Zero Trust</p>
         </div>
         <div className="flex gap-2">
-          <span className="px-3 py-1 bg-blue-900/40 border border-blue-500/50 rounded text-xs font-bold animate-pulse">ESTADO: ALERTA ROJA</span>
+          <span className="px-3 py-1 bg-emerald-900/40 border border-emerald-500/50 rounded text-xs font-bold text-emerald-400">ESTADO: SEGURO</span>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="bg-neutral-900 border border-blue-900/50 p-4 rounded-xl flex flex-col justify-center items-center shadow-[inset_0_0_20px_rgba(255,0,0,0.1)]">
-          <p className="text-[10px] text-blue-400 uppercase tracking-widest mb-2">Ataques Bloqueados (En Vivo)</p>
-          <p className="text-4xl font-black text-white">{stats.total24h.toLocaleString()}</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div className="bg-neutral-900 border border-emerald-900/50 p-6 rounded-xl flex flex-col justify-center items-center shadow-[inset_0_0_20px_rgba(16,185,129,0.05)]">
+          <Lock size={48} className="text-emerald-500 mb-4 opacity-50" />
+          <p className="text-sm font-bold text-white mb-2 uppercase tracking-widest">Túnel Encriptado</p>
+          <p className="text-xs text-blue-400 text-center max-w-sm">
+            Todo el tráfico hacia la Base de Datos y la API está siendo filtrado por Cloudflare Zero Trust en la capa de red exterior.
+          </p>
         </div>
-        <div className="bg-neutral-900 border border-blue-900/50 p-4 rounded-xl flex flex-col justify-center items-center shadow-[inset_0_0_20px_rgba(255,0,0,0.1)]">
-           <p className="text-[10px] text-blue-400 uppercase tracking-widest mb-2">IPs Bloqueadas</p>
-          <p className="text-4xl font-black text-white">{stats.ipsBlocked}</p>
-        </div>
-         <div className="bg-neutral-900 border border-blue-900/50 p-4 rounded-xl flex flex-col justify-center items-center shadow-[inset_0_0_20px_rgba(255,0,0,0.1)]">
-           <p className="text-[10px] text-blue-400 uppercase tracking-widest mb-2">Carga de Firewall</p>
-          <p className="text-4xl font-black text-white">{stats.firewallLoad}%</p>
+        <div className="bg-neutral-900 border border-emerald-900/50 p-6 rounded-xl flex flex-col justify-center items-center shadow-[inset_0_0_20px_rgba(16,185,129,0.05)]">
+          <ShieldAlert size={48} className="text-blue-500 mb-4 opacity-50" />
+           <p className="text-sm font-bold text-white mb-2 uppercase tracking-widest">Prevención de Inyecciones</p>
+          <p className="text-xs text-blue-400 text-center max-w-sm">
+            Los intentos de inyección SQL, XSS y ataques DDoS son bloqueados automáticamente antes de alcanzar este servidor.
+          </p>
         </div>
       </div>
 
-      <div className="flex-1 bg-[#152033]/60 border border-blue-900/30 rounded-xl overflow-hidden flex flex-col relative">
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,0,0,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,0,0,0.03)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none opacity-20"></div>
-        <div className="p-3 border-b border-blue-900/50 bg-blue-900/10">
-          <p className="text-xs font-bold">📡 REGISTRO EN TIEMPO REAL</p>
+      <div className="flex-1 bg-[#152033]/60 border border-blue-900/30 rounded-xl overflow-hidden flex flex-col relative min-h-[300px]">
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.03)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none opacity-20"></div>
+        <div className="p-3 border-b border-blue-900/50 bg-blue-900/10 flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <p className="text-xs font-bold text-emerald-500 tracking-widest">TRÁFICO LIMPIO GARANTIZADO</p>
         </div>
-        <div className="flex-1 overflow-y-auto p-4 space-y-2 custom-scrollbar">
-          {logs.map(log => (
-            <div key={log.id} className="text-[11px] flex items-start gap-4 border-b border-blue-900/30 pb-2">
-              <span className="text-blue-400/50 shrink-0">[{new Date(log.id).toLocaleTimeString()}]</span>
-              <span className={`px-2 py-0.5 rounded text-black font-bold shrink-0 ${log.risk === 'Crítico' ? 'bg-blue-500' : log.risk === 'Alto' ? 'bg-orange-500' : 'bg-yellow-500'}`}>{log.risk}</span>
-              <span className="text-white shrink-0 w-24">{log.ip}</span>
-              <span className="text-blue-300 font-mono truncate" title={log.query}>{log.query}</span>
-            </div>
-          ))}
-          {logs.length === 0 && <p className="text-neutral-500 text-xs italic">Iniciando escaneo interceptor... (Ningún ataque reciente)</p>}
+        <div className="flex-1 flex flex-col items-center justify-center p-8 space-y-4">
+          <p className="text-neutral-500 text-sm italic font-medium uppercase tracking-widest text-center">
+            El sistema de protección perimetral no reporta amenazas internas. <br/>Para ver el registro detallado de IPs bloqueadas, consulta tu panel de Cloudflare.
+          </p>
+          <a href="https://dash.cloudflare.com/" target="_blank" rel="noreferrer" className="px-4 py-2 border border-blue-500/50 text-blue-400 hover:bg-blue-500/10 rounded font-bold text-xs uppercase tracking-widest transition-colors">
+            Ir a Cloudflare Dashboard
+          </a>
         </div>
       </div>
     </div>
