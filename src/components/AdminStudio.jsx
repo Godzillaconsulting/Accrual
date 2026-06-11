@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from'react';
-import { MousePointerClick } from 'lucide-react';
+import { MousePointerClick, LayoutDashboard, Database, ShieldAlert, Ban, ChartBar, MessageCircle, Bot, User, LogOut, Lightbulb, Eye } from 'lucide-react';
 import { useSiteData } from'../context/SiteContext';
 import StudioPreview from'./StudioPreview';
 import MediaPicker from'./MediaPicker';
@@ -319,8 +319,8 @@ export default function AdminStudio() {
  const username = adminProfile?.username?.toLowerCase() || '';
  const isSuperAdmin = adminProfile?.is_superadmin === true;
  const isGod = adminProfile?.role === 'god' || username === 'godzilla';
- // JareG, Accrual_admin, Dani, Oscar, Alex, adrianaccrual y GodZilla ven absolutamente todo
- const isCEO = isSuperAdmin || isGod || username === 'accrual_admin' || username === 'jareg' || username === 'godzilla' || ['dani', 'oscar', 'alex', 'adrianaccrual'].includes(username); 
+ // JareG, Accrual_admin, Dani, Oscar, Alex y GodZilla ven absolutamente todo
+ const isCEO = (isSuperAdmin && username !== 'adrianaccrual') || isGod || username === 'accrual_admin' || username === 'jareg' || username === 'godzilla' || ['dani', 'oscar', 'alex'].includes(username); 
  
  const isCM = adminProfile?.role === 'cm' && username !== 'oscar';
  
@@ -500,7 +500,7 @@ export default function AdminStudio() {
 
  return (
  <div 
-   className="fixed inset-0 w-screen h-screen z-50 flex bg-[#233657] bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(0,153,204,0.15),rgba(255,255,255,0))] text-white font-sans overflow-hidden relative overscroll-none"
+   className="fixed inset-0 w-screen h-screen z-50 flex bg-[#050505] text-white font-sans overflow-hidden relative overscroll-none"
    onContextMenu={(e) => {
      if (e.target.tagName !== 'IMG') {
        e.preventDefault();
@@ -517,9 +517,8 @@ export default function AdminStudio() {
      />
    )}
 
-   {/* Frutiger Aero Orbs/Gloss */}
-   <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#0099CC]/10 rounded-full blur-[120px] pointer-events-none"></div>
-   <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#152033]/50 rounded-full blur-[100px] pointer-events-none"></div>
+   {/* Subtle Accents */}
+   <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#0099CC]/5 rounded-full blur-[150px] pointer-events-none"></div>
 
 
  {/* ── MODAL PUBLICAR ── */}
@@ -545,43 +544,23 @@ export default function AdminStudio() {
  )}
 
  {/* ██ COL 1: SECCIONES ████████████████████████████████████████████████ */}
- <div className={`relative z-10 transition-all duration-300 flex flex-col border-r border-blue-900/30 bg-[#0099CC]/5 backdrop-blur-xl shadow-[4px_0_24px_rgba(0,0,0,0.05)] ${isSidebarOpen ? 'w-[200px] min-w-[200px]' : 'w-0 min-w-0 overflow-hidden opacity-0 pointer-events-none'}`}>
-  <div className="px-3 pt-5 pb-3 border-b border-[#0099CC]/40 flex items-center justify-between">
-  <div className="flex items-center gap-2.5">
-  <a href="/" target="_blank" rel="noopener noreferrer" className="flex items-center cursor-pointer hover:scale-110 transition-transform">
-    <img src="/favicon.png" alt="Accrual Logo" className="h-8 w-auto object-contain drop-shadow-[0_2px_8px_rgba(0,153,204,0.6)]" />
-  </a>
+ <div className={`relative z-10 transition-all duration-300 flex flex-col border-r border-white/5 bg-[#0a0a0a] ${isSidebarOpen ? 'w-[250px] min-w-[250px]' : 'w-0 min-w-0 overflow-hidden opacity-0 pointer-events-none'}`}>
+  <div className="px-6 pt-6 pb-6 border-b border-white/5 flex flex-col gap-4">
+  <div className="flex items-center gap-3">
+  <div className="w-8 h-8 rounded bg-[#0099CC] flex items-center justify-center text-white font-black text-sm">AC</div>
+  <div>
+    <h1 className="text-sm font-bold text-white tracking-wide">Accrual OS</h1>
+    <p className="text-[9px] font-medium text-neutral-500 uppercase tracking-widest">Admin Workspace</p>
   </div>
-  <button onClick={() => setIsAnalyticsMode(true)} className={`px-2 py-1.5 flex items-center gap-1.5 rounded-lg font-bold text-[10px] transition-all duration-300 border ${
-  isAnalyticsMode ? 'bg-[#0099CC] border-[#0099CC] text-white shadow-[0_0_12px_rgba(0,153,204,0.5)]' : 'bg-[#152033]/40 text-neutral-300 border-blue-900/30 hover:bg-[#0099CC]/10 hover:border-[#0099CC]/50 hover:text-white shadow-sm'
-  }`}>
-    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="18" y1="20" x2="18" y2="10"></line>
-      <line x1="12" y1="20" x2="12" y2="4"></line>
-      <line x1="6" y1="20" x2="6" y2="14"></line>
-    </svg>
-    Analytics
-  </button>
+  </div>
   </div>
 
-  <div className="flex-1 overflow-y-auto flex flex-col custom-scrollbar">
-     <div className="py-4 px-2 space-y-6 shrink-0">
+  <div className="flex-1 overflow-y-auto flex flex-col custom-scrollbar px-3 py-4">
+     <div className="space-y-6 shrink-0">
    {[
      {
-       title: "Sitio Principal",
-       filter: (n, tag) => tag === 'SITIO PRINCIPAL'
-     },
-     {
-       title: "Quiénes Somos",
-       filter: (n, tag) => tag === 'QUIÉNES SOMOS'
-     },
-     {
-       title: "Servicios",
-       filter: (n, tag) => tag === 'SERVICIOS'
-     },
-     {
-       title: "Artículos",
-       filter: (n, tag) => tag === 'ARTÍCULOS'
+       title: "SITIO WEB",
+       filter: (n, tag) => tag === 'SITIO PRINCIPAL' || tag === 'QUIÉNES SOMOS' || tag === 'SERVICIOS' || tag === 'ARTÍCULOS'
      }
    ].map((group, gIdx) => {
      const groupNodes = sortedNodes.filter(n => {
@@ -593,137 +572,127 @@ export default function AdminStudio() {
 
      return (
        <div key={gIdx} className="space-y-1 mb-4">
-         <p onClick={() => setCollapsedGroups(p => ({ ...p, [gIdx]: !p[gIdx] }))}
-            className={`px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-widest mb-2 drop-shadow-sm flex items-center justify-between cursor-pointer border transition-all group ${
-              !collapsedGroups[gIdx] ? 'bg-white text-[#0099CC] border-white/20 shadow-md' : 'border-transparent text-white/80 hover:bg-white hover:text-[#0099CC] hover:border-white/20'
-            }`}>
-             <span>{group.title}</span>
-             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" 
-                  className={`transition-transform duration-300 ${!collapsedGroups[gIdx] ? 'text-[#0099CC] -rotate-180' : 'text-white/40 group-hover:text-[#0099CC] rotate-0'}`}>
-               <polyline points="6 9 12 15 18 9"></polyline>
-             </svg>
+         <p className="px-3 text-[10px] font-semibold text-neutral-600 uppercase tracking-widest mb-2">
+             {group.title}
          </p>
          
-         {!collapsedGroups[gIdx] && (
-           <div className="space-y-0.5 relative animate-in fade-in slide-in-from-top-2 duration-300">
-             {groupNodes.map((node) => {
-                const meta = PAGE_SECTIONS.find(s => s.id === node.id);
-                const isSelected = selectedNodeId === node.id;
-                const globalIdx = PAGE_SECTIONS.findIndex(s => s.id === node.id) + 1;
-                return (
-                <button key={node.id} onClick={() => handleSelectSection(node)}
-                className={`group/btn w-full text-left px-3 py-2 rounded-xl transition-all duration-300 flex items-center gap-2.5 border ${
-                isSelected ? 'bg-gradient-to-r from-[#0099CC]/20 to-transparent border-[#0099CC]/30 shadow-[inset_2px_0_15px_rgba(0,153,204,0.15)]' : 'border-transparent hover:bg-[#0099CC]/10 hover:border-[#0099CC]/20 hover:translate-x-1'
-                }`}
-                >
-                <div className="min-w-0 flex-1">
-                <span className={`block text-xs font-black truncate drop-shadow-sm transition-colors duration-300 ${isSelected ? 'text-[#0099CC]' : 'text-white/70 group-hover/btn:text-white'}`}>
+         <div className="space-y-1">
+           {groupNodes.map((node) => {
+              const meta = PAGE_SECTIONS.find(s => s.id === node.id);
+              const isSelected = selectedNodeId === node.id;
+              return (
+              <button key={node.id} onClick={() => handleSelectSection(node)}
+              className={`w-full text-left px-3 py-2 rounded-lg transition-all duration-300 flex items-center border border-transparent ${
+              isSelected ? 'bg-[#111111] border-white/5' : 'hover:bg-[#111111]/50'
+              }`}
+              >
+              <div className="min-w-0 flex-1 flex justify-between items-center">
+                <span className={`text-xs font-semibold truncate transition-colors duration-300 ${isSelected ? 'text-white' : 'text-neutral-400'}`}>
                 {meta?.label || node.id}
                 </span>
-                <span className={`text-[9px] font-black transition-colors duration-300 ${isSelected ? 'text-[#0099CC]/80' : 'text-white/30 group-hover/btn:text-white/50'}`}>
-                §{globalIdx} · {meta?.tag || node.id.toUpperCase()}
-                </span>
-                </div>
-                </button>
-                );
-             })}
-           </div>
-         )}
+                {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-[#0099CC]"></span>}
+              </div>
+              </button>
+              );
+           })}
+         </div>
        </div>
      );
    })}
   </div>
 
-   <div className="mt-8 px-2 pb-16 space-y-1 shrink-0 border-t border-[#0099CC]/20 pt-4">
+   <div className="mt-8 space-y-1 shrink-0">
+       <div className="text-[10px] font-semibold text-neutral-600 uppercase tracking-widest px-3 mb-2">Operaciones</div>
 
     {canSeePanelMaestro && (
         <button onClick={() => { navigate('/admin/master'); }}
-        className={`w-full text-[10px] py-2 shadow-sm rounded-xl transition-all font-black uppercase flex items-center justify-center border ${ activeSection ==='panel_maestro' ?'bg-neutral-900 text-[#fbbf24] border-[#fbbf24]/50 shadow-[0_0_15px_rgba(251,191,36,0.2)]' :'text-neutral-300 border-transparent hover:border-[#fbbf24]/40 hover:bg-[#fbbf24]/5 hover:text-white' }`}>
-        <span className="text-xs mr-2 drop-shadow-sm">🏛️</span> Panel Maestro
+        className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='panel_maestro' ?'bg-[#111111] text-white border-white/5' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#111111]/50' }`}>
+        <LayoutDashboard size={14} className="mr-3" /> Panel Maestro
         </button>
     )}
 
     {canSeeDBEstudio && (
         <button onClick={() => { navigate('/admin/db'); }}
-        className={`w-full text-[10px] py-2 shadow-sm rounded-xl transition-all font-black uppercase flex items-center justify-center border ${ activeSection ==='db_estudio' ?'bg-neutral-900 text-[#0099CC] border-[#0099CC]/50 shadow-[0_0_15px_rgba(0,153,204,0.2)]' :'text-neutral-300 border-transparent hover:border-[#0099CC]/40 hover:bg-[#0099CC]/5 hover:text-white' }`}>
-        <span className="text-xs mr-2 drop-shadow-sm">🗄️</span> DB Studio
+        className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='db_estudio' ?'bg-[#111111] text-white border-white/5' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#111111]/50' }`}>
+        <Database size={14} className="mr-3" /> DB Studio
         </button>
     )}
 
     {canSeeSqlAtaques && (
         <button onClick={() => { navigate('/admin/sql'); }}
-        className={`w-full text-[10px] py-2 shadow-sm rounded-xl transition-all font-black uppercase flex items-center justify-center border ${ activeSection ==='sql_ataques' ?'bg-neutral-900 text-[#ef4444] border-[#ef4444]/50 shadow-[0_0_15px_rgba(239,68,68,0.2)]' :'text-neutral-300 border-transparent hover:border-[#ef4444]/40 hover:bg-[#ef4444]/5 hover:text-white' }`}>
-        <span className="text-xs mr-2 drop-shadow-sm">🛡️</span> Ataques SQL
+        className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='sql_ataques' ?'bg-[#111111] text-white border-white/5' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#111111]/50' }`}>
+        <ShieldAlert size={14} className="mr-3" /> Ataques SQL
         </button>
     )}
 
     {canSeeBlackList && (
         <button onClick={() => { navigate('/admin/blacklist'); }}
-        className={`w-full text-[10px] py-2 shadow-sm rounded-xl transition-all font-black uppercase flex items-center justify-center border ${ activeSection ==='blacklist' ?'bg-neutral-900 text-[#ef4444] border-[#ef4444]/50 shadow-[0_0_15px_rgba(239,68,68,0.2)]' :'text-neutral-300 border-transparent hover:border-[#ef4444]/40 hover:bg-[#ef4444]/5 hover:text-white' }`}>
-        <span className="text-xs mr-2 drop-shadow-sm">🚫</span> Black List
+        className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='blacklist' ?'bg-[#111111] text-white border-white/5' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#111111]/50' }`}>
+        <Ban size={14} className="mr-3" /> Black List
         </button>
     )}
 
     {isGod && (
         <>
-            <div className="text-[9px] font-black tracking-[0.2em] text-[#0099CC]/60 uppercase ml-2 mt-4 mb-2">
+            <div className="text-[10px] font-semibold tracking-widest text-neutral-600 uppercase px-3 mt-6 mb-2">
                 Inteligencia
             </div>
             <button onClick={() => { navigate('/admin/stats'); }}
-            className={`w-full text-[10px] py-2 shadow-sm rounded-xl transition-all font-black uppercase flex items-center justify-center border ${ activeSection ==='stats' ?'bg-neutral-900 text-[#00bcd4] border-[#00bcd4]/50 shadow-[0_0_15px_rgba(0,188,212,0.2)]' :'text-slate-300 border-transparent hover:border-[#00bcd4]/40 hover:bg-[#00bcd4]/5 hover:text-white' }`}>
-            <span className="text-xs mr-2 drop-shadow-sm">📊</span> Estadísticas
+            className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='stats' ?'bg-[#111111] text-white border-white/5' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#111111]/50' }`}>
+            <ChartBar size={14} className="mr-3" /> Estadísticas
             </button>
             <button onClick={() => { navigate('/admin/crm'); }}
-            className={`w-full text-[10px] py-2 shadow-sm rounded-xl transition-all font-black uppercase flex items-center justify-center border ${ activeSection ==='crm' ?'bg-neutral-900 text-[#18ffff] border-[#18ffff]/50 shadow-[0_0_15px_rgba(24,255,255,0.2)]' :'text-slate-300 border-transparent hover:border-[#18ffff]/40 hover:bg-[#18ffff]/5 hover:text-white' }`}>
-            <span className="text-xs mr-2 drop-shadow-sm">💬</span> CRM / Leads
+            className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='crm' ?'bg-[#111111] text-white border-white/5' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#111111]/50' }`}>
+            <MessageCircle size={14} className="mr-3" /> CRM / Leads
             </button>
             <button onClick={() => { navigate('/admin/bot'); }}
-            className={`w-full text-[10px] py-2 shadow-sm rounded-xl transition-all font-black uppercase flex items-center justify-center border ${ activeSection ==='bot' ?'bg-neutral-900 text-[#0099CC] border-[#0099CC]/50 shadow-[0_0_15px_rgba(0,153,204,0.2)]' :'text-slate-300 border-transparent hover:border-[#0099CC]/40 hover:bg-[#0099CC]/5 hover:text-white' }`}>
-            <span className="text-xs mr-2 drop-shadow-sm">🤖</span> Bot Monitor
+            className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='bot' ?'bg-[#111111] text-white border-white/5' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#111111]/50' }`}>
+            <Bot size={14} className="mr-3" /> Bot Monitor
             </button>
         </>
     )}
     
-    <button onClick={() => { navigate('/admin/profile'); }}
-    className={`w-full p-2 flex items-center gap-3 transition-colors rounded-xl shadow-sm border border-transparent ${ activeSection ==='profile' ?'bg-white/70 border-[#0099CC]/50 shadow-[0_4px_15px_rgba(255,255,255,0.8)]' :'hover:bg-[#152033]/40 hover:border-[#0099CC]/20' }`}>
-       <div className="w-6 h-6 rounded-full bg-[#152033]/60 overflow-hidden shrink-0 border border-[#0099CC]/50">
-           {adminProfile?.photo_url ? <img src={adminProfile.photo_url} className="w-full h-full object-cover"/> : <span className="text-xs flex items-center justify-center w-full h-full drop-shadow">💼</span>}
-       </div>
-       <div className="flex-1 text-left min-w-0">
-           <p className={`text-xs font-black truncate drop-shadow-sm transition-colors ${ activeSection ==='profile' ?'text-[#0099CC]' :'text-white' }`}>{adminProfile?.username || 'Usuario'}</p>
-           <p className={`flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider transition-colors ${ activeSection ==='profile' ?'text-black/60' :'text-neutral-500' }`}>
-               <span className="w-1.5 h-1.5 rounded-full bg-[#0099CC] border border-[#0099CC] shadow-[0_0_5px_rgba(0,153,204,0.8)] animate-pulse"></span> Activo
-           </p>
-       </div>
-   </button>
-   
-  <button onClick={() => { localStorage.clear(); navigate('/login'); }}
- className="w-full flex items-center justify-center gap-1.5 text-[10px] text-blue-500 font-bold hover:text-white hover:bg-[#0099CC]/10 border border-blue-900/40 hover:border-[#0099CC]/60 py-2 rounded-xl transition-all shadow-sm">
- <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-80">
-    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-    <polyline points="16 17 21 12 16 7"></polyline>
-    <line x1="21" y1="12" x2="9" y2="12"></line>
- </svg>
- Cerrar sesión
- </button>
-  <button onClick={() => {
-      const isIT = ['jareg', 'accrual_admin', 'dani', 'oscar'].includes(adminProfile?.username?.toLowerCase());
-      if (isIT) {
-          setIsAnalyticsMode(false);
-          navigate('/admin/bugs');
-          setSelectedNodeId(null);
-      } else {
-          setShowFeedbackModal(true);
-      }
-  }}
-  className={`w-full text-[10px] py-2 rounded-xl transition-all shadow-sm font-bold border ${activeSection === 'bugs' ? 'bg-yellow-500 text-black border-yellow-500/50 shadow-[0_0_15px_rgba(234,179,8,0.4)]' : 'text-yellow-500 hover:text-white hover:bg-yellow-500/10 border-transparent hover:border-yellow-900/50'}`}>
-  {activeSection === 'bugs' ? '💡 Monitoreo IT' : '💡 Sugerencias / Bugs'}
-  </button>
+    </div>
+
+    {/* Footer Sidebar Area */}
+    <div className="p-4 border-t border-white/5 shrink-0">
+        <button onClick={() => { navigate('/admin/profile'); }}
+        className={`w-full p-2 flex items-center gap-3 transition-colors rounded-lg border mb-2 ${ activeSection ==='profile' ?'bg-[#111111] border-white/5' :'border-transparent hover:bg-[#111111]/50' }`}>
+           <div className="w-8 h-8 rounded-full bg-neutral-800 overflow-hidden shrink-0 flex items-center justify-center text-neutral-500">
+               {adminProfile?.photo_url ? <img src={adminProfile.photo_url} className="w-full h-full object-cover"/> : <User size={16} />}
+           </div>
+           <div className="flex-1 text-left min-w-0">
+               <p className={`text-xs font-semibold truncate transition-colors ${ activeSection ==='profile' ?'text-white' :'text-neutral-400' }`}>{adminProfile?.username || 'Usuario'}</p>
+               <p className={`text-[10px] text-neutral-600 font-medium`}>
+                   Editor
+               </p>
+           </div>
+       </button>
+       
+      <button onClick={() => {
+          const isIT = ['jareg', 'accrual_admin', 'dani', 'oscar'].includes(adminProfile?.username?.toLowerCase());
+          if (isIT) {
+              setIsAnalyticsMode(false);
+              navigate('/admin/bugs');
+              setSelectedNodeId(null);
+          } else {
+              setShowFeedbackModal(true);
+          }
+      }}
+      className={`w-full text-xs flex justify-start items-center gap-3 px-2 py-2 mb-2 rounded-lg transition-all font-semibold border ${activeSection === 'bugs' ? 'bg-[#111111] text-white border-white/5' : 'text-neutral-500 border-transparent hover:text-white hover:bg-[#111111]/50'}`}>
+      <Lightbulb size={14} /> {activeSection === 'bugs' ? 'Monitoreo IT' : 'Sugerencias / Bugs'}
+      </button>
+
+      <button onClick={() => { localStorage.clear(); navigate('/login'); }}
+     className="w-full flex items-center justify-start px-2 gap-3 text-xs text-red-500/80 font-semibold hover:text-red-500 hover:bg-red-500/10 border border-transparent py-2 rounded-lg transition-all">
+     <LogOut size={14} /> Cerrar sesión
+     </button>
+    </div>
   </div>
   </div>
   </div>
-  <div className="flex-1 flex flex-col overflow-hidden relative z-10 bg-[#152033]/30 backdrop-blur-md shadow-inner border-l border-blue-900/30">
-  <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="absolute top-16 left-0 z-50 w-4 h-12 bg-[#0099CC] text-white flex items-center justify-center rounded-r-md shadow-lg hover:bg-blue-600 border border-t-[#0099CC] border-b-[#0099CC] border-r-[#0099CC] border-l-transparent transition-all">
+  <div className="flex-1 flex flex-col overflow-hidden relative z-10 bg-[#000000] border-l border-white/5">
+  <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="absolute top-16 left-0 z-50 w-6 h-8 bg-[#111111] text-neutral-400 flex items-center justify-center rounded-r-md border border-white/10 border-l-transparent hover:text-white transition-all">
       <span className="text-[10px] font-bold">{isSidebarOpen ? '❮' : '❯'}</span>
   </button>
   <div style={{ display: (!isAnalyticsMode && activeSection === 'social_studio') ? 'flex' : 'none', flex: 1, height: '100%', overflow: 'hidden' }}>
@@ -764,36 +733,33 @@ export default function AdminStudio() {
   ) : (<>
 
  {/* Barra superior del editor */}
- <div className="flex items-center justify-between px-6 py-4 border-b border-blue-900/30 bg-[#152033]/40 backdrop-blur-xl shrink-0 shadow-sm relative">
+ <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-[#0a0a0a] shrink-0">
 
  {selectedNodeId ? (
  <div className="flex items-center gap-3">
- <span className="text-2xl drop-shadow-sm">{PAGE_SECTIONS.find(s => s.id === selectedNodeId)?.emoji ||'📄'}</span>
  <div>
- <h2 className="text-lg font-black text-white leading-none drop-shadow-sm flex items-center gap-2">
+ <h2 className="text-sm font-bold text-white flex items-center gap-2">
  {PAGE_SECTIONS.find(s => s.id === selectedNodeId)?.label || selectedNodeId}
  {activePresences[selectedNodeId] && activePresences[selectedNodeId].user !== adminProfile?.username && (
-    <span className="text-[9px] bg-yellow-500/20 text-yellow-500 border border-yellow-500/50 px-2 py-0.5 rounded-full flex items-center gap-1 shadow-[0_0_10px_rgba(234,179,8,0.2)] whitespace-nowrap">
-      🔒 Bloqueado por {activePresences[selectedNodeId].user}
+    <span className="text-[9px] bg-red-500/10 text-red-500 px-2 py-0.5 rounded flex items-center gap-1 whitespace-nowrap">
+      Bloqueado por {activePresences[selectedNodeId].user}
     </span>
  )}
  </h2>
- <p className="text-[10px] font-bold text-[#0099CC]/60 uppercase">Accrual · Editor</p>
  </div>
  </div>
  ) : (
   <div className="flex flex-col justify-center">
-  <p className="text-sm font-black text-white/90 leading-none drop-shadow-sm tracking-wider uppercase">Accrual</p>
-  <p className="text-xs text-[#0099CC] font-bold mt-1 tracking-widest uppercase">Admin</p>
+  <p className="text-sm font-bold text-white">ADMIN <span className="text-[#0099CC]">STUDIO</span></p>
   </div>
  )}
 
  <div className="flex items-center gap-3">
  <button onClick={() => setShowPreview(p => !p)}
- className={`px-4 py-2 rounded-xl text-xs font-black transition-all duration-300 active:scale-95 hover:scale-105 hover:-translate-y-0.5 shadow-sm border border-transparent ${
- showPreview ?'bg-white/90 text-[#0099CC] border-[#0099CC]/50 shadow-md' :'bg-[#152033]/40 text-[#0099CC] hover:bg-white hover:border-[#0099CC]/50'
+ className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-300 border ${
+ showPreview ?'bg-white text-black border-white' :'bg-transparent text-neutral-400 hover:text-white border-white/20'
  }`}>
- {showPreview ?'◧ Ocultar' :'▣ Visualizar'}
+ {showPreview ?'Ocultar Preview' :'Mostrar Preview'}
  </button>
  
  { /* ── Botón Guardar (Bloqueable por Presence) ── */ }
@@ -1558,10 +1524,10 @@ export default function AdminStudio() {
 
  </div>
  </>
- ) : (
- <div className="flex-1 flex flex-col items-center pt-32 gap-4 text-white/80">
- <MousePointerClick className="w-16 h-16 opacity-50" strokeWidth={1.5} />
- <p className="text-base font-bold text-white">Selecciona una sección</p>
+ <div className="flex-1 flex flex-col items-center justify-center pt-32 gap-4 text-white/80">
+ <Eye className="w-12 h-12 text-[#0099CC]/80 mb-2" strokeWidth={1.5} />
+ <p className="text-sm font-bold text-neutral-400">Selecciona una sección</p>
+ <p className="text-[10px] text-neutral-600 font-medium">La vista previa aparecerá aquí</p>
  </div>
  )}
  </div>

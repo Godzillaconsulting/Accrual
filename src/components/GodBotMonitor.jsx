@@ -156,12 +156,12 @@ export default function GodBotMonitor() {
       <header className="border-b border-white/5 px-6 py-5">
         <div className="mx-auto flex max-w-[1800px] flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl" style={{ background: 'linear-gradient(135deg, #0099CC, #00bcd4)' }}>
-              <Bot size={20} className="text-white" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#111111] border border-white/10">
+              <Bot size={20} className="text-[#0099CC]" />
             </div>
             <div>
               <h1 className="text-xl font-bold text-white tracking-tight">Bot Monitor</h1>
-              <p className="text-xs text-white/40">Monitoreo de estado y vinculación de WhatsApp</p>
+              <p className="text-xs text-neutral-500 font-medium">Monitoreo de estado y vinculación de WhatsApp</p>
             </div>
           </div>
 
@@ -191,13 +191,9 @@ export default function GodBotMonitor() {
         {/* Status Card */}
         <div className="md:col-span-1 flex flex-col gap-6">
           <div
-            className="p-6 rounded-2xl border border-white/5 flex flex-col items-center justify-center text-center relative overflow-hidden"
-            style={{
-              background: 'linear-gradient(135deg, rgba(21,32,51,.85) 0%, rgba(17,17,17,.9) 100%)',
-              backdropFilter: 'blur(12px)',
-            }}
+            className="p-6 rounded-xl border border-white/5 flex flex-col items-center justify-center text-center relative overflow-hidden bg-[#0a0a0a]"
           >
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#00bcd4]/50 to-transparent" />
+            <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#0099CC]/30 to-transparent" />
             
             <div className="relative mb-6">
               <div className={`absolute inset-0 rounded-full blur-xl ${status === 'CONNECTED' ? 'bg-green-500/20' : 'bg-red-500/20'}`} />
@@ -226,11 +222,7 @@ export default function GodBotMonitor() {
 
           {/* QR Code Scan Area */}
           <div
-            className="p-6 rounded-2xl border border-white/5 flex flex-col items-center justify-center relative overflow-hidden"
-            style={{
-              background: 'linear-gradient(135deg, rgba(21,32,51,.85) 0%, rgba(17,17,17,.9) 100%)',
-              backdropFilter: 'blur(12px)',
-            }}
+            className="p-6 rounded-xl border border-white/5 flex flex-col items-center justify-center relative overflow-hidden bg-[#0a0a0a]"
           >
             <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-4">Escanear Vinculación</h3>
             {status === 'QR_READY' ? (
@@ -266,11 +258,7 @@ export default function GodBotMonitor() {
         {/* Recent Messages Area */}
         <div className="md:col-span-2 flex flex-col">
           <div
-            className="flex-1 rounded-2xl border border-white/5 overflow-hidden flex flex-col h-[600px]"
-            style={{
-              background: 'linear-gradient(135deg, rgba(21,32,51,.85) 0%, rgba(17,17,17,.9) 100%)',
-              backdropFilter: 'blur(12px)',
-            }}
+            className="flex-1 rounded-xl border border-white/5 overflow-hidden flex flex-col h-[600px] bg-[#0a0a0a]"
           >
             <div className="p-4 border-b border-white/5 bg-black/20 flex justify-between items-center">
               <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Lock, Unlock } from 'lucide-react';
+import { User, Lock, Unlock, Ban, Smartphone, RefreshCw, AlertCircle, CheckCircle2, QrCode } from 'lucide-react';
 
 const API_BASE = '';
 
@@ -137,87 +137,85 @@ export default function BlackListPanel({ adminProfile }) {
 
     return (
         <div className="flex-1 flex flex-col p-6 md:p-10 bg-[#0a0a0a] text-white overflow-y-auto">
-            <div className="mb-8 border-b border-red-500/30 pb-6 flex items-center justify-between">
+            <div className="mb-8 border-b border-white/5 pb-6 flex items-center justify-between">
                 <div>
-                    <h2 className="text-3xl font-black tracking-widest text-red-500 flex items-center gap-3">
-                        <span>🛡️</span> BLACK LIST
+                    <h2 className="text-xl font-bold tracking-tight text-white flex items-center gap-3">
+                        <Ban size={24} className="text-[#0099CC]" /> Black List
                     </h2>
-                    <p className="text-sm text-neutral-400 mt-2">Gestión de números bloqueados para el Bot de WhatsApp.</p>
+                    <p className="text-xs text-neutral-500 mt-2 font-medium">Gestión de números bloqueados para el Bot de WhatsApp.</p>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {/* Form to add */}
                 <div className="col-span-1">
-                    <form onSubmit={handleAdd} className="bg-[#152033] border border-red-500/40 rounded-xl p-6 shadow-lg">
-                        <h3 className="font-bold text-red-400 mb-4 tracking-widest uppercase text-sm">Bloquear Número</h3>
+                    <form onSubmit={handleAdd} className="bg-[#111111] border border-white/5 rounded-xl p-6 shadow-sm">
+                        <h3 className="font-semibold text-white mb-4 uppercase tracking-widest text-[10px]">Bloquear Número</h3>
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-[10px] text-neutral-400 font-bold uppercase mb-1">Teléfono (con código de país)</label>
+                                <label className="block text-[10px] text-neutral-500 font-semibold uppercase mb-2">Teléfono (con código de país)</label>
                                 <input 
                                     type="text" 
                                     value={newPhone} 
                                     onChange={e => setNewPhone(e.target.value)} 
                                     placeholder="ej. 5216641234567" 
-                                    className="w-full bg-[#0a0a0a] border border-neutral-700 text-white rounded p-2.5 text-sm focus:border-red-500 outline-none"
+                                    className="w-full bg-[#0a0a0a] border border-white/10 text-white rounded-lg p-2.5 text-xs focus:border-[#0099CC] outline-none transition-colors"
                                     required
                                 />
                             </div>
                             <div>
-                                <label className="block text-[10px] text-neutral-400 font-bold uppercase mb-1">Motivo (Opcional)</label>
+                                <label className="block text-[10px] text-neutral-500 font-semibold uppercase mb-2">Motivo (Opcional)</label>
                                 <input 
                                     type="text" 
                                     value={newReason} 
                                     onChange={e => setNewReason(e.target.value)} 
                                     placeholder="ej. Spam continuo" 
-                                    className="w-full bg-[#0a0a0a] border border-neutral-700 text-white rounded p-2.5 text-sm focus:border-red-500 outline-none"
+                                    className="w-full bg-[#0a0a0a] border border-white/10 text-white rounded-lg p-2.5 text-xs focus:border-[#0099CC] outline-none transition-colors"
                                 />
                             </div>
-                            <button type="submit" disabled={loading} className="w-full bg-red-500/20 text-red-500 border border-red-500/50 hover:bg-red-500 hover:text-white font-bold py-2.5 rounded transition-colors text-sm">
+                            <button type="submit" disabled={loading} className="w-full bg-[#0099CC]/10 text-[#0099CC] border border-[#0099CC]/30 hover:bg-[#0099CC] hover:text-white font-semibold py-2.5 rounded-lg transition-colors text-xs">
                                 Añadir a la Lista
                             </button>
                         </div>
                     </form>
                     
 {/* Tarjeta de Conexión de WhatsApp */}
-                    <div className="bg-[#152033] border border-neutral-800 rounded-xl p-6 shadow-lg mt-6">
-                        <h3 className="font-bold text-gray-300 mb-4 tracking-widest uppercase text-sm flex items-center justify-between">
-                            <span className="flex items-center gap-2">📲 Conexión WhatsApp</span>
+                    <div className="bg-[#111111] border border-white/5 rounded-xl p-6 shadow-sm mt-6">
+                        <h3 className="font-semibold text-white mb-4 tracking-widest uppercase text-[10px] flex items-center justify-between">
+                            <span className="flex items-center gap-2"><Smartphone size={14} className="text-[#0099CC]"/> Conexión WhatsApp</span>
                             {botStatus.status === 'CONNECTED' ? (
-                                <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-green-500/20 text-green-400 border border-green-500/30 animate-pulse">
-                                    🟢 CONECTADO
+                                <span className="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-semibold bg-green-500/10 text-green-400 border border-green-500/20">
+                                    CONECTADO
                                 </span>
                             ) : botStatus.status === 'QR_READY' ? (
-                                <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
-                                    🟡 QR LISTO
+                                <span className="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-semibold bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">
+                                    QR LISTO
                                 </span>
                             ) : (
-                                <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/30">
-                                    🔴 DESCONECTADO
+                                <span className="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-semibold bg-red-500/10 text-red-400 border border-red-500/20">
+                                    DESCONECTADO
                                 </span>
                             )}
                         </h3>
 
                         {botStatus.status === 'CONNECTED' ? (
-                            <div className="flex flex-col items-center justify-center p-6 bg-green-500/5 rounded-lg border border-green-500/20 text-center">
-                                <div className="w-16 h-16 rounded-full bg-green-500/10 flex items-center justify-center text-green-400 mb-3 border border-green-500/30">
-                                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7"></path>
-                                    </svg>
+                            <div className="flex flex-col items-center justify-center p-6 bg-[#0a0a0a] rounded-lg border border-white/5 text-center">
+                                <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center text-green-400 mb-3 border border-green-500/20">
+                                    <CheckCircle2 size={24} />
                                 </div>
-                                <h4 className="text-sm font-bold text-green-400 uppercase tracking-wider">Bot en Línea</h4>
-                                <p className="text-xs text-neutral-300 mt-2 max-w-xs">
+                                <h4 className="text-xs font-semibold text-green-400 tracking-wider">Bot en Línea</h4>
+                                <p className="text-[10px] text-neutral-500 mt-2 max-w-xs font-medium">
                                     La Neurona WhatsApp está vinculada y operando correctamente en segundo plano.
                                 </p>
                                 {botStatus.ultima_conexion && (
-                                    <span className="text-[10px] text-neutral-400 mt-3 bg-neutral-900/60 px-2 py-1 rounded">
+                                    <span className="text-[9px] text-neutral-500 mt-3 font-semibold">
                                         Última Actividad: {new Date(botStatus.ultima_conexion).toLocaleString()}
                                     </span>
                                 )}
                             </div>
                         ) : botStatus.status === 'QR_READY' ? (
                             <div className="flex flex-col items-center">
-                                <p className="text-xs text-neutral-400 mb-4 text-center">
+                                <p className="text-[10px] text-neutral-500 mb-4 text-center font-medium">
                                     Escanea este código QR desde tu celular para conectar el Bot de WhatsApp.
                                 </p>
                                 <div className="flex flex-col items-center justify-center p-4 bg-white rounded-lg border border-neutral-700 w-full max-w-[210px] aspect-square">
@@ -238,43 +236,42 @@ export default function BlackListPanel({ adminProfile }) {
                                         Cargando QR...
                                     </div>
                                 </div>
-                                <div className="text-[10px] text-neutral-500 mt-3 text-center animate-pulse">
-                                    🔄 Sincronizando QR en tiempo real (5s)
+                                <div className="text-[9px] text-neutral-500 mt-3 text-center flex items-center gap-1 font-semibold">
+                                    <RefreshCw size={10} className="animate-spin" /> Sincronizando QR en tiempo real
                                 </div>
                             </div>
                         ) : (
-                            <div className="flex flex-col items-center justify-center p-6 bg-red-500/5 rounded-lg border border-red-500/20 text-center">
-                                <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center text-red-400 mb-3 border border-red-500/30 animate-pulse">
-                                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                                    </svg>
+                            <div className="flex flex-col items-center justify-center p-6 bg-[#0a0a0a] rounded-lg border border-white/5 text-center">
+                                <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center text-red-400 mb-3 border border-red-500/20">
+                                    <AlertCircle size={24} />
                                 </div>
-                                <h4 className="text-sm font-bold text-red-400 uppercase tracking-wider">Sesión Inactiva</h4>
-                                <p className="text-xs text-neutral-300 mt-2 max-w-xs">
+                                <h4 className="text-xs font-semibold text-red-400 tracking-wider">Sesión Inactiva</h4>
+                                <p className="text-[10px] text-neutral-500 mt-2 max-w-xs font-medium">
                                     El bot de WhatsApp está desconectado o el contenedor se está reiniciando. Por favor, espera unos segundos.
                                 </p>
                             </div>
                         )}
                     </div>
+                    </div>
                 </div>
 
                 {/* Table */}
                 <div className="col-span-1 md:col-span-2">
-                    <div className="bg-[#152033] border border-neutral-800 rounded-xl overflow-hidden shadow-lg">
-                        <div className="px-6 py-4 border-b border-neutral-800 bg-[#0d0d0d] flex items-center justify-between">
-                            <h3 className="text-sm font-bold text-gray-300 tracking-widest uppercase flex items-center gap-2">
+                    <div className="bg-[#111111] border border-white/5 rounded-xl overflow-hidden shadow-sm">
+                        <div className="px-6 py-4 border-b border-white/5 bg-[#0a0a0a] flex items-center justify-between">
+                            <h3 className="text-[10px] font-semibold text-white tracking-widest uppercase flex items-center gap-2">
                                 Números Bloqueados 
                                 {!isUnlocked ? (
-                                    <button onClick={handleUnlock} className="ml-3 text-[10px] bg-red-500/10 hover:bg-red-500/30 text-red-400 px-2 py-1 rounded flex items-center gap-1 transition-colors">
-                                        <Lock size={12} /> Desbloquear Vista
+                                    <button onClick={handleUnlock} className="ml-3 text-[9px] bg-[#0a0a0a] hover:bg-white/10 text-neutral-400 px-2 py-1 rounded border border-white/5 flex items-center gap-1 transition-colors">
+                                        <Lock size={10} /> Desbloquear Vista
                                     </button>
                                 ) : (
-                                    <span className="ml-3 text-[10px] bg-green-500/10 text-green-400 px-2 py-1 rounded flex items-center gap-1">
-                                        <Unlock size={12} /> Vista Desbloqueada
+                                    <span className="ml-3 text-[9px] bg-white/10 text-white px-2 py-1 rounded border border-white/20 flex items-center gap-1">
+                                        <Unlock size={10} /> Vista Desbloqueada
                                     </span>
                                 )}
                             </h3>
-                            <div className="text-[10px] font-bold text-neutral-500 bg-neutral-800/50 px-2.5 py-1 rounded-full">{blacklist.length} Registros</div>
+                            <div className="text-[9px] font-semibold text-neutral-500 bg-[#0a0a0a] border border-white/5 px-2.5 py-1 rounded-full">{blacklist.length} Registros</div>
                         </div>
                         
                         <div className="overflow-x-auto">
@@ -285,38 +282,38 @@ export default function BlackListPanel({ adminProfile }) {
                             ) : blacklist.length === 0 ? (
                                 <p className="p-8 text-neutral-500 text-center text-sm font-bold tracking-widest uppercase">No hay números bloqueados.</p>
                             ) : (
-                                <table className="w-full text-left text-sm">
-                                    <thead className="bg-[#0a0a0a] text-[10px] text-neutral-500 uppercase font-black tracking-widest">
+                                <table className="w-full text-left text-xs">
+                                    <thead className="bg-[#0a0a0a] text-[9px] text-neutral-500 uppercase font-semibold tracking-widest border-b border-white/5">
                                         <tr>
-                                            <th className="px-6 py-4">Teléfono</th>
-                                            <th className="px-6 py-4">Motivo</th>
-                                            <th className="px-6 py-4">Agregado</th>
-                                            <th className="px-6 py-4 text-right">Acciones</th>
+                                            <th className="px-6 py-4 font-semibold">Teléfono</th>
+                                            <th className="px-6 py-4 font-semibold">Motivo</th>
+                                            <th className="px-6 py-4 font-semibold">Agregado</th>
+                                            <th className="px-6 py-4 text-right font-semibold">Acciones</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-neutral-800/60 font-medium">
+                                    <tbody className="divide-y divide-white/5 font-medium">
                                         {blacklist.map(item => {
                                             const rawPhone = item.phone_number.split('@')[0];
                                             const maskedPhone = isUnlocked ? rawPhone : `(•••) ••• •${rawPhone.slice(-4)}`;
                                             return (
-                                                <tr key={item.phone_number} className="hover:bg-neutral-800/20 transition-colors group">
+                                                <tr key={item.phone_number} className="hover:bg-white/5 transition-colors group">
                                                     <td className="px-6 py-4">
                                                         <div className="flex items-center gap-3">
-                                                            <div className="w-8 h-8 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center text-neutral-400 group-hover:border-red-500/50 transition-colors">
+                                                            <div className="w-8 h-8 rounded-full bg-[#0a0a0a] border border-white/10 flex items-center justify-center text-neutral-500 group-hover:border-[#0099CC]/50 transition-colors">
                                                                 <User size={14} />
                                                             </div>
                                                             <div className="flex flex-col">
-                                                                <span className="text-sm text-gray-200 font-bold">{item.reason || 'Desconocido'}</span>
-                                                                <span className="text-[11px] text-red-400/80 font-mono tracking-wider">{maskedPhone}</span>
+                                                                <span className="text-xs text-white font-semibold">{item.reason || 'Desconocido'}</span>
+                                                                <span className="text-[10px] text-neutral-500 font-mono tracking-wider">{maskedPhone}</span>
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td className="px-6 py-4 text-neutral-400 text-xs hidden md:table-cell">{item.reason || 'Spam'}</td>
-                                                    <td className="px-6 py-4 text-neutral-500 text-xs">{new Date(item.added_at).toLocaleString()}</td>
+                                                    <td className="px-6 py-4 text-neutral-500 text-[10px] hidden md:table-cell">{item.reason || 'Spam'}</td>
+                                                    <td className="px-6 py-4 text-neutral-500 text-[10px]">{new Date(item.added_at).toLocaleString()}</td>
                                                     <td className="px-6 py-4 text-right">
                                                         <button 
                                                             onClick={() => handleDelete(item.phone_number)}
-                                                            className="px-3 py-1 bg-green-500/10 text-green-500 border border-green-500/30 rounded text-xs hover:bg-green-500 hover:text-white transition-colors"
+                                                            className="px-3 py-1.5 bg-transparent text-neutral-400 border border-white/10 rounded-lg text-[10px] font-semibold hover:bg-white hover:text-black transition-colors"
                                                         >
                                                             Desbloquear
                                                         </button>
