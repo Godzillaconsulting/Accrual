@@ -137,27 +137,47 @@ export default function GodCRMPage() {
               </div>
             ) : (
               <div className="space-y-3">
-                {leads.map((lead, idx) => (
-                  <div key={idx} className="flex items-center justify-between p-4 rounded-xl bg-black/20 border border-white/5 hover:border-[#0099CC]/30 transition-colors">
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full bg-[#0099CC]/10 flex items-center justify-center text-[#0099CC] font-black text-sm border border-[#0099CC]/20">
-                        {lead.numero_contacto ? String(lead.numero_contacto).slice(-2) : '??'}
-                      </div>
-                      <div>
-                        <div className="text-sm font-bold text-white">{lead.numero_contacto || 'Desconocido'}</div>
-                        <div className="text-xs text-white/40 truncate max-w-[250px]">
-                          {typeof lead.contexto_ia === 'object' && lead.contexto_ia ? JSON.stringify(lead.contexto_ia) : (lead.contexto_ia || 'Interacción iniciada')}
+                {leads.map((lead, idx) => {
+                  const phoneClean = lead.numero_contacto ? lead.numero_contacto.split('@')[0] : 'Desconocido';
+                  
+                  let contextText = 'Interacción iniciada';
+                  if (lead.contexto_ia && typeof lead.contexto_ia === 'object') {
+                    if (lead.contexto_ia.historial_mensajes && Array.isArray(lead.contexto_ia.historial_mensajes) && lead.contexto_ia.historial_mensajes.length > 0) {
+                      const lastMsg = lead.contexto_ia.historial_mensajes[lead.contexto_ia.historial_mensajes.length - 1];
+                      contextText = `Último msj: "${lastMsg.content}"`;
+                    } else if (lead.contexto_ia.summary) {
+                      contextText = lead.contexto_ia.summary;
+                    } else {
+                      contextText = 'Analizando contexto...';
+                    }
+                  } else if (typeof lead.contexto_ia === 'string') {
+                    contextText = lead.contexto_ia;
+                  }
+
+                  const funnelClean = typeof lead.etapa_embudo === 'object' ? 'LEAD' : (lead.etapa_embudo || 'Lead');
+
+                  return (
+                    <div key={idx} className="flex items-center justify-between p-4 rounded-xl bg-black/20 border border-white/5 hover:border-[#0099CC]/30 transition-colors">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-[#0099CC]/10 flex items-center justify-center text-[#0099CC] font-black text-sm border border-[#0099CC]/20 shrink-0">
+                          {phoneClean.length > 2 ? phoneClean.slice(-2) : '??'}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-sm font-bold text-white truncate">{phoneClean}</div>
+                          <div className="text-xs text-white/40 truncate w-[200px] md:w-[300px]" title={contextText}>
+                            {contextText}
+                          </div>
                         </div>
                       </div>
+                      <div className="flex flex-col items-end gap-1 shrink-0">
+                        <span className="px-3 py-1 rounded-full bg-[#0099CC]/10 text-[#0099CC] text-[9px] font-bold uppercase tracking-wider border border-[#0099CC]/20 max-w-[120px] truncate">
+                          {funnelClean.replace(/_/g, ' ')}
+                        </span>
+                        <span className="text-[10px] text-white/30 font-mono tracking-widest">{lead.ultima_interaccion ? new Date(lead.ultima_interaccion).toLocaleDateString('es-MX', {day: '2-digit', month: 'short'}) : 'Reciente'}</span>
+                      </div>
                     </div>
-                    <div className="flex flex-col items-end gap-1">
-                      <span className="px-3 py-1 rounded-full bg-[#0099CC]/10 text-[#0099CC] text-[10px] font-bold uppercase tracking-wider border border-[#0099CC]/20">
-                        {typeof lead.etapa_embudo === 'object' && lead.etapa_embudo ? JSON.stringify(lead.etapa_embudo) : (lead.etapa_embudo || 'Lead')}
-                      </span>
-                      <span className="text-[10px] text-white/30">{lead.ultima_interaccion ? new Date(lead.ultima_interaccion).toLocaleDateString() : 'Reciente'}</span>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
