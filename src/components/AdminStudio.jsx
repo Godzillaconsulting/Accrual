@@ -651,8 +651,8 @@ export default function AdminStudio() {
             </button>
         </>
     )}
-    
     </div>
+  </div>
 
     {/* Footer Sidebar Area */}
     <div className="p-4 border-t border-white/5 shrink-0">
@@ -688,8 +688,6 @@ export default function AdminStudio() {
      <LogOut size={14} /> Cerrar sesión
      </button>
     </div>
-  </div>
-  </div>
   </div>
   <div className="flex-1 flex flex-col overflow-hidden relative z-10 bg-[#000000] border-l border-white/5">
   <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="absolute top-16 left-0 z-50 w-6 h-8 bg-[#111111] text-neutral-400 flex items-center justify-center rounded-r-md border border-white/10 border-l-transparent hover:text-white transition-all">
@@ -1524,6 +1522,7 @@ export default function AdminStudio() {
 
  </div>
  </>
+ ) : (
  <div className="flex-1 flex flex-col items-center justify-center pt-32 gap-4 text-white/80">
  <Eye className="w-12 h-12 text-[#0099CC]/80 mb-2" strokeWidth={1.5} />
  <p className="text-sm font-bold text-neutral-400">Selecciona una sección</p>

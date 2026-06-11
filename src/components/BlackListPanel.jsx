@@ -252,7 +252,6 @@ export default function BlackListPanel({ adminProfile }) {
                             </div>
                         )}
                     </div>
-                    </div>
                 </div>
 
                 {/* Table */}

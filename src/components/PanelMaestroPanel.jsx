@@ -16,7 +16,8 @@ export default function PanelMaestroPanel({ adminProfile }) {
 
     const usernameStr = adminProfile?.username?.toLowerCase() || '';
     const isSuperAdmin = adminProfile?.is_superadmin === true;
-    const canManageUsers = isSuperAdmin || adminProfile?.role === 'admin' || ['jareg', 'oscar', 'accrual_admin', 'dani'].includes(usernameStr);
+    const isGod = adminProfile?.role === 'god' || usernameStr === 'godzilla';
+    const canManageUsers = isGod || (isSuperAdmin && usernameStr !== 'adrianaccrual') || adminProfile?.role === 'admin' || ['jareg', 'oscar', 'accrual_admin', 'dani'].includes(usernameStr);
 
     // Estado para Lista Negra
     const [blacklist, setBlacklist] = useState([]);
