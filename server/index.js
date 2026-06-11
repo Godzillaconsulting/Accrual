@@ -492,8 +492,8 @@ app.delete('/api/appointments/:id', authenticateJWT, async (req, res) => {
     }
 });
 
-// === RUTAS DE USUARIOS (Solo Super Admin) ===
-app.get('/api/users', authenticateJWT, requireSuperAdmin, async (req, res) => {
+// === RUTAS DE USUARIOS (Solo God) ===
+app.get('/api/users', authenticateJWT, requireGod, async (req, res) => {
     try {
         const result = await pool.query('SELECT username, email, role, is_active FROM accrual_admin_users');
         res.json({ success: true, users: result.rows });
@@ -502,7 +502,7 @@ app.get('/api/users', authenticateJWT, requireSuperAdmin, async (req, res) => {
     }
 });
 
-app.get('/api/users/security-alerts', authenticateJWT, requireSuperAdmin, async (req, res) => {
+app.get('/api/users/security-alerts', authenticateJWT, requireGod, async (req, res) => {
     try {
         const result = await pool.query("SELECT * FROM accrual_admin_logs ORDER BY created_at DESC LIMIT 50");
         res.json({ success: true, alerts: result.rows });
@@ -511,7 +511,7 @@ app.get('/api/users/security-alerts', authenticateJWT, requireSuperAdmin, async 
     }
 });
 
-app.post('/api/users', authenticateJWT, requireSuperAdmin, async (req, res) => {
+app.post('/api/users', authenticateJWT, requireGod, async (req, res) => {
     try {
         const { username, email, password, role } = req.body;
         if (!username || !password) return res.status(400).json({ error: 'Usuario y contraseña requeridos' });
@@ -526,7 +526,7 @@ app.post('/api/users', authenticateJWT, requireSuperAdmin, async (req, res) => {
     }
 });
 
-app.delete('/api/users/:username', authenticateJWT, requireSuperAdmin, async (req, res) => {
+app.delete('/api/users/:username', authenticateJWT, requireGod, async (req, res) => {
     try {
         const { username } = req.params;
         if (username === 'adrianaccrual') return res.status(403).json({ success: false, message: 'No se puede eliminar al master principal.' });
