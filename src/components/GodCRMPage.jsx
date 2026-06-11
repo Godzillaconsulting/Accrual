@@ -14,6 +14,7 @@ export default function GodCRMPage() {
   const [stats, setStats] = useState({ leads: 0, active: 0, appointments: 0 });
   const [selectedLead, setSelectedLead] = useState(null);
   const [leads, setLeads] = useState([]);
+  const [appointments, setAppointments] = useState([]);
   const [botStatus, setBotStatus] = useState('DISCONNECTED');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -22,10 +23,11 @@ export default function GodCRMPage() {
     setLoading(true);
     setError(null);
     try {
-      const [leadsRes, statsRes, botRes] = await Promise.all([
+      const [leadsRes, statsRes, botRes, apptsRes] = await Promise.all([
         fetch('/api/crm/leads', { headers: authHeaders() }),
         fetch('/api/crm/stats?range=30', { headers: authHeaders() }),
-        fetch('/api/whatsapp/status', { headers: authHeaders() })
+        fetch('/api/whatsapp/status', { headers: authHeaders() }),
+        fetch('/api/appointments', { headers: authHeaders() })
       ]);
 
       if (leadsRes.ok) {
@@ -45,6 +47,10 @@ export default function GodCRMPage() {
       if (botRes.ok) {
         const data = await botRes.json();
         if (data.success) setBotStatus(data.status);
+      }
+      if (apptsRes.ok) {
+        const data = await apptsRes.json();
+        if (data.success) setAppointments(data.appointments || []);
       }
     } catch (err) {
       console.warn('Dashboard fetch failed:', err.message);
@@ -118,16 +124,66 @@ export default function GodCRMPage() {
       <div className="px-8 grid grid-cols-1 lg:grid-cols-3 gap-6 pb-12">
         
         {/* Left Col: Agenda / Leads */}
-        <div className="lg:col-span-2 bg-[#152033]/40 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex flex-col min-h-[400px]">
-          <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#0099CC]/10">
-            <h2 className="text-sm font-bold text-white flex items-center gap-2 uppercase tracking-widest">
-              <MessageSquare size={16} className="text-[#0099CC]" />
-              Actividad de Leads ({today})
-            </h2>
-            <button onClick={fetchData} className="text-[#0099CC]/60 hover:text-[#0099CC] transition-colors">
-              <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
-            </button>
+        <div className="lg:col-span-2 space-y-6 flex flex-col">
+          
+          {/* Citas / Agenda */}
+          <div className="bg-[#152033]/40 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex flex-col min-h-[300px]">
+            <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#0099CC]/10">
+              <h2 className="text-sm font-bold text-white flex items-center gap-2 uppercase tracking-widest">
+                <Calendar size={16} className="text-[#0099CC]" />
+                Agenda de Citas
+              </h2>
+              <button onClick={fetchData} className="text-[#0099CC]/60 hover:text-[#0099CC] transition-colors">
+                <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
+              {loading ? (
+                <div className="h-full flex items-center justify-center text-white/20">Cargando agenda...</div>
+              ) : appointments.length === 0 ? (
+                <div className="h-full flex items-center justify-center text-white/30 text-sm">
+                  No hay citas próximas en la agenda.
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {appointments.map((appt, idx) => (
+                    <div key={idx} className="flex items-center justify-between p-4 rounded-xl bg-black/20 border border-white/5 hover:border-[#0099CC]/30 transition-colors">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-[#0099CC]/10 flex items-center justify-center text-[#0099CC] font-black text-sm border border-[#0099CC]/20 shrink-0">
+                          {new Date(appt.fecha).getDate()}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-sm font-bold text-white truncate">{appt.nombre} {appt.apellidos}</div>
+                          <div className="text-xs text-white/40 truncate w-[200px] md:w-[300px]" title={appt.mensaje}>
+                            {appt.service_requested} - {appt.modalidad}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end gap-1 shrink-0">
+                        <span className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider border max-w-[120px] truncate ${appt.status === 'confirmada' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-[#0099CC]/10 text-[#0099CC] border-[#0099CC]/20'}`}>
+                          {appt.status}
+                        </span>
+                        <span className="text-[10px] text-white/30 font-mono tracking-widest">{appt.hora ? appt.hora.slice(0,5) : ''}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
+
+          {/* Actividad de Leads */}
+          <div className="bg-[#152033]/40 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex flex-col min-h-[400px]">
+            <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#0099CC]/10">
+              <h2 className="text-sm font-bold text-white flex items-center gap-2 uppercase tracking-widest">
+                <MessageSquare size={16} className="text-[#0099CC]" />
+                Actividad de Leads ({today})
+              </h2>
+              <button onClick={fetchData} className="text-[#0099CC]/60 hover:text-[#0099CC] transition-colors">
+                <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+              </button>
+            </div>
 
           <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
             {loading ? (
