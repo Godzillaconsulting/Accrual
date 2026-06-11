@@ -121,13 +121,13 @@ export default function AdminStudio() {
     if (location.pathname.includes('/calendar')) return 'social';
     if (location.pathname.includes('/studio')) return 'social_studio';
     if (location.pathname.includes('/video-editor')) return 'video_editor';
-    if (location.pathname.includes('/db')) return 'blacklist';
+    if (location.pathname.includes('/db')) return 'db_studio';
     if (location.pathname.includes('/profile')) return 'profile';
     if (location.pathname.includes('/bugs')) return 'bugs';
     if (location.pathname.includes('/newsletter')) return 'newsletter';
     if (location.pathname.includes('/ceo')) return 'ceo_estudio';
     if (location.pathname.includes('/master')) return 'panel_maestro';
-    if (location.pathname.includes('/sql')) return 'blacklist';
+    if (location.pathname.includes('/sql')) return 'sql_ataques';
     if (location.pathname.includes('/blacklist')) return 'blacklist';
     if (location.pathname.includes('/ai-planner')) return 'ai-planner';
     if (location.pathname.includes('/automation-flow')) return 'automation-flow';

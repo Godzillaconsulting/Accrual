@@ -742,11 +742,35 @@ app.get('/api/crm/stats', authenticateJWT, requireGod, async (req, res) => {
         const messagesRes = await pool.query("SELECT COUNT(*) as total FROM wa_messages_log");
         const appointmentsRes = await pool.query("SELECT COUNT(*) as total FROM appointments WHERE status != 'cancelada'");
         
+        // Conversaciones activas (interactuaron en los ultimos 7 dias)
+        const activeRes = await pool.query("SELECT COUNT(*) as total FROM wa_workflow_states WHERE ultima_interaccion >= NOW() - INTERVAL '7 days'");
+        
+        // Ingresos (Asumiendo 1500 MXN base por cita confirmada - puede venir de tabla packages futuro)
+        const revenueRes = await pool.query("SELECT COUNT(*) * 1500 as total FROM appointments WHERE status = 'confirmada' OR status = 'completada'");
+
+        // Chart data: Leads grouped by month
+        const monthlyRes = await pool.query(`
+            SELECT to_char(date_trunc('month', ultima_interaccion), 'Mon') as month, COUNT(*) as count 
+            FROM wa_workflow_states 
+            GROUP BY date_trunc('month', ultima_interaccion) 
+            ORDER BY date_trunc('month', ultima_interaccion) DESC 
+            LIMIT 6
+        `);
+
+        // Funnel stats
+        const botQualifiedRes = await pool.query("SELECT COUNT(*) as total FROM wa_workflow_states WHERE etapa_embudo IN ('CALIFICACION_BOT', 'PROSPECTO_CALIFICADO', 'COTIZACION', 'CERRADO')");
+        const quotingRes = await pool.query("SELECT COUNT(*) as total FROM wa_workflow_states WHERE etapa_embudo IN ('COTIZACION', 'CERRADO')");
+
         res.json({
             success: true,
             totalLeads: parseInt(leadsRes.rows[0].total),
             totalMessages: parseInt(messagesRes.rows[0].total),
             totalAppointments: parseInt(appointmentsRes.rows[0].total),
+            activeConversations: parseInt(activeRes.rows[0].total),
+            monthlyRevenue: parseInt(revenueRes.rows[0]?.total || 0),
+            botQualified: parseInt(botQualifiedRes.rows[0].total),
+            quoting: parseInt(quotingRes.rows[0].total),
+            monthlyLeads: monthlyRes.rows.reverse().map(row => ({ month: row.month, count: parseInt(row.count) }))
         });
     } catch (err) {
         res.status(500).json({ error: err.message });

@@ -29,10 +29,12 @@ export default function GodStatsPage() {
           totalLeads: data.totalLeads || 0,
           totalMessages: data.totalMessages || 0,
           totalAppointments: data.totalAppointments || 0,
-          activeConversations: Math.round((data.totalLeads || 0) * 0.15), // Placeholder dinamico basado en reales
+          activeConversations: data.activeConversations || 0,
           conversionRate: data.totalLeads ? Math.min(100, Math.round((data.totalAppointments / data.totalLeads) * 1000) / 10) : 0,
-          monthlyRevenue: (data.totalAppointments || 0) * 1500, // $1500 por cita promedio
-          monthlyLeads: data.monthlyLeads || []
+          monthlyRevenue: data.monthlyRevenue || 0,
+          monthlyLeads: data.monthlyLeads && data.monthlyLeads.length > 0 ? data.monthlyLeads : [{ month: 'N/A', count: 0 }],
+          botQualified: data.botQualified || 0,
+          quoting: data.quoting || 0
         });
       } else {
         throw new Error(data.message || 'API error response');
@@ -47,7 +49,9 @@ export default function GodStatsPage() {
         activeConversations: 0,
         conversionRate: 0,
         monthlyRevenue: 0,
-        monthlyLeads: []
+        botQualified: 0,
+        quoting: 0,
+        monthlyLeads: [{ month: 'N/A', count: 0 }]
       });
     } finally {
       setLoading(false);
@@ -344,8 +348,8 @@ export default function GodStatsPage() {
               <div className="flex-1 flex flex-col justify-center space-y-4">
                 {[
                   { label: 'Leads Recibidos', val: stats.totalLeads, pct: 100, color: 'bg-green-500' },
-                  { label: 'Calificados por Bot', val: Math.round(stats.totalLeads * 0.6), pct: 60, color: 'bg-[#00bcd4]' },
-                  { label: 'En Cotización', val: Math.round(stats.totalLeads * 0.35), pct: 35, color: 'bg-yellow-500' },
+                  { label: 'Calificados por Bot', val: stats.botQualified, pct: stats.totalLeads ? Math.round((stats.botQualified / stats.totalLeads) * 100) : 0, color: 'bg-[#00bcd4]' },
+                  { label: 'En Cotización', val: stats.quoting, pct: stats.totalLeads ? Math.round((stats.quoting / stats.totalLeads) * 100) : 0, color: 'bg-yellow-500' },
                   { label: 'Citas Cerradas', val: stats.totalAppointments, pct: Math.round(stats.conversionRate), color: 'bg-[#18ffff]' }
                 ].map((row, idx) => (
                   <div key={idx} className="space-y-1">
