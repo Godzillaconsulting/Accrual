@@ -166,7 +166,7 @@ export default function AdminStudio() {
  const [isOpsMenuOpen, setIsOpsMenuOpen] = useState(false);
  const [bugReporterPos, setBugReporterPos] = useState(null);
  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
- const [collapsedGroups, setCollapsedGroups] = useState({ 0: true, 1: true, 2: true, 3: true });
+ const [collapsedGroups, setCollapsedGroups] = useState({ 0: false, 1: false, 2: false, 3: false });
  
  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
  const [feedbackText, setFeedbackText] = useState('');
@@ -500,7 +500,7 @@ export default function AdminStudio() {
 
  return (
  <div 
-   className="fixed inset-0 w-screen h-screen z-50 flex bg-[#050505] text-white font-sans overflow-hidden relative overscroll-none"
+   className="fixed inset-0 w-screen h-screen z-50 flex bg-[#030d12] text-white font-sans overflow-hidden relative overscroll-none"
    onContextMenu={(e) => {
      if (e.target.tagName !== 'IMG') {
        e.preventDefault();
@@ -544,8 +544,8 @@ export default function AdminStudio() {
  )}
 
  {/* ██ COL 1: SECCIONES ████████████████████████████████████████████████ */}
- <div className={`relative z-10 transition-all duration-300 flex flex-col border-r border-white/5 bg-[#0a0a0a] ${isSidebarOpen ? 'w-[250px] min-w-[250px]' : 'w-0 min-w-0 overflow-hidden opacity-0 pointer-events-none'}`}>
-  <div className="px-6 pt-6 pb-6 border-b border-white/5 flex flex-col gap-4">
+ <div className={`relative z-10 transition-all duration-300 flex flex-col border-r border-[#0099cc]/20 bg-[#081a20] ${isSidebarOpen ? 'w-[250px] min-w-[250px]' : 'w-0 min-w-0 overflow-hidden opacity-0 pointer-events-none'}`}>
+  <div className="px-6 pt-6 pb-6 border-b border-[#0099cc]/20 flex flex-col gap-4">
   <div className="flex items-center gap-3">
   <div className="w-8 h-8 rounded bg-[#0099CC] flex items-center justify-center text-white font-black text-sm">AC</div>
   <div>
@@ -584,18 +584,25 @@ export default function AdminStudio() {
 
      return (
        <div key={gIdx} className="space-y-1 mb-4">
-         <p className="px-3 text-[10px] font-semibold text-neutral-600 uppercase tracking-widest mb-2">
-             {group.title}
-         </p>
-         
-         <div className="space-y-1">
+          <p onClick={() => setCollapsedGroups(p => ({ ...p, [gIdx]: !p[gIdx] }))}
+             className={`px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-widest mb-2 flex items-center justify-between cursor-pointer border transition-all group ${
+               !collapsedGroups[gIdx] ? 'bg-white text-[#0099CC] border-[#0099CC]/30' : 'border-transparent text-[#0099CC]/60 hover:bg-[#0b242c] hover:text-[#0099CC] hover:border-[#0099cc]/20'
+             }`}>
+              <span>{group.title}</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" 
+                   className={`transition-transform duration-300 ${!collapsedGroups[gIdx] ? 'text-[#0099CC] -rotate-180' : 'text-[#0099CC]/40 group-hover:text-[#0099CC] rotate-0'}`}>
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+          </p>
+          
+          <div className={`space-y-1 overflow-hidden transition-all duration-300 ${!collapsedGroups[gIdx] ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
            {groupNodes.map((node) => {
               const meta = PAGE_SECTIONS.find(s => s.id === node.id);
               const isSelected = selectedNodeId === node.id;
               return (
               <button key={node.id} onClick={() => handleSelectSection(node)}
               className={`w-full text-left px-3 py-2 rounded-lg transition-all duration-300 flex items-center border border-transparent ${
-              isSelected ? 'bg-[#111111] border-white/5' : 'hover:bg-[#111111]/50'
+              isSelected ? 'bg-[#0b242c] border-[#0099cc]/20' : 'hover:bg-[#0b242c]/50'
               }`}
               >
               <div className="min-w-0 flex-1 flex justify-between items-center">
@@ -618,28 +625,28 @@ export default function AdminStudio() {
 
     {canSeePanelMaestro && (
         <button onClick={() => { navigate('/admin/master'); }}
-        className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='panel_maestro' ?'bg-[#111111] text-white border-white/5' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#111111]/50' }`}>
+        className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='panel_maestro' ?'bg-[#0b242c] text-white border-[#0099cc]/20' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
         <LayoutDashboard size={14} className="mr-3" /> Panel Maestro
         </button>
     )}
 
     {canSeeDBEstudio && (
         <button onClick={() => { navigate('/admin/db'); }}
-        className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='db_estudio' ?'bg-[#111111] text-white border-white/5' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#111111]/50' }`}>
+        className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='db_estudio' ?'bg-[#0b242c] text-white border-[#0099cc]/20' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
         <Database size={14} className="mr-3" /> DB Studio
         </button>
     )}
 
     {canSeeSqlAtaques && (
         <button onClick={() => { navigate('/admin/sql'); }}
-        className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='sql_ataques' ?'bg-[#111111] text-white border-white/5' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#111111]/50' }`}>
+        className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='sql_ataques' ?'bg-[#0b242c] text-white border-[#0099cc]/20' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
         <ShieldAlert size={14} className="mr-3" /> Ataques SQL
         </button>
     )}
 
     {canSeeBlackList && (
         <button onClick={() => { navigate('/admin/blacklist'); }}
-        className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='blacklist' ?'bg-[#111111] text-white border-white/5' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#111111]/50' }`}>
+        className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='blacklist' ?'bg-[#0b242c] text-white border-[#0099cc]/20' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
         <Ban size={14} className="mr-3" /> Black List
         </button>
     )}
@@ -650,15 +657,15 @@ export default function AdminStudio() {
                 Inteligencia
             </div>
             <button onClick={() => { navigate('/admin/stats'); }}
-            className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='stats' ?'bg-[#111111] text-white border-white/5' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#111111]/50' }`}>
+            className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='stats' ?'bg-[#0b242c] text-white border-[#0099cc]/20' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
             <ChartBar size={14} className="mr-3" /> Estadísticas
             </button>
             <button onClick={() => { navigate('/admin/crm'); }}
-            className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='crm' ?'bg-[#111111] text-white border-white/5' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#111111]/50' }`}>
+            className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='crm' ?'bg-[#0b242c] text-white border-[#0099cc]/20' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
             <MessageCircle size={14} className="mr-3" /> CRM / Leads
             </button>
             <button onClick={() => { navigate('/admin/bot'); }}
-            className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='bot' ?'bg-[#111111] text-white border-white/5' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#111111]/50' }`}>
+            className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='bot' ?'bg-[#0b242c] text-white border-[#0099cc]/20' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
             <Bot size={14} className="mr-3" /> Bot Monitor
             </button>
         </>
@@ -667,9 +674,9 @@ export default function AdminStudio() {
   </div>
 
     {/* Footer Sidebar Area */}
-    <div className="p-4 border-t border-white/5 shrink-0">
+    <div className="p-4 border-t border-[#0099cc]/20 shrink-0">
         <button onClick={() => { navigate('/admin/profile'); }}
-        className={`w-full p-2 flex items-center gap-3 transition-colors rounded-lg border mb-2 ${ activeSection ==='profile' ?'bg-[#111111] border-white/5' :'border-transparent hover:bg-[#111111]/50' }`}>
+        className={`w-full p-2 flex items-center gap-3 transition-colors rounded-lg border mb-2 ${ activeSection ==='profile' ?'bg-[#0b242c] border-[#0099cc]/20' :'border-transparent hover:bg-[#0b242c]/50' }`}>
            <div className="w-8 h-8 rounded-full bg-neutral-800 overflow-hidden shrink-0 flex items-center justify-center text-neutral-500">
                {adminProfile?.photo_url ? <img src={adminProfile.photo_url} className="w-full h-full object-cover"/> : <User size={16} />}
            </div>
@@ -691,7 +698,7 @@ export default function AdminStudio() {
               setShowFeedbackModal(true);
           }
       }}
-      className={`w-full text-xs flex justify-start items-center gap-3 px-2 py-2 mb-2 rounded-lg transition-all font-semibold border ${activeSection === 'bugs' ? 'bg-[#111111] text-white border-white/5' : 'text-neutral-500 border-transparent hover:text-white hover:bg-[#111111]/50'}`}>
+      className={`w-full text-xs flex justify-start items-center gap-3 px-2 py-2 mb-2 rounded-lg transition-all font-semibold border ${activeSection === 'bugs' ? 'bg-[#0b242c] text-white border-[#0099cc]/20' : 'text-neutral-500 border-transparent hover:text-white hover:bg-[#0b242c]/50'}`}>
       <Lightbulb size={14} /> {activeSection === 'bugs' ? 'Monitoreo IT' : 'Sugerencias / Bugs'}
       </button>
 
@@ -701,8 +708,8 @@ export default function AdminStudio() {
      </button>
     </div>
   </div>
-  <div className="flex-1 flex flex-col overflow-hidden relative z-10 bg-[#000000] border-l border-white/5">
-  <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="absolute top-16 left-0 z-50 w-6 h-8 bg-[#111111] text-neutral-400 flex items-center justify-center rounded-r-md border border-white/10 border-l-transparent hover:text-white transition-all">
+  <div className="flex-1 flex flex-col overflow-hidden relative z-10 bg-[#051014] border-l border-[#0099cc]/20">
+  <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="absolute top-16 left-0 z-50 w-6 h-8 bg-[#0b242c] text-neutral-400 flex items-center justify-center rounded-r-md border border-[#0099cc]/20 border-l-transparent hover:text-[#0099cc] hover:bg-[#051014] transition-all">
       <span className="text-[10px] font-bold">{isSidebarOpen ? '❮' : '❯'}</span>
   </button>
   <div style={{ display: (!isAnalyticsMode && activeSection === 'social_studio') ? 'flex' : 'none', flex: 1, height: '100%', overflow: 'hidden' }}>
@@ -743,7 +750,7 @@ export default function AdminStudio() {
   ) : (<>
 
  {/* Barra superior del editor */}
- <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-[#0a0a0a] shrink-0">
+ <div className="flex items-center justify-between px-6 py-4 border-b border-[#0099cc]/20 bg-[#081a20] shrink-0">
 
  {selectedNodeId ? (
  <div className="flex items-center gap-3">
