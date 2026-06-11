@@ -1,15 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Bot, RefreshCw, AlertCircle, Smartphone, Clock, MessageSquare, ShieldCheck } from 'lucide-react';
+import { Bot, RefreshCw, AlertCircle, Smartphone, Clock, MessageSquare, ShieldCheck, X } from 'lucide-react';
 
-/* ── Mock fallback data ─────────────────────────────────────────────── */
-const MOCK_STATUS = { connected: true, uptime: '3d 14h 22m', messagesProcessed: 1247 };
-const MOCK_CONVERSATIONS = [
-  { phone: '5512345678', messageCount: 12, lastMessageAt: '2026-06-10T10:30:00Z', preview: 'Gracias por la info', direccion: 'INBOUND' },
-  { phone: '5587654321', messageCount: 5, lastMessageAt: '2026-06-10T09:15:00Z', preview: 'Ok, me interesa', direccion: 'OUTBOUND' },
-  { phone: '5511223344', messageCount: 8, lastMessageAt: '2026-06-09T14:00:00Z', preview: 'Cuándo puedo pasar?', direccion: 'INBOUND' },
-  { phone: '5599887766', messageCount: 3, lastMessageAt: '2026-06-09T11:30:00Z', preview: 'Buenos días', direccion: 'INBOUND' },
-  { phone: '5544556677', messageCount: 15, lastMessageAt: '2026-06-08T16:45:00Z', preview: 'Perfecto, gracias!', direccion: 'OUTBOUND' },
-];
+// Todo proviene de la DB real.
 
 function authHeaders() {
   return {
@@ -30,6 +22,11 @@ export default function GodBotMonitor() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [qrNonce, setQrNonce] = useState(Date.now());
+
+  // Estado del Modal de Historial
+  const [selectedPhone, setSelectedPhone] = useState(null);
+  const [history, setHistory] = useState([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -54,10 +51,10 @@ export default function GodBotMonitor() {
         setConversations(convData.conversations || []);
       }
     } catch (err) {
-      console.warn('Bot monitor fetch failed, using fallback metrics:', err.message);
+      console.warn('Bot monitor fetch failed:', err.message);
       setError(err.message);
-      setStatus('CONNECTED'); // Fallback visual
-      setConversations(MOCK_CONVERSATIONS);
+      setStatus('DISCONNECTED');
+      setConversations([]);
     } finally {
       setLoading(false);
     }
@@ -73,8 +70,88 @@ export default function GodBotMonitor() {
     setQrNonce(Date.now());
   };
 
+  const openHistory = async (phone) => {
+    setSelectedPhone(phone);
+    setHistory([]);
+    setLoadingHistory(true);
+    try {
+      const res = await fetch(`/api/crm/conversations/${phone}`, { headers: authHeaders() });
+      if (!res.ok) throw new Error(`History HTTP ${res.status}`);
+      const data = await res.json();
+      if (data.success) {
+        setHistory(data.history || []);
+      }
+    } catch (err) {
+      console.error('Error fetching history:', err);
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
+
+  const closeHistory = () => {
+    setSelectedPhone(null);
+    setHistory([]);
+  };
+
   return (
     <div className="min-h-screen w-full flex flex-col" style={{ background: 'linear-gradient(160deg, #0a0f1a 0%, #111 40%, #152033 100%)' }}>
+      
+      {/* ── Modal Historial de Conversación ── */}
+      {selectedPhone && (
+        <div className="fixed inset-0 z-[100] bg-[#0a0f1a]/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[#152033] border border-[#00bcd4]/30 shadow-2xl rounded-2xl w-full max-w-3xl h-[80vh] flex flex-col animate-fade-in">
+            <div className="flex items-center justify-between p-5 border-b border-[#00bcd4]/20 bg-[#00bcd4]/5 rounded-t-2xl">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#00bcd4]/20 flex items-center justify-center border border-[#00bcd4]/50">
+                  <Smartphone className="text-[#00bcd4]" size={20} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-white tracking-widest uppercase">
+                    {selectedPhone}
+                  </h3>
+                  <p className="text-xs text-[#00bcd4]">Historial Completo</p>
+                </div>
+              </div>
+              <button onClick={closeHistory} className="text-slate-400 hover:text-white transition-colors bg-slate-800/50 hover:bg-slate-700/50 p-2 rounded-full">
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar bg-black/20">
+              {loadingHistory ? (
+                <div className="h-full flex flex-col items-center justify-center text-[#00bcd4]/50">
+                  <RefreshCw size={32} className="animate-spin mb-3" />
+                  <p className="text-sm font-bold tracking-widest uppercase">Cargando mensajes...</p>
+                </div>
+              ) : history.length === 0 ? (
+                <div className="h-full flex items-center justify-center text-slate-500">
+                  No hay mensajes registrados.
+                </div>
+              ) : (
+                history.map((msg, i) => {
+                  const isInbound = msg.direccion === 'INBOUND';
+                  return (
+                    <div key={i} className={`flex ${isInbound ? 'justify-start' : 'justify-end'}`}>
+                      <div className={`max-w-[75%] p-4 rounded-2xl ${
+                        isInbound 
+                          ? 'bg-slate-800/80 border border-slate-700 text-slate-200 rounded-tl-sm' 
+                          : 'bg-[#00bcd4]/10 border border-[#00bcd4]/30 text-white rounded-tr-sm'
+                      }`}>
+                        <div className="text-sm whitespace-pre-wrap leading-relaxed">{msg.contenido_mensaje}</div>
+                        <div className={`text-[10px] mt-2 flex items-center gap-1 ${isInbound ? 'text-slate-500' : 'text-[#00bcd4]/70'}`}>
+                          <Clock size={10} />
+                          {new Date(msg.created_at).toLocaleString('es-MX')}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <header className="border-b border-white/5 px-6 py-5">
         <div className="mx-auto flex max-w-[1800px] flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -194,6 +271,7 @@ export default function GodBotMonitor() {
               <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
                 <MessageSquare size={16} className="text-[#00bcd4]" />
                 Conversaciones Recientes ({conversations.length})
+                <span className="text-[10px] font-normal text-white/50 lowercase ml-2 normal-case">(Haz clic para ver el historial completo)</span>
               </h3>
             </div>
 
@@ -207,10 +285,11 @@ export default function GodBotMonitor() {
                 conversations.map((conv, idx) => (
                   <div
                     key={idx}
-                    className="bg-[#152033]/40 p-4 rounded-xl border border-white/5 hover:border-cyan-500/30 transition-all duration-200"
+                    onClick={() => openHistory(conv.phone)}
+                    className="bg-[#152033]/40 p-4 rounded-xl border border-white/5 hover:border-[#00bcd4]/50 hover:bg-[#00bcd4]/5 transition-all duration-200 cursor-pointer group"
                   >
                     <div className="flex justify-between items-start mb-2">
-                      <span className="font-bold text-white text-sm">{maskPhone(conv.phone)}</span>
+                      <span className="font-bold text-white text-sm group-hover:text-[#00bcd4] transition-colors">{maskPhone(conv.phone)}</span>
                       <span className="text-[10px] text-white/30 flex items-center gap-1">
                         <Clock size={10} />
                         {new Date(conv.created_at || conv.lastMessageAt).toLocaleString()}

@@ -1,21 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { BarChart2, TrendingUp, Users, MessageSquare, DollarSign, Calendar, RefreshCw, AlertCircle } from 'lucide-react';
 
-/* ── Mock fallback stats ─────────────────────────────────────────────── */
-const MOCK_STATS = {
-  totalLeads: 147,
-  activeConversations: 23,
-  conversionRate: 18.5,
-  monthlyRevenue: 245000,
-  monthlyLeads: [
-    { month: 'Ene', count: 12 },
-    { month: 'Feb', count: 19 },
-    { month: 'Mar', count: 15 },
-    { month: 'Abr', count: 24 },
-    { month: 'May', count: 31 },
-    { month: 'Jun', count: 28 },
-  ]
-};
+// No mock fallback stats. Todo proviene de la DB.
 
 function authHeaders() {
   return {
@@ -39,30 +25,29 @@ export default function GodStatsPage() {
       const data = await res.json();
       
       if (data.success) {
-        // Combinar datos reales de la API con los mocks estéticos solicitados (Conversion & Revenue)
         setStats({
-          totalLeads: data.totalLeads ?? MOCK_STATS.totalLeads,
-          totalMessages: data.totalMessages ?? MOCK_STATS.totalMessages,
-          totalAppointments: data.totalAppointments ?? MOCK_STATS.totalAppointments,
-          activeConversations: Math.round((data.totalLeads ?? MOCK_STATS.totalLeads) * 0.15),
-          conversionRate: data.totalLeads ? Math.min(100, Math.round((data.totalAppointments / data.totalLeads) * 1000) / 10) : MOCK_STATS.conversionRate,
-          monthlyRevenue: (data.totalAppointments ?? 0) * 1500 || MOCK_STATS.monthlyRevenue,
-          monthlyLeads: MOCK_STATS.monthlyLeads
+          totalLeads: data.totalLeads || 0,
+          totalMessages: data.totalMessages || 0,
+          totalAppointments: data.totalAppointments || 0,
+          activeConversations: Math.round((data.totalLeads || 0) * 0.15), // Placeholder dinamico basado en reales
+          conversionRate: data.totalLeads ? Math.min(100, Math.round((data.totalAppointments / data.totalLeads) * 1000) / 10) : 0,
+          monthlyRevenue: (data.totalAppointments || 0) * 1500, // $1500 por cita promedio
+          monthlyLeads: data.monthlyLeads || []
         });
       } else {
         throw new Error(data.message || 'API error response');
       }
     } catch (err) {
-      console.warn('CRM stats fetch failed, using mock data:', err.message);
+      console.warn('CRM stats fetch failed:', err.message);
       setError(err.message);
       setStats({
-        totalLeads: MOCK_STATS.totalLeads,
-        totalMessages: 843,
-        totalAppointments: 27,
-        activeConversations: MOCK_STATS.activeConversations,
-        conversionRate: MOCK_STATS.conversionRate,
-        monthlyRevenue: MOCK_STATS.monthlyRevenue,
-        monthlyLeads: MOCK_STATS.monthlyLeads
+        totalLeads: 0,
+        totalMessages: 0,
+        totalAppointments: 0,
+        activeConversations: 0,
+        conversionRate: 0,
+        monthlyRevenue: 0,
+        monthlyLeads: []
       });
     } finally {
       setLoading(false);
@@ -158,9 +143,9 @@ export default function GodStatsPage() {
 
       {/* Error banner */}
       {error && (
-        <div className="mx-auto mt-3 flex max-w-[1800px] items-center gap-2 rounded-lg border border-amber-500/20 bg-amber-500/10 px-4 py-2 text-xs text-amber-300">
+        <div className="mx-auto mt-3 flex max-w-[1800px] items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-2 text-xs text-red-300">
           <AlertCircle size={14} />
-          <span>Servicio parcial — cargando métricas extendidas locales ({error})</span>
+          <span>Error conectando a la base de datos: {error}. Mostrando métricas en cero.</span>
         </div>
       )}
 

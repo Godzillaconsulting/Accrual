@@ -1,22 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Users, Phone, MessageSquare, Clock, RefreshCw, AlertCircle, GripVertical, Search, Filter } from 'lucide-react';
 
-/* ── Mock fallback data ─────────────────────────────────────────────── */
-const MOCK_LEADS = [
-  { id: 1, name: 'Carlos Mendoza', phone: '5512345678', stage: 'new', lastMessage: 'Hola, necesito información sobre facturación', updatedAt: '2026-06-10T10:30:00Z' },
-  { id: 2, name: 'María López', phone: '5587654321', stage: 'bot_qualified', lastMessage: 'Me interesa el paquete emprendedor', updatedAt: '2026-06-10T09:15:00Z' },
-  { id: 3, name: 'Roberto Sánchez', phone: '5511223344', stage: 'quote', lastMessage: 'Cuánto cuesta el servicio mensual?', updatedAt: '2026-06-09T14:00:00Z' },
-  { id: 4, name: 'Ana García', phone: '5599887766', stage: 'support', lastMessage: 'Tengo un problema con mi declaración', updatedAt: '2026-06-09T11:30:00Z' },
-  { id: 5, name: 'Luis Torres', phone: '5544556677', stage: 'closed', lastMessage: 'Gracias, ya firmé el contrato', updatedAt: '2026-06-08T16:45:00Z' },
-];
-
 /* ── Column definitions ─────────────────────────────────────────────── */
 const COLUMNS = [
-  { key: 'new',           label: '🟢 Lead Nuevo',        accent: '#22c55e' },
-  { key: 'bot_qualified', label: '🤖 Calificación Bot',  accent: '#0099CC' },
-  { key: 'quote',         label: '💰 Cotización',        accent: '#eab308' },
-  { key: 'support',       label: '🛠️ Soporte',           accent: '#f97316' },
-  { key: 'closed',        label: '✅ Cierre',            accent: '#18ffff' },
+  { key: 'LEAD_ENTRY',      label: '🟢 Prospecto Nuevo',  accent: '#22c55e' },
+  { key: 'CALIFICACION_BOT',label: '🤖 Calificación Bot', accent: '#0099CC' },
+  { key: 'COTIZACION',      label: '💰 Propuesta',        accent: '#eab308' },
+  { key: 'SOPORTE',         label: '📄 Documentación',    accent: '#f97316' },
+  { key: 'CIERRE',          label: '✅ Alta de Cliente',  accent: '#18ffff' },
 ];
 
 /* ── Helpers ─────────────────────────────────────────────────────────── */
@@ -120,17 +111,17 @@ export default function GodCRMPage() {
       const data = await res.json();
       const mappedLeads = (data.leads || []).map(l => ({
         id: l.numero_contacto,
-        name: 'Cliente ' + (l.numero_contacto ? l.numero_contacto.slice(-4) : '????'),
+        name: 'Prospecto ' + (l.numero_contacto ? l.numero_contacto.slice(-4) : 'N/A'),
         phone: l.numero_contacto,
-        stage: l.etapa_embudo || 'new',
-        lastMessage: l.contexto_ia || 'Sin contexto',
+        stage: l.etapa_embudo || 'LEAD_ENTRY',
+        lastMessage: l.contexto_ia ? JSON.stringify(l.contexto_ia) : 'Sin contexto capturado',
         updatedAt: l.ultima_interaccion
       }));
       setLeads(mappedLeads);
     } catch (err) {
-      console.warn('CRM fetch failed, using mock data:', err.message);
+      console.warn('CRM fetch failed:', err.message);
       setError(err.message);
-      setLeads(MOCK_LEADS);
+      setLeads([]);
     } finally {
       setLoading(false);
     }
@@ -240,9 +231,9 @@ export default function GodCRMPage() {
 
       {/* ── Error banner ─────────────────────────────────────────────── */}
       {error && (
-        <div className="mx-6 mt-3 flex items-center gap-2 rounded-lg border border-amber-500/20 bg-amber-500/10 px-4 py-2 text-xs text-amber-300 shrink-0">
+        <div className="mx-6 mt-3 flex items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-2 text-xs text-red-300 shrink-0">
           <AlertCircle size={14} />
-          <span>API no disponible — mostrando datos de demostración ({error})</span>
+          <span>Error conectando a la base de datos: {error}. Mostrando 0 resultados.</span>
         </div>
       )}
 
