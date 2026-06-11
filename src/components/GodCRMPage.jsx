@@ -145,7 +145,7 @@ export default function GodCRMPage() {
                   if (lead.contexto_ia && typeof lead.contexto_ia === 'object') {
                     if (lead.contexto_ia.historial_mensajes && Array.isArray(lead.contexto_ia.historial_mensajes) && lead.contexto_ia.historial_mensajes.length > 0) {
                       const lastMsg = lead.contexto_ia.historial_mensajes[lead.contexto_ia.historial_mensajes.length - 1];
-                      contextText = `Último msj: "${lastMsg.content}"`;
+                      contextText = `Último msj: "${lastMsg.content || lastMsg.contenido || ''}"`;
                     } else if (lead.contexto_ia.summary) {
                       contextText = lead.contexto_ia.summary;
                     } else {
@@ -261,13 +261,14 @@ export default function GodCRMPage() {
                   {selectedLead.contexto_ia.historial_mensajes.map((msg, i) => {
                     const isBot = msg.role === 'assistant' || msg.role === 'system';
                     if (msg.role === 'system') return null; // Ocultar mensajes de sistema internos
+                    const textoMensaje = msg.content || msg.contenido || '';
                     return (
                       <div key={i} className={`flex w-full ${isBot ? 'justify-start' : 'justify-end'}`}>
                         <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${isBot ? 'bg-[#152033] border border-[#0099CC]/20 text-white/90 rounded-tl-sm' : 'bg-[#0099CC] text-white rounded-tr-sm shadow-md'}`}>
                           <div className="text-[10px] font-black uppercase tracking-widest mb-1 opacity-50 flex items-center gap-1">
                             {isBot ? <><Bot size={10} /> Asistente IA</> : <><User size={10} /> Cliente</>}
                           </div>
-                          <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+                          <p className="text-sm whitespace-pre-wrap leading-relaxed">{textoMensaje}</p>
                         </div>
                       </div>
                     );
