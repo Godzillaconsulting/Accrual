@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Users, Calendar, Clock, Bot, RefreshCw, MessageSquare, AlertCircle, ChevronRight } from 'lucide-react';
+import { Users, Calendar, Clock, Bot, RefreshCw, MessageSquare, AlertCircle, ChevronRight, User, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 function authHeaders() {
@@ -12,6 +12,7 @@ function authHeaders() {
 export default function GodCRMPage() {
   const navigate = useNavigate();
   const [stats, setStats] = useState({ leads: 0, active: 0, appointments: 0 });
+  const [selectedLead, setSelectedLead] = useState(null);
   const [leads, setLeads] = useState([]);
   const [botStatus, setBotStatus] = useState('DISCONNECTED');
   const [loading, setLoading] = useState(true);
@@ -157,7 +158,11 @@ export default function GodCRMPage() {
                   const funnelClean = typeof lead.etapa_embudo === 'object' ? 'LEAD' : (lead.etapa_embudo || 'Lead');
 
                   return (
-                    <div key={idx} className="flex items-center justify-between p-4 rounded-xl bg-black/20 border border-white/5 hover:border-[#0099CC]/30 transition-colors">
+                    <div 
+                      key={idx} 
+                      onClick={() => setSelectedLead(lead)}
+                      className="flex items-center justify-between p-4 rounded-xl bg-black/20 border border-white/5 hover:border-[#0099CC]/30 hover:bg-[#0099CC]/5 transition-colors cursor-pointer"
+                    >
                       <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-full bg-[#0099CC]/10 flex items-center justify-center text-[#0099CC] font-black text-sm border border-[#0099CC]/20 shrink-0">
                           {phoneClean.length > 2 ? phoneClean.slice(-2) : '??'}
@@ -223,6 +228,72 @@ export default function GodCRMPage() {
         </div>
 
       </div>
+
+      {/* Modal de Detalles del Lead */}
+      {selectedLead && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-[#152033] border border-[#0099CC]/30 rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in zoom-in-95">
+            {/* Modal Header */}
+            <div className="px-6 py-4 border-b border-[#0099CC]/20 flex items-center justify-between bg-black/20">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-[#0099CC]/20 flex items-center justify-center text-[#0099CC] font-black text-lg border border-[#0099CC]/30 shrink-0">
+                  {selectedLead.numero_contacto ? String(selectedLead.numero_contacto.split('@')[0]).slice(-2) : '??'}
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-white">{selectedLead.numero_contacto ? selectedLead.numero_contacto.split('@')[0] : 'Desconocido'}</h3>
+                  <p className="text-xs text-[#0099CC] font-bold uppercase tracking-widest">
+                    {(typeof selectedLead.etapa_embudo === 'object' ? 'LEAD' : (selectedLead.etapa_embudo || 'Lead')).replace(/_/g, ' ')}
+                  </p>
+                </div>
+              </div>
+              <button onClick={() => setSelectedLead(null)} className="p-2 text-white/50 hover:text-white hover:bg-white/10 rounded-full transition-colors">
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Modal Body (Chat History) */}
+            <div className="flex-1 overflow-y-auto p-6 bg-[#0a0f18] custom-scrollbar">
+              {selectedLead.contexto_ia && typeof selectedLead.contexto_ia === 'object' && Array.isArray(selectedLead.contexto_ia.historial_mensajes) ? (
+                <div className="space-y-4">
+                  <div className="text-center mb-6">
+                    <span className="bg-[#152033] text-white/40 text-[10px] px-3 py-1 rounded-full uppercase tracking-widest font-bold">Inicio de la conversación</span>
+                  </div>
+                  {selectedLead.contexto_ia.historial_mensajes.map((msg, i) => {
+                    const isBot = msg.role === 'assistant' || msg.role === 'system';
+                    if (msg.role === 'system') return null; // Ocultar mensajes de sistema internos
+                    return (
+                      <div key={i} className={`flex w-full ${isBot ? 'justify-start' : 'justify-end'}`}>
+                        <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${isBot ? 'bg-[#152033] border border-[#0099CC]/20 text-white/90 rounded-tl-sm' : 'bg-[#0099CC] text-white rounded-tr-sm shadow-md'}`}>
+                          <div className="text-[10px] font-black uppercase tracking-widest mb-1 opacity-50 flex items-center gap-1">
+                            {isBot ? <><Bot size={10} /> Asistente IA</> : <><User size={10} /> Cliente</>}
+                          </div>
+                          <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : typeof selectedLead.contexto_ia === 'string' ? (
+                <div className="p-4 bg-[#152033] rounded-xl border border-white/10 text-white/70 text-sm whitespace-pre-wrap">
+                  {selectedLead.contexto_ia}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full text-white/30 space-y-3">
+                  <MessageSquare size={40} className="opacity-20" />
+                  <p className="text-sm font-semibold tracking-wide">Aún no hay historial de chat registrado.</p>
+                </div>
+              )}
+            </div>
+            
+            {/* Modal Footer */}
+            <div className="p-4 bg-black/20 border-t border-[#0099CC]/20 text-center">
+               <p className="text-[10px] text-white/40 uppercase tracking-widest font-semibold">
+                  Última interacción: {selectedLead.ultima_interaccion ? new Date(selectedLead.ultima_interaccion).toLocaleString('es-MX') : 'Desconocida'}
+               </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
