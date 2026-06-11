@@ -757,17 +757,35 @@ app.get('/api/crm/stats', authenticateJWT, requireGod, async (req, res) => {
 app.get('/api/crm/conversations', authenticateJWT, requireGod, async (req, res) => {
     try {
         const result = await pool.query(`
-            SELECT numero_remitente as phone, contenido_mensaje as last_message, direccion, created_at
+            SELECT DISTINCT ON (numero_remitente)
+                numero_remitente as phone, 
+                contenido_mensaje as last_message, 
+                direccion, 
+                created_at
             FROM wa_messages_log
-            WHERE message_id IN (
-                SELECT MAX(message_id) 
-                FROM wa_messages_log 
-                GROUP BY numero_remitente
-            )
-            ORDER BY created_at DESC
+            ORDER BY numero_remitente, created_at DESC
             LIMIT 50
         `);
-        res.json({ success: true, conversations: result.rows });
+        // DISTINCT ON forces ORDER BY numero_remitente, so we must sort by date in JS
+        const sorted = result.rows.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        res.json({ success: true, conversations: sorted });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Bot Monitor: Historial completo de conversación (Lazy load)
+app.get('/api/crm/conversations/:phone', authenticateJWT, requireGod, async (req, res) => {
+    try {
+        const { phone } = req.params;
+        const result = await pool.query(`
+            SELECT contenido_mensaje, direccion, created_at
+            FROM wa_messages_log
+            WHERE numero_remitente = $1
+            ORDER BY created_at ASC
+            LIMIT 200
+        `, [phone]);
+        res.json({ success: true, history: result.rows });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
