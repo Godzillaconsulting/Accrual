@@ -7,8 +7,8 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Cambiar al directorio raíz de la workspace para que docker-compose funcione
-process.chdir(path.join(__dirname, '..'));
+// El gestor ahora se ejecuta desde la raíz directamente
+process.chdir(__dirname);
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -85,13 +85,13 @@ const showMenu = () => {
                 runCommand('docker compose stop accrual-bot', false);
                 
                 // Borrar carpeta bot_sessions en el host
-                const sessionsPath = path.join('Accrual', 'bot_sessions');
+                const sessionsPath = path.join(__dirname, 'bot_sessions');
                 if (fs.existsSync(sessionsPath)) {
                     runCommand(`rmdir /S /Q "${sessionsPath}"`, false);
                 }
                 
                 // Sobreescribir el QR en el host para limpiarlo
-                const qrPath = path.join('Accrual', 'qr_accrual.png');
+                const qrPath = path.join(__dirname, 'qr_accrual.png');
                 if (fs.existsSync(qrPath)) {
                     try { fs.writeFileSync(qrPath, ''); } catch(e) {}
                 }

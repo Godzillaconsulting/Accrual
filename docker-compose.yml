@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  accrual-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: accrual-api
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - .env
+    volumes:
+      - ./media-uploads:/app/media-uploads
+      - ./pgdata:/var/lib/postgresql/data # Placeholder if PG is inside, else just standard
+    restart: unless-stopped
+
+  accrual-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile.bot
+    container_name: accrual-bot
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - .env
+    volumes:
+      - ./bot_sessions:/app/bot_sessions
+      - ./media-uploads:/app/media-uploads
+      - ./qr_accrual.png:/app/qr_accrual.png
+    restart: unless-stopped
+
+  accrual-cloudflare-tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: accrual-cloudflare-tunnel
+    command: tunnel --url http://accrual-api:3002
+    restart: unless-stopped
