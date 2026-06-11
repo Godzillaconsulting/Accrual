@@ -18,6 +18,9 @@ import CeoEstudioPanel from './CeoEstudioPanel';
 import PanelMaestroPanel from './PanelMaestroPanel';
 import SqlAtaquesPanel from './SqlAtaquesPanel';
 import BlackListPanel from './BlackListPanel';
+import GodCRMPage from './GodCRMPage';
+import GodStatsPage from './GodStatsPage';
+import GodBotMonitor from './GodBotMonitor';
 // ── Hover field wrapper → activa resaltado en preview ──────────────────────
 import { PAGE_SECTIONS, injectSectionDefaults, replaceBrWithNewline } from '../utils/studioConfig';
 import { detectTextFields, detectMediaFields, toLabel, detectGroupedFields, MEDIA_PATTERNS, getFieldWeight } from '../utils/editorParser';
@@ -239,6 +242,14 @@ export default function AdminStudio() {
      }
  }, []);
 
+  // Redirigir si no es rol God y quiere acceder a Inteligencia
+  useEffect(() => {
+    const isGodUser = adminProfile?.role === 'god' || adminProfile?.username?.toLowerCase() === 'godzilla';
+    if (['crm', 'stats', 'bot'].includes(activeSection) && adminProfile && !isGodUser) {
+      navigate('/admin/studio');
+    }
+  }, [activeSection, adminProfile, navigate]);
+
  // ── Presence SSE Listener ────────────────────────────────────────────────
  useEffect(() => {
     const token = localStorage.getItem('adminToken');
@@ -304,8 +315,9 @@ export default function AdminStudio() {
  // ── Permisos por Rol Avanzados ──────────────────────────────────────────
  const username = adminProfile?.username?.toLowerCase() || '';
  const isSuperAdmin = adminProfile?.is_superadmin === true;
- // JareG, Accrual_admin, Dani, Oscar, Alex y adrianaccrual ven absolutamente todo
- const isCEO = isSuperAdmin || username === 'accrual_admin' || username === 'jareg' || ['dani', 'oscar', 'alex', 'adrianaccrual'].includes(username); 
+ const isGod = adminProfile?.role === 'god' || username === 'godzilla';
+ // JareG, Accrual_admin, Dani, Oscar, Alex, adrianaccrual y GodZilla ven absolutamente todo
+ const isCEO = isSuperAdmin || isGod || username === 'accrual_admin' || username === 'jareg' || username === 'godzilla' || ['dani', 'oscar', 'alex', 'adrianaccrual'].includes(username); 
  
  const isCM = adminProfile?.role === 'cm' && username !== 'oscar';
  
@@ -314,11 +326,11 @@ export default function AdminStudio() {
  const canEditSite = isEditor;
 
   // Lógica explícita de vistas
-  const canSeeDBEstudio    = false;
+  const canSeeDBEstudio    = isGod;
   const canSeePanelMaestro = isCEO;
-  const canSeeSqlAtaques   = false; // Removido a petición del usuario (se monitorea en Godzilla)
- const canSeeBlackList    = isCEO;
- const canSeeCeoEstudio   = isEditor;
+  const canSeeSqlAtaques   = isGod;
+  const canSeeBlackList    = isCEO;
+  const canSeeCeoEstudio   = isEditor;
 
   useEffect(() => {
     if (selectedNodeId && nodes.length > 0 && !draftData) {
@@ -648,6 +660,26 @@ export default function AdminStudio() {
         <span className="text-xs mr-2 drop-shadow-sm">🚫</span> Black List
         </button>
     )}
+
+    {isGod && (
+        <>
+            <div className="text-[9px] font-black tracking-[0.2em] text-[#0099CC]/60 uppercase ml-2 mt-4 mb-2">
+                Inteligencia
+            </div>
+            <button onClick={() => { navigate('/admin/stats'); }}
+            className={`w-full text-[10px] py-2 shadow-sm rounded-xl transition-all font-black uppercase flex items-center justify-center border ${ activeSection ==='stats' ?'bg-neutral-900 text-[#00bcd4] border-[#00bcd4]/50 shadow-[0_0_15px_rgba(0,188,212,0.2)]' :'text-slate-300 border-transparent hover:border-[#00bcd4]/40 hover:bg-[#00bcd4]/5 hover:text-white' }`}>
+            <span className="text-xs mr-2 drop-shadow-sm">📊</span> Estadísticas
+            </button>
+            <button onClick={() => { navigate('/admin/crm'); }}
+            className={`w-full text-[10px] py-2 shadow-sm rounded-xl transition-all font-black uppercase flex items-center justify-center border ${ activeSection ==='crm' ?'bg-neutral-900 text-[#18ffff] border-[#18ffff]/50 shadow-[0_0_15px_rgba(24,255,255,0.2)]' :'text-slate-300 border-transparent hover:border-[#18ffff]/40 hover:bg-[#18ffff]/5 hover:text-white' }`}>
+            <span className="text-xs mr-2 drop-shadow-sm">💬</span> CRM / Leads
+            </button>
+            <button onClick={() => { navigate('/admin/bot'); }}
+            className={`w-full text-[10px] py-2 shadow-sm rounded-xl transition-all font-black uppercase flex items-center justify-center border ${ activeSection ==='bot' ?'bg-neutral-900 text-[#0099CC] border-[#0099CC]/50 shadow-[0_0_15px_rgba(0,153,204,0.2)]' :'text-slate-300 border-transparent hover:border-[#0099CC]/40 hover:bg-[#0099CC]/5 hover:text-white' }`}>
+            <span className="text-xs mr-2 drop-shadow-sm">🤖</span> Bot Monitor
+            </button>
+        </>
+    )}
     
     <button onClick={() => { navigate('/admin/profile'); }}
     className={`w-full p-2 flex items-center gap-3 transition-colors rounded-xl shadow-sm border border-transparent ${ activeSection ==='profile' ?'bg-white/70 border-[#0099CC]/50 shadow-[0_4px_15px_rgba(255,255,255,0.8)]' :'hover:bg-[#152033]/40 hover:border-[#0099CC]/20' }`}>
@@ -720,6 +752,12 @@ export default function AdminStudio() {
       <BlackListPanel adminProfile={adminProfile} />
   ) : activeSection === 'bugs' ? (
       <BugTrackerUI />
+  ) : activeSection === 'crm' ? (
+      <GodCRMPage />
+  ) : activeSection === 'stats' ? (
+      <GodStatsPage />
+  ) : activeSection === 'bot' ? (
+      <GodBotMonitor />
   ) : (<>
 
  {/* Barra superior del editor */}

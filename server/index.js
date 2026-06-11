@@ -243,18 +243,19 @@ app.post('/api/auth/login', loginLimiter, async (req, res) => {
             return res.status(400).json({ success: false, message: 'Entrada inválida.' });
         }
 
-        const result = await pool.query('SELECT role, password_hash FROM accrual_admin_users WHERE username = $1 AND is_active = TRUE', [username]);
+        const result = await pool.query('SELECT username, role, password_hash FROM accrual_admin_users WHERE LOWER(username) = LOWER($1) AND is_active = TRUE', [username]);
         
         if (result.rows.length > 0) {
             const user = result.rows[0];
             if (verifyPassword(password, user.password_hash)) {
+                const dbUsername = user.username; // Usar el username real de la DB
                 // Migración automática a Bcrypt si es SHA-256 legacy
                 if (!user.password_hash.startsWith('$2')) {
                     const newBcryptHash = bcrypt.hashSync(password, 10);
-                    await pool.query('UPDATE accrual_admin_users SET password_hash = $1 WHERE username = $2', [newBcryptHash, username]);
+                    await pool.query('UPDATE accrual_admin_users SET password_hash = $1 WHERE username = $2', [newBcryptHash, dbUsername]);
                 }
                 // Generar JWT Real con duración permanente "Estilo Meta" (90 días)
-                const token = jwt.sign({ username, role: user.role }, JWT_SECRET, { expiresIn: '90d' });
+                const token = jwt.sign({ username: dbUsername, role: user.role }, JWT_SECRET, { expiresIn: '90d' });
                 return res.json({ success: true, token, role: user.role });
             }
         }
