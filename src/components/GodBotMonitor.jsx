@@ -206,14 +206,14 @@ export default function GodBotMonitor() {
               </div>
             </div>
 
-            <h2 className="text-lg font-black text-white tracking-widest uppercase mb-2">Estado Neurona</h2>
+            <h2 className="text-lg font-black text-white tracking-widest uppercase mb-2">Conexión WhatsApp</h2>
             {status === 'CONNECTED' ? (
               <span className="px-4 py-1.5 bg-green-500/20 text-green-400 rounded-full text-xs font-bold tracking-widest uppercase">
                 Online / Activo
               </span>
             ) : (
               <span className="px-4 py-1.5 bg-red-500/20 text-red-400 rounded-full text-xs font-bold tracking-widest uppercase flex items-center gap-2">
-                <AlertCircle size={14} /> Offline
+                <AlertCircle size={14} /> Desconectado
               </span>
             )}
 
@@ -249,10 +249,15 @@ export default function GodBotMonitor() {
                   Recargar QR
                 </button>
               </div>
-            ) : (
+            ) : status === 'CONNECTED' ? (
               <div className="h-56 flex flex-col items-center justify-center text-center text-white/35">
                 <ShieldCheck size={48} className="text-green-500/60 mb-3" />
                 <p className="text-xs font-semibold max-w-[200px]">Dispositivo conectado y verificado. No se requiere vinculación.</p>
+              </div>
+            ) : (
+              <div className="h-56 flex flex-col items-center justify-center text-center text-white/35">
+                <AlertCircle size={48} className="text-red-500/60 mb-3" />
+                <p className="text-xs font-semibold max-w-[200px]">Bot desconectado o apagado. Espera a que el sistema arranque para vincular.</p>
               </div>
             )}
           </div>
