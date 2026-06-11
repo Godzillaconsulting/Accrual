@@ -131,6 +131,9 @@ export default function AdminStudio() {
     if (location.pathname.includes('/blacklist')) return 'blacklist';
     if (location.pathname.includes('/ai-planner')) return 'ai-planner';
     if (location.pathname.includes('/automation-flow')) return 'automation-flow';
+    if (location.pathname.includes('/crm')) return 'crm';
+    if (location.pathname.includes('/stats')) return 'stats';
+    if (location.pathname.includes('/bot')) return 'bot';
     return 'editor';
   }, [location.pathname]);
 
