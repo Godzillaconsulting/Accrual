@@ -141,20 +141,20 @@ export default function GodCRMPage() {
                   <div key={idx} className="flex items-center justify-between p-4 rounded-xl bg-black/20 border border-white/5 hover:border-[#0099CC]/30 transition-colors">
                     <div className="flex items-center gap-4">
                       <div className="w-10 h-10 rounded-full bg-[#0099CC]/10 flex items-center justify-center text-[#0099CC] font-black text-sm border border-[#0099CC]/20">
-                        {lead.numero_contacto.slice(-2)}
+                        {lead.numero_contacto ? String(lead.numero_contacto).slice(-2) : '??'}
                       </div>
                       <div>
-                        <div className="text-sm font-bold text-white">{lead.numero_contacto}</div>
+                        <div className="text-sm font-bold text-white">{lead.numero_contacto || 'Desconocido'}</div>
                         <div className="text-xs text-white/40 truncate max-w-[250px]">
-                          {lead.contexto_ia || 'Interacción iniciada'}
+                          {typeof lead.contexto_ia === 'object' && lead.contexto_ia ? JSON.stringify(lead.contexto_ia) : (lead.contexto_ia || 'Interacción iniciada')}
                         </div>
                       </div>
                     </div>
                     <div className="flex flex-col items-end gap-1">
                       <span className="px-3 py-1 rounded-full bg-[#0099CC]/10 text-[#0099CC] text-[10px] font-bold uppercase tracking-wider border border-[#0099CC]/20">
-                        {lead.etapa_embudo || 'Lead'}
+                        {typeof lead.etapa_embudo === 'object' && lead.etapa_embudo ? JSON.stringify(lead.etapa_embudo) : (lead.etapa_embudo || 'Lead')}
                       </span>
-                      <span className="text-[10px] text-white/30">{new Date(lead.ultima_interaccion).toLocaleDateString()}</span>
+                      <span className="text-[10px] text-white/30">{lead.ultima_interaccion ? new Date(lead.ultima_interaccion).toLocaleDateString() : 'Reciente'}</span>
                     </div>
                   </div>
                 ))}
