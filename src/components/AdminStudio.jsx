@@ -559,8 +559,20 @@ export default function AdminStudio() {
      <div className="space-y-6 shrink-0">
    {[
      {
-       title: "SITIO WEB",
-       filter: (n, tag) => tag === 'SITIO PRINCIPAL' || tag === 'QUIÉNES SOMOS' || tag === 'SERVICIOS' || tag === 'ARTÍCULOS'
+       title: "Sitio Principal",
+       filter: (n, tag) => tag === 'SITIO PRINCIPAL'
+     },
+     {
+       title: "Quiénes Somos",
+       filter: (n, tag) => tag === 'QUIÉNES SOMOS'
+     },
+     {
+       title: "Servicios",
+       filter: (n, tag) => tag === 'SERVICIOS'
+     },
+     {
+       title: "Artículos",
+       filter: (n, tag) => tag === 'ARTÍCULOS'
      }
    ].map((group, gIdx) => {
      const groupNodes = sortedNodes.filter(n => {
