@@ -243,6 +243,7 @@ export default function GodCRMPage() {
             )}
           </div>
         </div>
+        </div>
 
         {/* Right Col: Bot Status */}
         <div className="bg-[#152033]/40 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex flex-col">
