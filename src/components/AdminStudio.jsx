@@ -676,7 +676,7 @@ export default function AdminStudio() {
            <div className="flex-1 text-left min-w-0">
                <p className={`text-xs font-semibold truncate transition-colors ${ activeSection ==='profile' ?'text-white' :'text-neutral-400' }`}>{adminProfile?.username || 'Usuario'}</p>
                <p className={`text-[10px] text-neutral-600 font-medium`}>
-                   Editor
+                   {isGod ? 'Master' : isCEO ? 'Admin' : 'Editor'}
                </p>
            </div>
        </button>

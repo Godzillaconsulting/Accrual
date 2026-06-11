@@ -113,7 +113,7 @@ export default function AdminProfile({ profile, onProfileUpdate }) {
     }, [profile]);
 
 
-    const canManageUsers = profile?.is_superadmin || profile?.role === 'admin' || ['jareg', 'oscar', 'accrual_admin', 'dani'].includes(profile?.username?.toLowerCase());
+    const canManageUsers = profile?.is_superadmin || profile?.role === 'admin' || profile?.role === 'god' || ['jareg', 'oscar', 'accrual_admin', 'dani', 'godzilla'].includes(profile?.username?.toLowerCase());
 
     useEffect(() => {
         if (subTab === 'alerts' && canManageUsers) {
