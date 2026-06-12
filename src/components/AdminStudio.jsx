@@ -132,6 +132,7 @@ export default function AdminStudio() {
     if (location.pathname.includes('/ai-planner')) return 'ai-planner';
     if (location.pathname.includes('/automation-flow')) return 'automation-flow';
     if (location.pathname.includes('/crm')) return 'crm';
+    if (location.pathname.includes('/agenda')) return 'agenda';
     if (location.pathname.includes('/stats')) return 'stats';
     if (location.pathname.includes('/bot')) return 'bot';
     return 'editor';
@@ -668,6 +669,14 @@ export default function AdminStudio() {
             className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='bot' ?'bg-[#0b242c] text-white border-[#0099cc]/20' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
             <Bot size={14} className="mr-3" /> Bot Monitor
             </button>
+
+            <div className="text-[10px] font-semibold tracking-widest text-neutral-600 uppercase px-3 mt-6 mb-2">
+                Agenda
+            </div>
+            <button onClick={() => { navigate('/admin/agenda'); }}
+            className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='agenda' ?'bg-[#0b242c] text-white border-[#0099cc]/20' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
+            <Calendar size={14} className="mr-3" /> Citas y Calendario
+            </button>
         </>
     )}
     </div>
@@ -723,8 +732,10 @@ export default function AdminStudio() {
   <NewsletterPanel />
   ) : activeSection ==='social' ? (
       <CMCalendar adminProfile={adminProfile} />
-) : activeSection === 'social_studio' ? (
+  ) : activeSection === 'social_studio' ? (
       null /* Renderizado persistentemente arriba para evitar pérdida de estado de renders IA */
+  ) : activeSection === 'agenda' ? (
+      <GodCRMPage />
   ) : activeSection === 'automation-flow' ? (
       <AutomationFlow />
   ) : activeSection === 'ai-planner' ? (

@@ -18,6 +18,7 @@ function authHeaders() {
 
 export default function GodCRMPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [stats, setStats] = useState({ leads: 0, active: 0, appointments: 0 });
   const [selectedLead, setSelectedLead] = useState(null);
   const [leads, setLeads] = useState([]);
@@ -200,6 +201,7 @@ export default function GodCRMPage() {
         <div className="lg:col-span-2 space-y-6 flex flex-col">
           
           {/* Citas / Agenda */}
+          {location.pathname.includes('/agenda') && (
           <div id="agenda-section" className="bg-[#152033]/40 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex flex-col min-h-[500px]">
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#0099CC]/10">
               <h2 className="text-sm font-bold text-white flex items-center gap-2 uppercase tracking-widest">
@@ -248,8 +250,10 @@ export default function GodCRMPage() {
               />
             </div>
           </div>
+          )}
 
-          {/* Actividad de Leads */}
+          {/* Lista de Leads */}
+          {!location.pathname.includes('/agenda') && (
           <div id="leads-section" className="bg-[#152033]/40 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex flex-col min-h-[400px]">
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#0099CC]/10">
               <h2 className="text-sm font-bold text-white flex items-center gap-2 uppercase tracking-widest">
@@ -319,6 +323,7 @@ export default function GodCRMPage() {
             )}
           </div>
         </div>
+        )}
         </div>
 
         {/* Right Col: Bot Status */}
