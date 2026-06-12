@@ -713,7 +713,6 @@ const ContactScheduler = ({ showHeader = false, showMap = true }) => {
                         </div>
                     </div>
                 </div>
-            </div>
         </section>
     );
 };
