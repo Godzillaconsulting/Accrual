@@ -151,22 +151,51 @@ export default function GodCRMPage() {
 
       {/* ── Top Stats Row ────────────────────────────────────────────── */}
       <div className="px-8 flex items-center justify-between mb-4">
-        <div className="flex bg-[#152033]/60 border border-[#0099CC]/20 rounded-xl p-1 backdrop-blur-sm">
+        <div className="flex bg-[#152033]/60 border border-[#0099CC]/20 rounded-xl p-1 backdrop-blur-sm items-center">
           <button 
             onClick={() => { setSelectedDate(new Date()); setFilterMode('day'); }} 
             className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors ${filterMode === 'day' && selectedDate && isSameDay(selectedDate, new Date()) ? 'bg-[#0099CC] text-white' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
           >
             Hoy
           </button>
-          <button 
-            onClick={() => { setSelectedDate(new Date()); setFilterMode('week'); }} 
-            className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors ${filterMode === 'week' ? 'bg-[#0099CC] text-white' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
-          >
-            Semana
-          </button>
+          
+          <div className="border-l border-white/10 pl-2 flex items-center gap-2">
+            <div className="flex flex-col relative" title="Escoger Día Específico">
+              <span className="text-[9px] text-white/30 uppercase font-bold absolute -top-3 left-1">Día</span>
+              <input 
+                type="date"
+                style={{ colorScheme: 'dark' }}
+                className={`bg-transparent text-xs outline-none cursor-pointer p-1 rounded transition-colors ${filterMode === 'day' && selectedDate && !isSameDay(selectedDate, new Date()) ? 'text-white bg-[#0099CC]/20' : 'text-white/50 hover:text-white'}`}
+                onChange={(e) => {
+                  if (e.target.value) {
+                    setSelectedDate(new Date(e.target.value + 'T12:00:00'));
+                    setFilterMode('day');
+                  }
+                }}
+              />
+            </div>
+
+            <div className="flex flex-col relative border-l border-white/5 pl-2" title="Escoger Semana del Año">
+              <span className="text-[9px] text-white/30 uppercase font-bold absolute -top-3 left-3">Semana</span>
+              <input 
+                type="week"
+                style={{ colorScheme: 'dark' }}
+                className={`bg-transparent text-xs outline-none cursor-pointer p-1 rounded transition-colors ${filterMode === 'week' ? 'text-white bg-[#0099CC]/20' : 'text-white/50 hover:text-white'}`}
+                onChange={(e) => {
+                  if (e.target.value) {
+                    const [y, w] = e.target.value.split('-W');
+                    const date = new Date(y, 0, 1 + (w - 1) * 7);
+                    setSelectedDate(date);
+                    setFilterMode('week');
+                  }
+                }}
+              />
+            </div>
+          </div>
+
           <button 
             onClick={() => { setSelectedDate(null); setFilterMode('all'); }} 
-            className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors ${filterMode === 'all' ? 'bg-[#0099CC] text-white' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
+            className={`ml-2 px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors border-l border-white/10 ${filterMode === 'all' ? 'bg-[#0099CC] text-white' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
           >
             Todo el tiempo
           </button>
