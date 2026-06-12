@@ -471,6 +471,13 @@ const ContactScheduler = ({ showHeader = false, showMap = true }) => {
                                 </button>
                             </div>
 
+                            {bookingType === 'video' && (
+                                <div className="mt-3 mb-2 text-[11px] text-blue-300 bg-blue-900/40 p-3 rounded-lg border border-blue-500/50 leading-relaxed">
+                                    <AlertCircle className="w-3.5 h-3.5 inline mr-1 -mt-0.5" />
+                                    <b>Nota sobre el pago:</b> Como elegiste Videollamada, al finalizar tu reservación te enviaremos por correo y WhatsApp los datos bancarios (Transferencia/Depósito) para cubrir el costo de tu asesoría y confirmar tu cita.
+                                </div>
+                            )}
+
                             {bookingType === 'presencial' && userCity && !userCity.toLowerCase().includes('juarez') && !userCity.toLowerCase().includes('juárez') && !userCity.toLowerCase().includes('el paso') && (
                                 <div className="mt-3 mb-2 text-[11px] text-yellow-300 bg-yellow-900/40 p-3 rounded-lg border border-yellow-500/50 leading-relaxed">
                                     <AlertCircle className="w-3.5 h-3.5 inline mr-1 -mt-0.5" />
