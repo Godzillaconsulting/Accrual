@@ -30,8 +30,18 @@ const ContactScheduler = ({ showHeader = false, showMap = true }) => {
 
     // Calendar Navigation State
     const [currentDate, setCurrentDate] = useState(new Date()); // Initialize to Current Date
+    const [userCity, setUserCity] = useState(null);
 
     const scrollContainerRef = useRef(null);
+
+    useEffect(() => {
+        fetch('https://ipapi.co/json/')
+            .then(res => res.json())
+            .then(data => {
+                if (data.city) setUserCity(data.city);
+            })
+            .catch(err => console.error('Error fetching location:', err));
+    }, []);
 
     useEffect(() => {
         // Scroll to selected date on mount or update
@@ -444,7 +454,7 @@ const ContactScheduler = ({ showHeader = false, showMap = true }) => {
                             </h3>
 
                             {/* Appointment Type Toggle */}
-                            <div className="bg-[#1a2844] p-1 rounded-xl flex mb-6 shadow-inner border border-white/5">
+                            <div className="bg-[#1a2844] p-1 rounded-xl flex shadow-inner border border-white/5">
                                 <button
                                     onClick={() => setBookingType('presencial')}
                                     className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${bookingType === 'presencial' ? 'bg-[#D0D0DA] text-[#233657] shadow-md' : 'text-[#D0D0DA]/60 hover:text-[#D0D0DA]'}`}
@@ -461,7 +471,12 @@ const ContactScheduler = ({ showHeader = false, showMap = true }) => {
                                 </button>
                             </div>
 
-
+                            {bookingType === 'presencial' && userCity && !userCity.toLowerCase().includes('juarez') && !userCity.toLowerCase().includes('juárez') && !userCity.toLowerCase().includes('el paso') && (
+                                <div className="mt-3 mb-2 text-[11px] text-yellow-300 bg-yellow-900/40 p-3 rounded-lg border border-yellow-500/50 leading-relaxed">
+                                    <AlertCircle className="w-3.5 h-3.5 inline mr-1 -mt-0.5" />
+                                    Detectamos que estás en <b>{userCity}</b>. Las citas presenciales se realizan <b>únicamente en Ciudad Juárez, Chihuahua</b>, donde se cubre el costo de la asesoría. Si no puedes asistir físicamente, te sugerimos seleccionar <b>Videollamada</b> para no bloquear un espacio presencial.
+                                </div>
+                            )}
 
                             {/* Month Navigation */}
                             <div className="flex items-center justify-between mb-4 px-2">
@@ -599,6 +614,11 @@ const ContactScheduler = ({ showHeader = false, showMap = true }) => {
                                         Una hora
                                     </button>
                                 </div>
+                                <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest text-[#D0D0DA] bg-[#1a2844] p-3 rounded-lg border border-white/5">
+                                    <span>Costo de Asesoría:</span>
+                                    <span className="text-white bg-[#0F4C82] px-2 py-1 rounded shadow-sm">{duration === '30min' ? '$600 MXN' : '$1,000 MXN'}</span>
+                                </div>
+                            </div>
 
                                 <button
                                     onClick={async () => {

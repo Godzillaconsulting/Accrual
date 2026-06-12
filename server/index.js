@@ -401,7 +401,7 @@ app.put('/api/public/appointments', publicAppointmentsLimiter, async (req, res) 
             }
 
             try {
-                const { agendarEnGoogleCalendar } = await import('../Accrual/bot/services/calendarService.js');
+                const { agendarEnGoogleCalendar } = await import('../bot/services/calendarService.js');
                 const cita = updated.rows[0];
                 const gRes = await agendarEnGoogleCalendar({
                     nombre: `${cita.nombre} ${cita.apellidos || ''}`.trim(),
