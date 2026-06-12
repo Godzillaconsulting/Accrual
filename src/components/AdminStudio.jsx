@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from'react';
-import { MousePointerClick, LayoutDashboard, Database, ShieldAlert, Ban, ChartBar, MessageCircle, Bot, User, LogOut, Lightbulb, Eye } from 'lucide-react';
+import { MousePointerClick, LayoutDashboard, Database, ShieldAlert, Ban, ChartBar, MessageCircle, Bot, User, LogOut, Lightbulb, Eye, Calendar } from 'lucide-react';
 import { useSiteData } from'../context/SiteContext';
 import StudioPreview from'./StudioPreview';
 import MediaPicker from'./MediaPicker';
