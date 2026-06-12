@@ -21,6 +21,8 @@ export default function GodCRMPage() {
   const location = useLocation();
   const [stats, setStats] = useState({ leads: 0, active: 0, appointments: 0 });
   const [selectedLead, setSelectedLead] = useState(null);
+  const [leadMessages, setLeadMessages] = useState([]);
+  const [loadingMessages, setLoadingMessages] = useState(false);
   const [leads, setLeads] = useState([]);
   const [appointments, setAppointments] = useState([]);
   const [botStatus, setBotStatus] = useState('DISCONNECTED');
@@ -68,6 +70,29 @@ export default function GodCRMPage() {
     const interval = setInterval(fetchData, 60000); // 1 min refresh
     return () => clearInterval(interval);
   }, [fetchData]);
+
+  useEffect(() => {
+    if (!selectedLead) {
+      setLeadMessages([]);
+      return;
+    }
+    const fetchMessages = async () => {
+      setLoadingMessages(true);
+      try {
+        const phone = selectedLead.numero_contacto.split('@')[0];
+        const res = await fetch(`/api/crm/leads/${phone}/messages`, { headers: authHeaders() });
+        const data = await res.json();
+        if (data.success) {
+          setLeadMessages(data.messages || []);
+        }
+      } catch (err) {
+        console.error("Error fetching messages", err);
+      } finally {
+        setLoadingMessages(false);
+      }
+    };
+    fetchMessages();
+  }, [selectedLead]);
 
   // Transformar citas para el calendario visual
   const calendarEvents = useMemo(() => {
@@ -339,44 +364,26 @@ export default function GodCRMPage() {
                 {filteredLeads.map((lead, idx) => {
                   const phoneClean = lead.numero_contacto ? lead.numero_contacto.split('@')[0] : 'Desconocido';
                   
-                  let contextText = 'Interacción iniciada';
-                  if (lead.contexto_ia && typeof lead.contexto_ia === 'object') {
-                    if (lead.contexto_ia.historial_mensajes && Array.isArray(lead.contexto_ia.historial_mensajes) && lead.contexto_ia.historial_mensajes.length > 0) {
-                      const lastMsg = lead.contexto_ia.historial_mensajes[lead.contexto_ia.historial_mensajes.length - 1];
-                      contextText = `Último msj: "${lastMsg.content || lastMsg.contenido || ''}"`;
-                    } else if (lead.contexto_ia.summary) {
-                      contextText = lead.contexto_ia.summary;
-                    } else {
-                      contextText = 'Analizando contexto...';
-                    }
-                  } else if (typeof lead.contexto_ia === 'string') {
-                    contextText = lead.contexto_ia;
-                  }
-
-                  const funnelClean = typeof lead.etapa_embudo === 'object' ? 'LEAD' : (lead.etapa_embudo || 'Lead');
-
                   return (
                     <div 
                       key={idx} 
                       onClick={() => setSelectedLead(lead)}
-                      className="flex items-center justify-between p-4 rounded-xl bg-black/20 border border-white/5 hover:border-[#0099CC]/30 hover:bg-[#0099CC]/5 transition-colors cursor-pointer"
+                      className="flex items-center justify-between p-4 rounded-xl bg-black/20 border border-white/5 hover:border-[#0099CC]/30 hover:bg-[#0099CC]/5 transition-colors cursor-pointer group"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-[#0099CC]/10 flex items-center justify-center text-[#0099CC] font-black text-sm border border-[#0099CC]/20 shrink-0">
+                        <div className="w-10 h-10 rounded-full bg-[#0099CC]/10 flex items-center justify-center text-[#0099CC] font-black text-sm border border-[#0099CC]/20 shrink-0 group-hover:scale-110 transition-transform">
                           {phoneClean.length > 2 ? phoneClean.slice(-2) : '??'}
                         </div>
                         <div className="min-w-0">
-                          <div className="text-sm font-bold text-white truncate">{phoneClean}</div>
-                          <div className="text-xs text-white/40 truncate w-[200px] md:w-[300px]" title={contextText}>
-                            {contextText}
+                          <div className="text-sm font-bold text-white truncate group-hover:text-[#0099CC] transition-colors">{phoneClean}</div>
+                          <div className="text-[11px] text-white/40 truncate uppercase tracking-widest font-bold flex items-center gap-1">
+                            <MessageSquare size={10} />
+                            Ver mensajes
                           </div>
                         </div>
                       </div>
-                      <div className="flex flex-col items-end gap-1 shrink-0">
-                        <span className="px-3 py-1 rounded-full bg-[#0099CC]/10 text-[#0099CC] text-[9px] font-bold uppercase tracking-wider border border-[#0099CC]/20 max-w-[120px] truncate">
-                          {funnelClean.replace(/_/g, ' ')}
-                        </span>
-                        <span className="text-[10px] text-white/30 font-mono tracking-widest">{lead.ultima_interaccion ? new Date(lead.ultima_interaccion).toLocaleDateString('es-MX', {day: '2-digit', month: 'short'}) : 'Reciente'}</span>
+                      <div className="flex flex-col items-end shrink-0">
+                        <span className="text-[10px] text-white/30 font-mono tracking-widest">{lead.ultima_interaccion ? new Date(lead.ultima_interaccion).toLocaleDateString('es-MX', {day: '2-digit', month: 'short', hour: '2-digit', minute:'2-digit'}) : 'Reciente'}</span>
                       </div>
                     </div>
                   );
@@ -453,12 +460,17 @@ export default function GodCRMPage() {
 
             {/* Modal Body (Chat History) */}
             <div className="flex-1 overflow-y-auto p-6 bg-[#0a0f18] custom-scrollbar">
-              {selectedLead.contexto_ia && typeof selectedLead.contexto_ia === 'object' && Array.isArray(selectedLead.contexto_ia.historial_mensajes) ? (
+              {loadingMessages ? (
+                <div className="flex flex-col items-center justify-center h-full text-[#0099CC] space-y-4">
+                  <RefreshCw size={32} className="animate-spin opacity-50" />
+                  <p className="text-xs font-bold uppercase tracking-widest animate-pulse">Cargando mensajes...</p>
+                </div>
+              ) : leadMessages.length > 0 ? (
                 <div className="space-y-4">
                   <div className="text-center mb-6">
                     <span className="bg-[#152033] text-white/40 text-[10px] px-3 py-1 rounded-full uppercase tracking-widest font-bold">Inicio de la conversación</span>
                   </div>
-                  {selectedLead.contexto_ia.historial_mensajes.map((msg, i) => {
+                  {leadMessages.map((msg, i) => {
                     const isBot = msg.role === 'assistant' || msg.role === 'system';
                     if (msg.role === 'system') return null; // Ocultar mensajes de sistema internos
                     const textoMensaje = msg.content || msg.contenido || '';
@@ -473,10 +485,6 @@ export default function GodCRMPage() {
                       </div>
                     );
                   })}
-                </div>
-              ) : typeof selectedLead.contexto_ia === 'string' ? (
-                <div className="p-4 bg-[#152033] rounded-xl border border-white/10 text-white/70 text-sm whitespace-pre-wrap">
-                  {selectedLead.contexto_ia}
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center h-full text-white/30 space-y-3">

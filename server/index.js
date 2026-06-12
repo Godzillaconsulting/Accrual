@@ -706,15 +706,32 @@ app.get('/api/whatsapp/status', authenticateJWT, requireSuperAdmin, async (req, 
 // === CRM, STATS & BOT MONITOR (Exclusivo GOD) ===
 // ========================================================================
 
-// CRM: Obtener leads del bot
+// CRM: Obtener leads del bot (LIGERO, sin contexto completo para RAM)
 app.get('/api/crm/leads', authenticateJWT, requireGod, async (req, res) => {
     try {
         const result = await pool.query(`
-            SELECT numero_contacto, etapa_embudo, contexto_ia, ultima_interaccion
+            SELECT numero_contacto, etapa_embudo, ultima_interaccion
             FROM wa_workflow_states
             ORDER BY ultima_interaccion DESC
         `);
         res.json({ success: true, leads: result.rows });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// CRM: Obtener mensajes específicos de un lead bajo demanda
+app.get('/api/crm/leads/:phone/messages', authenticateJWT, requireGod, async (req, res) => {
+    try {
+        const { phone } = req.params;
+        const result = await pool.query(
+            "SELECT contexto_ia FROM wa_workflow_states WHERE numero_contacto = $1",
+            [phone]
+        );
+        if (result.rows.length === 0) return res.json({ success: true, messages: [] });
+        
+        const contexto = result.rows[0].contexto_ia || {};
+        res.json({ success: true, messages: contexto.historial_mensajes || [] });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
