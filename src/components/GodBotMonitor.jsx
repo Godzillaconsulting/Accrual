@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Bot, RefreshCw, AlertCircle, Smartphone, Clock, MessageSquare, ShieldCheck, X } from 'lucide-react';
+import { Bot, RefreshCw, AlertCircle, Smartphone, Clock, MessageSquare, ShieldCheck, X, Ban } from 'lucide-react';
+import BlackListPanel from './BlackListPanel';
 
 // Todo proviene de la DB real.
 
@@ -22,6 +23,7 @@ export default function GodBotMonitor() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [qrNonce, setQrNonce] = useState(Date.now());
+  const [activeTab, setActiveTab] = useState('monitor'); // 'monitor' | 'blacklist'
 
   // Estado del Modal de Historial
   const [selectedPhone, setSelectedPhone] = useState(null);
@@ -166,6 +168,21 @@ export default function GodBotMonitor() {
           </div>
 
           <div className="flex items-center gap-3">
+            <div className="flex bg-[#111111] border border-white/10 p-1 rounded-lg">
+              <button 
+                onClick={() => setActiveTab('monitor')}
+                className={`px-4 py-1.5 rounded-md text-xs font-bold transition-all ${activeTab === 'monitor' ? 'bg-[#0099CC] text-white' : 'text-neutral-500 hover:text-white hover:bg-white/5'}`}
+              >
+                <Bot size={14} className="inline mr-2" /> Monitor en Vivo
+              </button>
+              <button 
+                onClick={() => setActiveTab('blacklist')}
+                className={`px-4 py-1.5 rounded-md text-xs font-bold transition-all ${activeTab === 'blacklist' ? 'bg-red-600 text-white' : 'text-neutral-500 hover:text-white hover:bg-white/5'}`}
+              >
+                <Ban size={14} className="inline mr-2" /> Números Bloqueados
+              </button>
+            </div>
+            
             <button
               onClick={fetchData}
               disabled={loading}
@@ -178,15 +195,9 @@ export default function GodBotMonitor() {
         </div>
       </header>
 
-      {/* Error banner */}
-      {error && (
-        <div className="mx-auto mt-3 flex max-w-[1800px] items-center gap-2 rounded-lg border border-amber-500/20 bg-amber-500/10 px-4 py-2 text-xs text-amber-300">
-          <AlertCircle size={14} />
-          <span>Usando caché local del Bot Monitor ({error})</span>
-        </div>
-      )}
 
-      {/* Grid Monitor */}
+      {/* Main Content */}
+      {activeTab === 'monitor' ? (
       <main className="flex-1 mx-auto max-w-[1800px] w-full px-6 py-6 grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Status Card */}
         <div className="md:col-span-1 flex flex-col gap-6">
@@ -307,6 +318,7 @@ export default function GodBotMonitor() {
           </div>
         </div>
       </main>
+      ) : null}
     </div>
   );
 }

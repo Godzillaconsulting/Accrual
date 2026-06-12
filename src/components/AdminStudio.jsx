@@ -21,6 +21,7 @@ import BlackListPanel from './BlackListPanel';
 import GodCRMPage from './GodCRMPage';
 import GodStatsPage from './GodStatsPage';
 import GodBotMonitor from './GodBotMonitor';
+import MasterDashboard from './MasterDashboard';
 // ── Hover field wrapper → activa resaltado en preview ──────────────────────
 import { PAGE_SECTIONS, injectSectionDefaults, replaceBrWithNewline } from '../utils/studioConfig';
 import { detectTextFields, detectMediaFields, toLabel, detectGroupedFields, MEDIA_PATTERNS, getFieldWeight } from '../utils/editorParser';
@@ -135,7 +136,8 @@ export default function AdminStudio() {
     if (location.pathname.includes('/agenda')) return 'agenda';
     if (location.pathname.includes('/stats')) return 'stats';
     if (location.pathname.includes('/bot')) return 'bot';
-    return 'editor';
+    if (location.pathname.includes('/editor')) return 'editor';
+    return 'home';
   }, [location.pathname]);
 
   const [activeTab, setActiveTab] = useState('textos');
@@ -621,35 +623,31 @@ export default function AdminStudio() {
    })}
   </div>
 
-   <div className="mt-8 space-y-1 shrink-0">
-       <div className="text-[10px] font-semibold text-neutral-600 uppercase tracking-widest px-3 mb-2">Operaciones</div>
-
     {canSeePanelMaestro && (
         <button onClick={() => { navigate('/admin/master'); }}
         className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='panel_maestro' ?'bg-[#0b242c] text-white border-[#0099cc]/20' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
-        <LayoutDashboard size={14} className="mr-3" /> Panel Maestro
+        <LayoutDashboard size={14} className="mr-3" /> Panel Maestro Web
         </button>
     )}
 
-    {canSeeDBEstudio && (
-        <button onClick={() => { navigate('/admin/db'); }}
-        className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='db_estudio' ?'bg-[#0b242c] text-white border-[#0099cc]/20' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
-        <Database size={14} className="mr-3" /> DB Studio
-        </button>
-    )}
-
-    {canSeeSqlAtaques && (
-        <button onClick={() => { navigate('/admin/sql'); }}
-        className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='sql_ataques' ?'bg-[#0b242c] text-white border-[#0099cc]/20' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
-        <ShieldAlert size={14} className="mr-3" /> Ataques SQL
-        </button>
-    )}
-
-    {canSeeBlackList && (
-        <button onClick={() => { navigate('/admin/blacklist'); }}
-        className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='blacklist' ?'bg-[#0b242c] text-white border-[#0099cc]/20' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
-        <Ban size={14} className="mr-3" /> Black List
-        </button>
+    {(canSeeDBEstudio || canSeeSqlAtaques) && (
+        <>
+            <div className="text-[10px] font-semibold tracking-widest text-neutral-600 uppercase px-3 mt-6 mb-2">
+                Seguridad & IT
+            </div>
+            {canSeeDBEstudio && (
+                <button onClick={() => { navigate('/admin/db'); }}
+                className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='db_estudio' ?'bg-[#0b242c] text-white border-[#0099cc]/20' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
+                <Database size={14} className="mr-3" /> DB Studio
+                </button>
+            )}
+            {canSeeSqlAtaques && (
+                <button onClick={() => { navigate('/admin/sql'); }}
+                className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='sql_ataques' ?'bg-[#0b242c] text-white border-[#0099cc]/20' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
+                <ShieldAlert size={14} className="mr-3" /> Ataques SQL
+                </button>
+            )}
+        </>
     )}
 
     {isGod && (
@@ -657,10 +655,6 @@ export default function AdminStudio() {
             <div className="text-[10px] font-semibold tracking-widest text-neutral-600 uppercase px-3 mt-6 mb-2">
                 Inteligencia
             </div>
-            <button onClick={() => { navigate('/admin/stats'); }}
-            className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='stats' ?'bg-[#0b242c] text-white border-[#0099cc]/20' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
-            <ChartBar size={14} className="mr-3" /> Estadísticas
-            </button>
             <button onClick={() => { navigate('/admin/crm'); }}
             className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='crm' ?'bg-[#0b242c] text-white border-[#0099cc]/20' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
             <MessageCircle size={14} className="mr-3" /> CRM / Leads
@@ -680,7 +674,6 @@ export default function AdminStudio() {
         </>
     )}
     </div>
-  </div>
 
     {/* Footer Sidebar Area */}
     <div className="p-4 border-t border-[#0099cc]/20 shrink-0">
@@ -726,6 +719,8 @@ export default function AdminStudio() {
   </div>
  {isAnalyticsMode ? (
  <AnalyticsDashboard />
+ ) : activeSection ==='home' ? (
+ <MasterDashboard adminProfile={adminProfile} />
  ) : activeSection ==='profile' ? (
  <AdminProfile profile={adminProfile} onProfileUpdate={setAdminProfile} />
  ) : activeSection ==='newsletter' ? (
@@ -1598,7 +1593,36 @@ export default function AdminStudio() {
      </button>
     </div>
   </div>
+  </div>
   )}
+
+    {/* Global Search Modal */}
+    {isSearchOpen && (
+      <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-start justify-center pt-[15vh]">
+        <div className="bg-[#0a0a0a] border border-[#0099CC]/30 rounded-2xl w-[90%] max-w-[600px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="flex items-center px-4 py-3 border-b border-white/10">
+            <Search size={20} className="text-[#0099CC] mr-3" />
+            <input 
+              autoFocus
+              type="text" 
+              placeholder="Buscar prospectos por nombre o teléfono..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="flex-1 bg-transparent border-none text-white text-lg outline-none placeholder:text-neutral-600"
+            />
+            <span className="text-[10px] font-mono text-neutral-500 bg-white/5 px-2 py-1 rounded ml-3">ESC</span>
+          </div>
+          <div className="p-4 bg-[#111] min-h-[100px] flex flex-col items-center justify-center text-neutral-500">
+            {searchQuery ? (
+               <div className="text-sm">Buscando "{searchQuery}"... <span className="block mt-2 text-xs text-[#0099CC] cursor-pointer hover:underline" onClick={() => { setIsSearchOpen(false); navigate('/admin/crm'); }}>Ir al CRM avanzado</span></div>
+            ) : (
+               <div className="text-sm">Escribe para buscar en toda la plataforma</div>
+            )}
+          </div>
+        </div>
+        <div className="absolute inset-0 -z-10" onClick={() => setIsSearchOpen(false)} />
+      </div>
+    )}
 
  </div>
 );

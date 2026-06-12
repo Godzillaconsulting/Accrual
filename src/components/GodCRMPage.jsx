@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Users, Calendar, Clock, Bot, RefreshCw, MessageSquare, AlertCircle, ChevronRight, User, X, Filter } from 'lucide-react';
+import { Users, Calendar, Clock, Bot, RefreshCw, MessageSquare, AlertCircle, ChevronRight, User, X, Filter, ChartBar } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Calendar as BigCalendar, dateFnsLocalizer, Views } from 'react-big-calendar';
 import { format, parse, startOfWeek, endOfWeek, getDay, isSameDay, isWithinInterval, startOfDay, endOfDay } from 'date-fns';
 import { es } from 'date-fns/locale/es';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import GodStatsPage from './GodStatsPage';
 
 const locales = { 'es': es };
 const localizer = dateFnsLocalizer({ format, parse, startOfWeek, getDay, locales });
@@ -32,6 +33,7 @@ export default function GodCRMPage() {
   // Filtros de fecha
   const [selectedDate, setSelectedDate] = useState(null); // null = Todo
   const [filterMode, setFilterMode] = useState('all'); // 'all', 'day', 'week'
+  const [activeTab, setActiveTab] = useState('crm'); // 'crm' | 'stats'
   const [calendarView, setCalendarView] = useState(Views.MONTH);
   const [calendarDate, setCalendarDate] = useState(new Date());
 
@@ -158,13 +160,31 @@ export default function GodCRMPage() {
   return (
     <div className="h-full w-full flex flex-col bg-transparent overflow-y-auto custom-scrollbar">
       {/* ── Header ───────────────────────────────────────────────────── */}
-      <div className="px-8 pt-8 pb-4 shrink-0">
-        <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
-          Hola, GodZilla 👋
-        </h1>
-        <p className="text-sm text-[#0099CC] mt-1 font-semibold tracking-wider">
-          Resumen de prospectos y operaciones de la firma
-        </p>
+      <div className="px-8 pt-8 pb-4 shrink-0 flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
+            Hola, GodZilla 👋
+          </h1>
+          <p className="text-sm text-[#0099CC] mt-1 font-semibold tracking-wider">
+            Resumen de prospectos y operaciones de la firma
+          </p>
+        </div>
+        {!location.pathname.includes('/agenda') && (
+        <div className="flex bg-[#111111] border border-[#0099CC]/30 p-1 rounded-lg">
+          <button 
+            onClick={() => setActiveTab('crm')}
+            className={`px-4 py-2 rounded-md text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'crm' ? 'bg-[#0099CC] text-white' : 'text-neutral-500 hover:text-white hover:bg-[#0099CC]/10'}`}
+          >
+            <Users size={14} className="inline mr-2" /> CRM / Leads
+          </button>
+          <button 
+            onClick={() => setActiveTab('stats')}
+            className={`px-4 py-2 rounded-md text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'stats' ? 'bg-[#0099CC] text-white' : 'text-neutral-500 hover:text-white hover:bg-[#0099CC]/10'}`}
+          >
+            <ChartBar size={14} className="inline mr-2" /> Estadísticas
+          </button>
+        </div>
+        )}
       </div>
 
       {error && (
@@ -175,6 +195,8 @@ export default function GodCRMPage() {
       )}
 
       {/* ── Top Stats Row ────────────────────────────────────────────── */}
+      {activeTab === 'crm' ? (
+      <>
       <div className="px-8 flex items-center justify-between mb-4">
         <div className="flex bg-[#152033]/60 border border-[#0099CC]/20 rounded-xl p-1 backdrop-blur-sm items-center">
           <button 
@@ -501,6 +523,14 @@ export default function GodCRMPage() {
                </p>
             </div>
           </div>
+        </div>
+        )}
+      {/* End Modal */}
+
+      </>
+      ) : (
+        <div className="flex-1 overflow-y-auto">
+          <GodStatsPage />
         </div>
       )}
     </div>

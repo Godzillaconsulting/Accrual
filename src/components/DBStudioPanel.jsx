@@ -62,33 +62,7 @@ export default function DBStudioPanel({ adminProfile }) {
 
     return (
         <div className="flex w-full h-full bg-[#0a0a0a] text-neutral-300 font-mono text-sm border-l border-blue-900/30 overflow-hidden">
-            {/* PANEL LATERAL: Explorador de Tablas (Neon Style) */}
-            <div className="w-64 flex flex-col bg-[#152033] border-r border-blue-900/40 shrink-0">
-                <div className="p-4 border-b border-blue-900/40 bg-[#0099CC]/10 flex items-center gap-2">
-                    <span className="text-xl">🗄️</span>
-                    <h2 className="font-sans font-black text-white tracking-widest uppercase">Accrual DB</h2>
-                </div>
-                
-
-
-                <div className="px-3 pb-2 flex-1 overflow-y-auto custom-scrollbar">
-                    <div className="text-[10px] text-neutral-500 font-bold uppercase tracking-wider mb-2 px-1">Tablas Públicas</div>
-                    <div className="space-y-0.5">
-                        {tables.map(t => (
-                            <button 
-                                key={t} 
-                                onClick={() => loadTable(t)}
-                                className={`w-full text-left px-3 py-1.5 rounded transition-all text-sm flex items-center gap-2 truncate ${selectedTable === t ? 'bg-[#0099CC]/10 text-white font-bold border-l-2 border-[#0099CC]' : 'text-neutral-400 hover:bg-neutral-900 hover:text-neutral-200'}`}
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-                                {t}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            </div>
-
-            {/* PANEL DERECHO: Visor + Editor */}
+            {/* PANEL DERECHO: Visor + Editor (FULL WIDTH AHORA) */}
             <div className="flex-1 flex flex-col min-w-0" style={{ background: 'radial-gradient(ellipse at top right, rgba(0,153,204,0.05), transparent 40%)' }}>
                 
 
