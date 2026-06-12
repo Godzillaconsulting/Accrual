@@ -1593,7 +1593,6 @@ export default function AdminStudio() {
      </button>
     </div>
   </div>
-  </div>
   )}
 
     {/* Global Search Modal */}
