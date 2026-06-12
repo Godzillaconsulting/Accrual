@@ -239,8 +239,11 @@ export default function GodCRMPage() {
         )}
 
         {!location.pathname.includes('/agenda') && (
-        <div className="bg-[#152033]/60 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex items-center gap-4 hover:border-[#0099CC]/50 transition-colors">
-          <div className="w-12 h-12 rounded-xl bg-[#0099CC]/10 flex items-center justify-center border border-[#0099CC]/30 shrink-0">
+        <div 
+          onClick={() => document.getElementById('leads-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+          className="bg-[#152033]/60 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex items-center gap-4 hover:border-[#0099CC]/50 transition-colors cursor-pointer group"
+        >
+          <div className="w-12 h-12 rounded-xl bg-[#0099CC]/10 flex items-center justify-center border border-[#0099CC]/30 shrink-0 group-hover:scale-110 transition-transform">
             <Clock className="text-[#0099CC]" size={24} />
           </div>
           <div>
@@ -259,7 +262,7 @@ export default function GodCRMPage() {
           
           {/* Citas / Agenda */}
           {location.pathname.includes('/agenda') && (
-          <div id="agenda-section" className="bg-[#152033]/40 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex flex-col min-h-[500px]">
+          <div id="agenda-section" className="bg-[#152033]/40 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex flex-col h-[650px]">
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#0099CC]/10">
               <h2 className="text-sm font-bold text-white flex items-center gap-2 uppercase tracking-widest">
                 <Calendar size={16} className="text-[#0099CC]" />
@@ -313,7 +316,7 @@ export default function GodCRMPage() {
 
           {/* Lista de Leads */}
           {!location.pathname.includes('/agenda') && (
-          <div id="leads-section" className="bg-[#152033]/40 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex flex-col min-h-[400px]">
+          <div id="leads-section" className="bg-[#152033]/40 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex flex-col h-[650px]">
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#0099CC]/10">
               <h2 className="text-sm font-bold text-white flex items-center gap-2 uppercase tracking-widest">
                 <MessageSquare size={16} className="text-[#0099CC]" />
@@ -386,7 +389,7 @@ export default function GodCRMPage() {
         </div>
 
         {/* Right Col: Bot Status */}
-        <div className="bg-[#152033]/40 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex flex-col">
+        <div className="bg-[#152033]/40 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex flex-col h-[650px]">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-sm font-bold text-white flex items-center gap-2 uppercase tracking-widest">
               <Bot size={16} className="text-[#0099CC]" />
