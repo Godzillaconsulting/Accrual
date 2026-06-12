@@ -47,12 +47,12 @@ export const PAGE_SECTIONS = [
 
  { id:'articulos-grid', label:'Artículos Grid', emoji:'📚', tag:'ARTÍCULOS' },
  { id:'articulo-1', label:'Errores en declaración', emoji:'📄', tag:'ARTÍCULOS' },
- { id:'articulo-2', label:'Beneficios de asesor fiscal', emoji:'📄', tag:'ARTÍCULOS' },
+ { id:'articulo-2', label:'Beneficios de un asesor fiscal', emoji:'📄', tag:'ARTÍCULOS' },
  { id:'articulo-3', label:'Beneficios del compliance', emoji:'📄', tag:'ARTÍCULOS' },
  { id:'articulo-4', label:'Importancia del presupuesto', emoji:'📄', tag:'ARTÍCULOS' },
- { id:'articulo-5', label:'Implicaciones delitos fisc.', emoji:'📄', tag:'ARTÍCULOS' },
+ { id:'articulo-5', label:'Implicaciones de delitos fisc.', emoji:'📄', tag:'ARTÍCULOS' },
  { id:'articulo-6', label:'Suspensión de sellos', emoji:'📄', tag:'ARTÍCULOS' },
- { id:'articulo-7', label:'Partes relacionadas y pre.', emoji:'📄', tag:'ARTÍCULOS' },
+ { id:'articulo-7', label:'Partes relacionadas y precios', emoji:'📄', tag:'ARTÍCULOS' },
  { id:'articulo-8', label:'Acciones BEPS', emoji:'📄', tag:'ARTÍCULOS' },
 ];
 
@@ -93,11 +93,11 @@ export function injectSectionDefaults(nodeId, draftSource) {
   } else if (nodeId === 'quienes-somos') {
       if (combinedData.aboutMainTitle === undefined) combinedData.aboutMainTitle = '¿Quiénes <br /> Somos?';
       if (combinedData.aboutSubtitle1 === undefined) combinedData.aboutSubtitle1 = 'Nuestra Historia';
-      if (combinedData.aboutText1 === undefined) combinedData.aboutText1 = 'Fundada en 2015 Accrual se ha dedicado a fortalecer a sus socios de negocios mediante servicios de vanguardia, profesionalismo y veracidad.';
+      if (combinedData.aboutText1 === undefined) combinedData.aboutText1 = 'Fundada en 2015, Accrual se ha dedicado a fortalecer a sus socios de negocios mediante servicios de vanguardia, profesionalismo y veracidad.';
       if (combinedData.aboutSubtitle2 === undefined) combinedData.aboutSubtitle2 = 'Visión';
-      if (combinedData.aboutText2 === undefined) combinedData.aboutText2 = 'Con la visión de ser líderes en ofrecer servicios financieros y fiscales a nivel nacional e internacional, ofrecemos soluciones innovadoras en planeacion, diseño, capacitacion y consultoría fiscal, contable y financiera.';
+      if (combinedData.aboutText2 === undefined) combinedData.aboutText2 = 'Con la visión de ser líderes en ofrecer servicios financieros y fiscales a nivel nacional e internacional, ofrecemos soluciones innovadoras en planeación, diseño, capacitación y consultoría fiscal, contable y financiera.';
       if (combinedData.aboutSubtitle3 === undefined) combinedData.aboutSubtitle3 = 'Misión';
-      if (combinedData.aboutText3 === undefined) combinedData.aboutText3 = 'Nuestra misión es impulsar el éxito y la eficiencia de nuestros clientes, fortaleciendo los pilares financieros. A través de nuestra trayectoria, hemos logrado demostrar nuestro compromiso con la excelencia con el maximo profesionalismo.';
+      if (combinedData.aboutText3 === undefined) combinedData.aboutText3 = 'Nuestra misión es impulsar el éxito y la eficiencia de nuestros clientes, fortaleciendo sus pilares financieros. A través de nuestra trayectoria, hemos logrado demostrar nuestro compromiso con la excelencia con el máximo profesionalismo.';
       if (combinedData.aboutBtn === undefined) combinedData.aboutBtn = 'Conoce nuestros servicios';
       if (combinedData.aboutImage === undefined) combinedData.aboutImage = 'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
   } else if (nodeId === 'paquetes') {
@@ -127,11 +127,11 @@ export function injectSectionDefaults(nodeId, draftSource) {
       if (combinedData.pack3Price === undefined) combinedData.pack3Price = '$30,000,000';
       if (combinedData.pack3PostPrice === undefined) combinedData.pack3PostPrice = 'mxn';
       if (combinedData.pack3Subtitle === undefined) combinedData.pack3Subtitle = '/ Facturación mensual + Ops USA';
-      if (combinedData.pack3Desc === undefined) combinedData.pack3Desc = '¿Estás facturando más de $30,000,000 al mes? <br /><br /> Proteja su patrimonio transfronterizo. Sincronizamos su operación México-USA mediante ingeniería fiscal avanzada, precios de transferencia y blindaje legal preventivo';
+      if (combinedData.pack3Desc === undefined) combinedData.pack3Desc = '¿Estás facturando más de $30,000,000 al mes? <br /><br /> Protege tu patrimonio transfronterizo. Sincronizamos tu operación México-USA mediante ingeniería fiscal avanzada, precios de transferencia y blindaje legal preventivo.';
       if (combinedData.pack3Btn === undefined) combinedData.pack3Btn = 'Ver Solución Corporativo';
       if (combinedData.pack3Bullet1 === undefined) combinedData.pack3Bullet1 = 'Estrategia Binacional';
       if (combinedData.pack3Bullet2 === undefined) combinedData.pack3Bullet2 = 'Precios de Transferencia';
-      if (combinedData.pack3Bullet3 === undefined) combinedData.pack3Bullet3 = 'Auditoria & Compliance';
+      if (combinedData.pack3Bullet3 === undefined) combinedData.pack3Bullet3 = 'Auditoría & Compliance';
   } else if (nodeId === 'testimonios') {
       if (combinedData.testMainTitle === undefined) combinedData.testMainTitle = 'LO QUE OPINAN NUESTROS CLIENTES <br /> DE ACCRUAL';
       if (combinedData.testSubtitle === undefined) combinedData.testSubtitle = 'Resultados Reales en la Frontera Norte';

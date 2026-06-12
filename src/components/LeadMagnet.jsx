@@ -45,7 +45,7 @@ const LeadMagnet = () => {
                 {status === 'success' ? (
                     <div className="bg-green-500/20 text-green-100 p-8 rounded-2xl border border-green-500/50 backdrop-blur-md animate-pulse">
                         <h3 className="text-2xl font-bold mb-2">¡Gracias por registrarte! 🎉</h3>
-                        <p className="text-lg">Tu descarga comenzará en breve...</p>
+                        <p className="text-lg">Te enviaremos la guía a tu correo en breve.</p>
                     </div>
                 ) : (
                     <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row items-center gap-4 w-full max-w-lg mx-auto">
