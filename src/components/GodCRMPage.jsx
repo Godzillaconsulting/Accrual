@@ -156,7 +156,8 @@ export default function GodCRMPage() {
         )}
       </div>
 
-      <div className="px-8 grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className={`px-8 grid grid-cols-1 md:grid-cols-${location.pathname.includes('/agenda') ? '1' : '2'} gap-6 mb-8`}>
+        {!location.pathname.includes('/agenda') && (
         <div 
           onClick={() => document.getElementById('leads-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
           className="bg-[#152033]/60 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex items-center gap-4 hover:border-[#0099CC] hover:bg-[#0099CC]/10 transition-all cursor-pointer group"
@@ -169,7 +170,9 @@ export default function GodCRMPage() {
             <div className="text-[11px] text-white/50 uppercase tracking-wider font-bold">Leads Registrados</div>
           </div>
         </div>
+        )}
 
+        {location.pathname.includes('/agenda') && (
         <div 
           onClick={() => document.getElementById('agenda-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
           className="bg-[#152033]/60 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex items-center gap-4 hover:border-[#0099CC] hover:bg-[#0099CC]/10 transition-all cursor-pointer group"
@@ -182,7 +185,9 @@ export default function GodCRMPage() {
             <div className="text-[11px] text-white/50 uppercase tracking-wider font-bold">Citas en Periodo</div>
           </div>
         </div>
+        )}
 
+        {!location.pathname.includes('/agenda') && (
         <div className="bg-[#152033]/60 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex items-center gap-4 hover:border-[#0099CC]/50 transition-colors">
           <div className="w-12 h-12 rounded-xl bg-[#0099CC]/10 flex items-center justify-center border border-[#0099CC]/30 shrink-0">
             <Clock className="text-[#0099CC]" size={24} />
@@ -192,6 +197,7 @@ export default function GodCRMPage() {
             <div className="text-[11px] text-white/50 uppercase tracking-wider font-bold">Trámites Pendientes</div>
           </div>
         </div>
+        )}
       </div>
 
       {/* ── Main Content Grid ────────────────────────────────────────── */}
