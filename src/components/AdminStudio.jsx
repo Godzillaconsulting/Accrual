@@ -158,6 +158,8 @@ export default function AdminStudio() {
  const [hoveredField, setHoveredField] = useState(null);
  const [isAnalyticsMode, setIsAnalyticsMode] = useState(false);
  const [isLandingMenuOpen, setIsLandingMenuOpen] = useState(false);
+ const [isSearchOpen, setIsSearchOpen] = useState(false);
+ const [searchQuery, setSearchQuery] = useState('');
  const [dbArticles, setDbArticles] = useState([]);
 
  useEffect(() => {
