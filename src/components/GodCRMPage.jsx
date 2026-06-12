@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Users, Calendar, Clock, Bot, RefreshCw, MessageSquare, AlertCircle, ChevronRight, User, X, Filter } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Calendar as BigCalendar, dateFnsLocalizer, Views } from 'react-big-calendar';
-import { format, parse, startOfWeek, getDay, isSameDay, isWithinInterval, startOfDay, endOfDay } from 'date-fns';
+import { format, parse, startOfWeek, endOfWeek, getDay, isSameDay, isWithinInterval, startOfDay, endOfDay } from 'date-fns';
 import { es } from 'date-fns/locale/es';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
@@ -29,6 +29,7 @@ export default function GodCRMPage() {
 
   // Filtros de fecha
   const [selectedDate, setSelectedDate] = useState(null); // null = Todo
+  const [filterMode, setFilterMode] = useState('all'); // 'all', 'day', 'week'
   const [calendarView, setCalendarView] = useState(Views.MONTH);
   const [calendarDate, setCalendarDate] = useState(new Date());
 
@@ -90,20 +91,35 @@ export default function GodCRMPage() {
 
   // Filtrado de Leads
   const filteredLeads = useMemo(() => {
-    if (!selectedDate) return leads;
+    if (filterMode === 'all' || !selectedDate) return leads;
     return leads.filter(lead => {
       if (!lead.ultima_interaccion) return false;
       const leadDate = new Date(lead.ultima_interaccion);
-      return isSameDay(leadDate, selectedDate);
+      if (filterMode === 'day') return isSameDay(leadDate, selectedDate);
+      if (filterMode === 'week') {
+        const start = startOfWeek(selectedDate, { weekStartsOn: 1 });
+        const end = endOfWeek(selectedDate, { weekStartsOn: 1 });
+        return isWithinInterval(leadDate, { start, end });
+      }
+      return true;
     });
-  }, [leads, selectedDate]);
+  }, [leads, selectedDate, filterMode]);
 
   // Estadísticas calculadas localmente según el filtro
   const displayStats = useMemo(() => {
     const totalLeads = filteredLeads.length;
     let totalAppointments = appointments.length;
-    if (selectedDate) {
-      totalAppointments = appointments.filter(a => isSameDay(new Date(a.fecha), selectedDate)).length;
+    if (filterMode !== 'all' && selectedDate) {
+      totalAppointments = appointments.filter(a => {
+        const aDate = new Date(a.fecha);
+        if (filterMode === 'day') return isSameDay(aDate, selectedDate);
+        if (filterMode === 'week') {
+          const start = startOfWeek(selectedDate, { weekStartsOn: 1 });
+          const end = endOfWeek(selectedDate, { weekStartsOn: 1 });
+          return isWithinInterval(aDate, { start, end });
+        }
+        return true;
+      }).length;
     }
     return {
       leads: totalLeads,
@@ -137,21 +153,27 @@ export default function GodCRMPage() {
       <div className="px-8 flex items-center justify-between mb-4">
         <div className="flex bg-[#152033]/60 border border-[#0099CC]/20 rounded-xl p-1 backdrop-blur-sm">
           <button 
-            onClick={() => setSelectedDate(new Date())} 
-            className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors ${selectedDate && isSameDay(selectedDate, new Date()) ? 'bg-[#0099CC] text-white' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
+            onClick={() => { setSelectedDate(new Date()); setFilterMode('day'); }} 
+            className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors ${filterMode === 'day' && selectedDate && isSameDay(selectedDate, new Date()) ? 'bg-[#0099CC] text-white' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
           >
             Hoy
           </button>
           <button 
-            onClick={() => setSelectedDate(null)} 
-            className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors ${!selectedDate ? 'bg-[#0099CC] text-white' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
+            onClick={() => { setSelectedDate(new Date()); setFilterMode('week'); }} 
+            className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors ${filterMode === 'week' ? 'bg-[#0099CC] text-white' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
+          >
+            Semana
+          </button>
+          <button 
+            onClick={() => { setSelectedDate(null); setFilterMode('all'); }} 
+            className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors ${filterMode === 'all' ? 'bg-[#0099CC] text-white' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
           >
             Todo el tiempo
           </button>
         </div>
-        {selectedDate && (
+        {filterMode !== 'all' && selectedDate && (
           <div className="text-xs text-[#0099CC] font-bold flex items-center gap-1">
-            <Filter size={14} /> Filtro activo: {format(selectedDate, 'dd MMM yyyy', { locale: es })}
+            <Filter size={14} /> Filtro activo: {filterMode === 'week' ? `Semana del ${format(startOfWeek(selectedDate, { weekStartsOn: 1 }), 'dd MMM', { locale: es })}` : format(selectedDate, 'dd MMM yyyy', { locale: es })}
           </div>
         )}
       </div>
@@ -232,10 +254,12 @@ export default function GodCRMPage() {
                 selectable={true}
                 onSelectSlot={(slotInfo) => {
                   setSelectedDate(slotInfo.start);
+                  setFilterMode('day');
                   document.getElementById('leads-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }}
                 onSelectEvent={(event) => {
                   setSelectedDate(event.start);
+                  setFilterMode('day');
                   document.getElementById('leads-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }}
                 messages={{
@@ -264,7 +288,7 @@ export default function GodCRMPage() {
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#0099CC]/10">
               <h2 className="text-sm font-bold text-white flex items-center gap-2 uppercase tracking-widest">
                 <MessageSquare size={16} className="text-[#0099CC]" />
-                Actividad de Leads {selectedDate ? `(${format(selectedDate, 'dd MMM', { locale: es })})` : ''}
+                Actividad de Leads {filterMode === 'week' ? `(Semana del ${format(startOfWeek(selectedDate, { weekStartsOn: 1 }), 'dd MMM', { locale: es })})` : filterMode === 'day' && selectedDate ? `(${format(selectedDate, 'dd MMM', { locale: es })})` : ''}
               </h2>
               <button onClick={fetchData} className="text-[#0099CC]/60 hover:text-[#0099CC] transition-colors">
                 <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
@@ -276,7 +300,7 @@ export default function GodCRMPage() {
               <div className="h-full flex items-center justify-center text-white/20">Cargando leads...</div>
             ) : filteredLeads.length === 0 ? (
               <div className="h-full flex items-center justify-center text-white/30 text-sm">
-                {selectedDate ? "No hay conversaciones registradas para esta fecha." : "No hay prospectos registrados aún."}
+                {filterMode !== 'all' ? "No hay conversaciones registradas para este periodo." : "No hay prospectos registrados aún."}
               </div>
             ) : (
               <div className="space-y-3">
