@@ -16,7 +16,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const SESSIONS_BASE = process.env.SESSION_PATH || path.join(__dirname, '..', 'bot_sessions');
-const DEBOUNCE_TIME_MS = 8000; // 8 segundos de buffer (jitter de lectura)
+const DEBOUNCE_TIME_MS = 12000; // 12 segundos de agrupación de mensajes antes del Visto
 const messageQueues = new Map();
 const pausedChats = new Map(); // Para dormir al bot cuando un humano interviene
 const rescueTimers = new Map(); // Para retomar la plática si el admin olvida contestar
@@ -810,15 +810,10 @@ export const initWhatsAppBot = async () => {
             // ── COLA GLOBAL SECUENCIAL ──
             globalBotQueue = globalBotQueue.then(async () => {
                 try {
-                    // Generar retraso total humano aleatorio entre 6 y 15 segundos
-                    const totalDelay = Math.floor(Math.random() * 9000) + 6000;
-                    const thinkingDelay = Math.floor(totalDelay * 0.6);
-                    const typingDelay = totalDelay - thinkingDelay;
+                    // Generar retraso de escritura de 10 a 15 segundos
+                    const typingDelay = Math.floor(Math.random() * 5000) + 10000;
 
-                    // Jitter de pensamiento/lectura
-                    await new Promise(r => setTimeout(r, thinkingDelay));
-
-                    // 👤 VISTO HUMANO: Marcar leído y componer justo antes de empezar a escribir
+                    // 👤 VISTO HUMANO: Marcar leído y componer justo antes de empezar a procesar IA
                     if (sock && msgsToRead.length > 0) {
                         try {
                             const keys = msgsToRead.map(m => m.key);

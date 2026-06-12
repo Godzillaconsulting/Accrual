@@ -1,6 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Users, Calendar, Clock, Bot, RefreshCw, MessageSquare, AlertCircle, ChevronRight, User, X } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { Users, Calendar, Clock, Bot, RefreshCw, MessageSquare, AlertCircle, ChevronRight, User, X, Filter } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { Calendar as BigCalendar, dateFnsLocalizer, Views } from 'react-big-calendar';
+import { format, parse, startOfWeek, getDay, isSameDay, isWithinInterval, startOfDay, endOfDay } from 'date-fns';
+import { es } from 'date-fns/locale/es';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+
+const locales = { 'es': es };
+const localizer = dateFnsLocalizer({ format, parse, startOfWeek, getDay, locales });
 
 function authHeaders() {
   return {
@@ -19,13 +26,17 @@ export default function GodCRMPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Filtros de fecha
+  const [selectedDate, setSelectedDate] = useState(null); // null = Todo
+  const [calendarView, setCalendarView] = useState(Views.MONTH);
+  const [calendarDate, setCalendarDate] = useState(new Date());
+
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const [leadsRes, statsRes, botRes, apptsRes] = await Promise.all([
+      const [leadsRes, botRes, apptsRes] = await Promise.all([
         fetch('/api/crm/leads', { headers: authHeaders() }),
-        fetch('/api/crm/stats?range=30', { headers: authHeaders() }),
         fetch('/api/whatsapp/status', { headers: authHeaders() }),
         fetch('/api/appointments', { headers: authHeaders() })
       ]);
@@ -33,16 +44,6 @@ export default function GodCRMPage() {
       if (leadsRes.ok) {
         const data = await leadsRes.json();
         if (data.success) setLeads(data.leads || []);
-      }
-      if (statsRes.ok) {
-        const data = await statsRes.json();
-        if (data.success) {
-          setStats({
-            leads: data.totalLeads || 0,
-            active: Math.round((data.totalLeads || 0) * 0.15),
-            appointments: data.totalAppointments || 0
-          });
-        }
       }
       if (botRes.ok) {
         const data = await botRes.json();
@@ -66,6 +67,50 @@ export default function GodCRMPage() {
     return () => clearInterval(interval);
   }, [fetchData]);
 
+  // Transformar citas para el calendario visual
+  const calendarEvents = useMemo(() => {
+    return appointments.map(appt => {
+      let start = new Date(appt.fecha);
+      let end = new Date(appt.fecha);
+      if (appt.hora) {
+        const [h, m] = appt.hora.split(':');
+        start.setHours(parseInt(h, 10), parseInt(m, 10), 0);
+        end.setHours(parseInt(h, 10) + 1, parseInt(m, 10), 0);
+      }
+      return {
+        id: appt.id,
+        title: `${appt.nombre} - ${appt.service_requested}`,
+        start,
+        end,
+        resource: appt
+      };
+    });
+  }, [appointments]);
+
+  // Filtrado de Leads
+  const filteredLeads = useMemo(() => {
+    if (!selectedDate) return leads;
+    return leads.filter(lead => {
+      if (!lead.ultima_interaccion) return false;
+      const leadDate = new Date(lead.ultima_interaccion);
+      return isSameDay(leadDate, selectedDate);
+    });
+  }, [leads, selectedDate]);
+
+  // Estadísticas calculadas localmente según el filtro
+  const displayStats = useMemo(() => {
+    const totalLeads = filteredLeads.length;
+    let totalAppointments = appointments.length;
+    if (selectedDate) {
+      totalAppointments = appointments.filter(a => isSameDay(new Date(a.fecha), selectedDate)).length;
+    }
+    return {
+      leads: totalLeads,
+      active: Math.round(totalLeads * 0.15),
+      appointments: totalAppointments
+    };
+  }, [filteredLeads, appointments, selectedDate]);
+
   const today = new Date().toLocaleDateString('es-MX', { day: 'numeric', month: 'short' });
 
   return (
@@ -88,34 +133,52 @@ export default function GodCRMPage() {
       )}
 
       {/* ── Top Stats Row ────────────────────────────────────────────── */}
+      <div className="px-8 flex items-center justify-between mb-4">
+        <div className="flex bg-[#152033]/60 border border-[#0099CC]/20 rounded-xl p-1 backdrop-blur-sm">
+          <button 
+            onClick={() => setSelectedDate(new Date())} 
+            className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors ${selectedDate && isSameDay(selectedDate, new Date()) ? 'bg-[#0099CC] text-white' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
+          >
+            Hoy
+          </button>
+          <button 
+            onClick={() => setSelectedDate(null)} 
+            className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors ${!selectedDate ? 'bg-[#0099CC] text-white' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
+          >
+            Todo el tiempo
+          </button>
+        </div>
+        {selectedDate && (
+          <div className="text-xs text-[#0099CC] font-bold flex items-center gap-1">
+            <Filter size={14} /> Filtro activo: {format(selectedDate, 'dd MMM yyyy', { locale: es })}
+          </div>
+        )}
+      </div>
+
       <div className="px-8 grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div 
-          onClick={() => {
-            document.getElementById('leads-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }}
+          onClick={() => document.getElementById('leads-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
           className="bg-[#152033]/60 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex items-center gap-4 hover:border-[#0099CC] hover:bg-[#0099CC]/10 transition-all cursor-pointer group"
         >
           <div className="w-12 h-12 rounded-xl bg-[#0099CC]/10 flex items-center justify-center border border-[#0099CC]/30 shrink-0 group-hover:scale-110 transition-transform">
             <Users className="text-[#0099CC]" size={24} />
           </div>
           <div>
-            <div className="text-2xl font-black text-white">{loading ? '...' : stats.leads}</div>
+            <div className="text-2xl font-black text-white">{loading ? '...' : displayStats.leads}</div>
             <div className="text-[11px] text-white/50 uppercase tracking-wider font-bold">Leads Registrados</div>
           </div>
         </div>
 
         <div 
-          onClick={() => {
-            document.getElementById('agenda-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }}
+          onClick={() => document.getElementById('agenda-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
           className="bg-[#152033]/60 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex items-center gap-4 hover:border-[#0099CC] hover:bg-[#0099CC]/10 transition-all cursor-pointer group"
         >
           <div className="w-12 h-12 rounded-xl bg-[#0099CC]/10 flex items-center justify-center border border-[#0099CC]/30 shrink-0 group-hover:scale-110 transition-transform">
             <Calendar className="text-[#0099CC]" size={24} />
           </div>
           <div>
-            <div className="text-2xl font-black text-white">{loading ? '...' : stats.appointments}</div>
-            <div className="text-[11px] text-white/50 uppercase tracking-wider font-bold">Citas Totales</div>
+            <div className="text-2xl font-black text-white">{loading ? '...' : displayStats.appointments}</div>
+            <div className="text-[11px] text-white/50 uppercase tracking-wider font-bold">Citas en Periodo</div>
           </div>
         </div>
 
@@ -124,7 +187,7 @@ export default function GodCRMPage() {
             <Clock className="text-[#0099CC]" size={24} />
           </div>
           <div>
-            <div className="text-2xl font-black text-white">{loading ? '...' : stats.active}</div>
+            <div className="text-2xl font-black text-white">{loading ? '...' : displayStats.active}</div>
             <div className="text-[11px] text-white/50 uppercase tracking-wider font-bold">Trámites Pendientes</div>
           </div>
         </div>
@@ -137,7 +200,7 @@ export default function GodCRMPage() {
         <div className="lg:col-span-2 space-y-6 flex flex-col">
           
           {/* Citas / Agenda */}
-          <div id="agenda-section" className="bg-[#152033]/40 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex flex-col min-h-[300px]">
+          <div id="agenda-section" className="bg-[#152033]/40 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex flex-col min-h-[500px]">
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#0099CC]/10">
               <h2 className="text-sm font-bold text-white flex items-center gap-2 uppercase tracking-widest">
                 <Calendar size={16} className="text-[#0099CC]" />
@@ -148,38 +211,41 @@ export default function GodCRMPage() {
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
-              {loading ? (
-                <div className="h-full flex items-center justify-center text-white/20">Cargando agenda...</div>
-              ) : appointments.length === 0 ? (
-                <div className="h-full flex items-center justify-center text-white/30 text-sm">
-                  No hay citas próximas en la agenda.
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {appointments.map((appt, idx) => (
-                    <div key={idx} className="flex items-center justify-between p-4 rounded-xl bg-black/20 border border-white/5 hover:border-[#0099CC]/30 transition-colors">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-[#0099CC]/10 flex items-center justify-center text-[#0099CC] font-black text-sm border border-[#0099CC]/20 shrink-0">
-                          {new Date(appt.fecha).getDate()}
-                        </div>
-                        <div className="min-w-0">
-                          <div className="text-sm font-bold text-white truncate">{appt.nombre} {appt.apellidos}</div>
-                          <div className="text-xs text-white/40 truncate w-[200px] md:w-[300px]" title={appt.mensaje}>
-                            {appt.service_requested} - {appt.modalidad}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex flex-col items-end gap-1 shrink-0">
-                        <span className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider border max-w-[120px] truncate ${appt.status === 'confirmada' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-[#0099CC]/10 text-[#0099CC] border-[#0099CC]/20'}`}>
-                          {appt.status}
-                        </span>
-                        <span className="text-[10px] text-white/30 font-mono tracking-widest">{appt.hora ? appt.hora.slice(0,5) : ''}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+            <div className="flex-1 custom-scrollbar">
+              <BigCalendar
+                localizer={localizer}
+                events={calendarEvents}
+                startAccessor="start"
+                endAccessor="end"
+                view={calendarView}
+                onView={setCalendarView}
+                date={calendarDate}
+                onNavigate={setCalendarDate}
+                selectable={true}
+                onSelectSlot={(slotInfo) => {
+                  setSelectedDate(slotInfo.start);
+                  document.getElementById('leads-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }}
+                onSelectEvent={(event) => {
+                  setSelectedDate(event.start);
+                  document.getElementById('leads-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }}
+                messages={{
+                  next: "Sig",
+                  previous: "Ant",
+                  today: "Hoy",
+                  month: "Mes",
+                  week: "Semana",
+                  day: "Día",
+                  agenda: "Agenda",
+                  date: "Fecha",
+                  time: "Hora",
+                  event: "Evento",
+                  noEventsInRange: "No hay citas en este periodo."
+                }}
+                style={{ height: '400px', color: 'white' }}
+                className="custom-calendar-theme text-xs"
+              />
             </div>
           </div>
 
@@ -188,7 +254,7 @@ export default function GodCRMPage() {
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#0099CC]/10">
               <h2 className="text-sm font-bold text-white flex items-center gap-2 uppercase tracking-widest">
                 <MessageSquare size={16} className="text-[#0099CC]" />
-                Actividad de Leads ({today})
+                Actividad de Leads {selectedDate ? `(${format(selectedDate, 'dd MMM', { locale: es })})` : ''}
               </h2>
               <button onClick={fetchData} className="text-[#0099CC]/60 hover:text-[#0099CC] transition-colors">
                 <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
@@ -198,13 +264,13 @@ export default function GodCRMPage() {
           <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
             {loading ? (
               <div className="h-full flex items-center justify-center text-white/20">Cargando leads...</div>
-            ) : leads.length === 0 ? (
+            ) : filteredLeads.length === 0 ? (
               <div className="h-full flex items-center justify-center text-white/30 text-sm">
-                No hay prospectos registrados aún.
+                {selectedDate ? "No hay conversaciones registradas para esta fecha." : "No hay prospectos registrados aún."}
               </div>
             ) : (
               <div className="space-y-3">
-                {leads.map((lead, idx) => {
+                {filteredLeads.map((lead, idx) => {
                   const phoneClean = lead.numero_contacto ? lead.numero_contacto.split('@')[0] : 'Desconocido';
                   
                   let contextText = 'Interacción iniciada';
