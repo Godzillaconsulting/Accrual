@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Users, Calendar, Clock, Bot, RefreshCw, MessageSquare, AlertCircle, ChevronRight, User, X, Filter, ChartBar } from 'lucide-react';
+import { Users, Calendar as CalendarIcon, ChartBar, AlertCircle, Bot, X, MessageSquare, ChevronRight, Phone, Send, Clock, CheckCircle } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Calendar as BigCalendar, dateFnsLocalizer, Views } from 'react-big-calendar';
-import { format, parse, startOfWeek, endOfWeek, getDay, isSameDay, isWithinInterval, startOfDay, endOfDay } from 'date-fns';
+import { format, parse, startOfWeek, endOfWeek, getDay, isSameDay, isWithinInterval } from 'date-fns';
 import { es } from 'date-fns/locale/es';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import GodStatsPage from './GodStatsPage';
@@ -17,13 +17,18 @@ function authHeaders() {
   };
 }
 
+const STAGES = [
+  { id: 'NUEVO', label: 'Nuevos', color: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
+  { id: 'SEGUIMIENTO', label: 'Seguimiento', color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' },
+  { id: 'CITA', label: 'Cita Agendada', color: 'bg-purple-500/20 text-purple-400 border-purple-500/30' },
+  { id: 'GANADO', label: 'Ganados', color: 'bg-green-500/20 text-green-400 border-green-500/30' }
+];
+
 export default function GodCRMPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [stats, setStats] = useState({ leads: 0, active: 0, appointments: 0 });
-  const [selectedLead, setSelectedLead] = useState(null);
-  const [leadMessages, setLeadMessages] = useState([]);
-  const [loadingMessages, setLoadingMessages] = useState(false);
+  const [activeTab, setActiveTab] = useState('crm'); // 'crm', 'agenda', 'stats'
+  
   const [leads, setLeads] = useState([]);
   const [appointments, setAppointments] = useState([]);
   const [botStatus, setBotStatus] = useState('DISCONNECTED');
@@ -31,9 +36,15 @@ export default function GodCRMPage() {
   const [error, setError] = useState(null);
 
   // Filtros de fecha
-  const [selectedDate, setSelectedDate] = useState(null); // null = Todo
-  const [filterMode, setFilterMode] = useState('all'); // 'all', 'day', 'week'
-  const [activeTab, setActiveTab] = useState('crm'); // 'crm' | 'stats'
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [filterMode, setFilterMode] = useState('all');
+
+  // Chat Offcanvas
+  const [selectedLead, setSelectedLead] = useState(null);
+  const [leadMessages, setLeadMessages] = useState([]);
+  const [loadingMessages, setLoadingMessages] = useState(false);
+
+  // Calendario
   const [calendarView, setCalendarView] = useState(Views.MONTH);
   const [calendarDate, setCalendarDate] = useState(new Date());
 
@@ -69,7 +80,7 @@ export default function GodCRMPage() {
 
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchData, 60000); // 1 min refresh
+    const interval = setInterval(fetchData, 60000);
     return () => clearInterval(interval);
   }, [fetchData]);
 
@@ -96,7 +107,25 @@ export default function GodCRMPage() {
     fetchMessages();
   }, [selectedLead]);
 
-  // Transformar citas para el calendario visual
+  const updateLeadStage = async (phone, newStage) => {
+    try {
+      const cleanPhone = phone.split('@')[0];
+      const res = await fetch(`/api/crm/leads/${cleanPhone}/stage`, {
+        method: 'PUT',
+        headers: authHeaders(),
+        body: JSON.stringify({ etapa_embudo: newStage })
+      });
+      if (res.ok) {
+        setLeads(prev => prev.map(l => l.numero_contacto === phone ? { ...l, etapa_embudo: newStage } : l));
+        if (selectedLead && selectedLead.numero_contacto === phone) {
+            setSelectedLead({ ...selectedLead, etapa_embudo: newStage });
+        }
+      }
+    } catch(e) {
+      console.error("Error updating stage", e);
+    }
+  };
+
   const calendarEvents = useMemo(() => {
     return appointments.map(appt => {
       let start = new Date(appt.fecha);
@@ -116,7 +145,6 @@ export default function GodCRMPage() {
     });
   }, [appointments]);
 
-  // Filtrado de Leads
   const filteredLeads = useMemo(() => {
     if (filterMode === 'all' || !selectedDate) return leads;
     return leads.filter(lead => {
@@ -132,407 +160,239 @@ export default function GodCRMPage() {
     });
   }, [leads, selectedDate, filterMode]);
 
-  // Estadísticas calculadas localmente según el filtro
-  const displayStats = useMemo(() => {
-    const totalLeads = filteredLeads.length;
-    let totalAppointments = appointments.length;
-    if (filterMode !== 'all' && selectedDate) {
-      totalAppointments = appointments.filter(a => {
-        const aDate = new Date(a.fecha);
-        if (filterMode === 'day') return isSameDay(aDate, selectedDate);
-        if (filterMode === 'week') {
-          const start = startOfWeek(selectedDate, { weekStartsOn: 1 });
-          const end = endOfWeek(selectedDate, { weekStartsOn: 1 });
-          return isWithinInterval(aDate, { start, end });
-        }
-        return true;
-      }).length;
-    }
-    return {
-      leads: totalLeads,
-      active: Math.round(totalLeads * 0.15),
-      appointments: totalAppointments
-    };
-  }, [filteredLeads, appointments, selectedDate]);
-
-  const today = new Date().toLocaleDateString('es-MX', { day: 'numeric', month: 'short' });
-
   return (
-    <div className="h-full w-full flex flex-col bg-transparent overflow-y-auto custom-scrollbar">
-      {/* ── Header ───────────────────────────────────────────────────── */}
-      <div className="px-8 pt-8 pb-4 shrink-0 flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
-            Hola, GodZilla 👋
-          </h1>
-          <p className="text-sm text-[#0099CC] mt-1 font-semibold tracking-wider">
-            Resumen de prospectos y operaciones de la firma
-          </p>
-        </div>
-        {!location.pathname.includes('/agenda') && (
-        <div className="flex bg-[#111111] border border-[#0099CC]/30 p-1 rounded-lg">
-          <button 
-            onClick={() => setActiveTab('crm')}
-            className={`px-4 py-2 rounded-md text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'crm' ? 'bg-[#0099CC] text-white' : 'text-neutral-500 hover:text-white hover:bg-[#0099CC]/10'}`}
-          >
-            <Users size={14} className="inline mr-2" /> CRM / Leads
-          </button>
-          <button 
-            onClick={() => setActiveTab('stats')}
-            className={`px-4 py-2 rounded-md text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'stats' ? 'bg-[#0099CC] text-white' : 'text-neutral-500 hover:text-white hover:bg-[#0099CC]/10'}`}
-          >
-            <ChartBar size={14} className="inline mr-2" /> Estadísticas
-          </button>
-        </div>
-        )}
-      </div>
-
-      {error && (
-        <div className="mx-8 mb-4 flex items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3 text-xs text-red-300">
-          <AlertCircle size={16} />
-          <span>Error conectando a la base de datos: {error}</span>
-        </div>
-      )}
-
-      {/* ── Top Stats Row ────────────────────────────────────────────── */}
-      {activeTab === 'crm' ? (
-      <>
-      <div className="px-8 flex items-center justify-between mb-4">
-        <div className="flex bg-[#152033]/60 border border-[#0099CC]/20 rounded-xl p-1 backdrop-blur-sm items-center">
-          <button 
-            onClick={() => { setSelectedDate(new Date()); setFilterMode('day'); }} 
-            className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors ${filterMode === 'day' && selectedDate && isSameDay(selectedDate, new Date()) ? 'bg-[#0099CC] text-white' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
-          >
-            Hoy
-          </button>
-          
-          <div className="border-l border-white/10 pl-2 flex items-center gap-2">
-            <div className="flex flex-col relative" title="Escoger Día Específico">
-              <span className="text-[9px] text-white/30 uppercase font-bold absolute -top-3 left-1">Día</span>
-              <input 
-                type="date"
-                style={{ colorScheme: 'dark' }}
-                className={`bg-transparent text-xs outline-none cursor-pointer p-1 rounded transition-colors ${filterMode === 'day' && selectedDate && !isSameDay(selectedDate, new Date()) ? 'text-white bg-[#0099CC]/20' : 'text-white/50 hover:text-white'}`}
-                onChange={(e) => {
-                  if (e.target.value) {
-                    setSelectedDate(new Date(e.target.value + 'T12:00:00'));
-                    setFilterMode('day');
-                  }
-                }}
-              />
-            </div>
-
-            <div className="flex flex-col relative border-l border-white/5 pl-2" title="Escoger Semana del Año">
-              <span className="text-[9px] text-white/30 uppercase font-bold absolute -top-3 left-3">Semana</span>
-              <input 
-                type="week"
-                style={{ colorScheme: 'dark' }}
-                className={`bg-transparent text-xs outline-none cursor-pointer p-1 rounded transition-colors ${filterMode === 'week' ? 'text-white bg-[#0099CC]/20' : 'text-white/50 hover:text-white'}`}
-                onChange={(e) => {
-                  if (e.target.value) {
-                    const [y, w] = e.target.value.split('-W');
-                    const date = new Date(y, 0, 1 + (w - 1) * 7);
-                    setSelectedDate(date);
-                    setFilterMode('week');
-                  }
-                }}
-              />
-            </div>
-          </div>
-
-          <button 
-            onClick={() => { setSelectedDate(null); setFilterMode('all'); }} 
-            className={`ml-2 px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors border-l border-white/10 ${filterMode === 'all' ? 'bg-[#0099CC] text-white' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
-          >
-            Todo el tiempo
-          </button>
-        </div>
-        {filterMode !== 'all' && selectedDate && (
-          <div className="text-xs text-[#0099CC] font-bold flex items-center gap-1">
-            <Filter size={14} /> Filtro activo: {filterMode === 'week' ? `Semana del ${format(startOfWeek(selectedDate, { weekStartsOn: 1 }), 'dd MMM', { locale: es })}` : format(selectedDate, 'dd MMM yyyy', { locale: es })}
-          </div>
-        )}
-      </div>
-
-      <div className={`px-8 grid grid-cols-1 md:grid-cols-${location.pathname.includes('/agenda') ? '1' : '2'} gap-6 mb-8`}>
-        {!location.pathname.includes('/agenda') && (
-        <div 
-          onClick={() => document.getElementById('leads-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-          className="bg-[#152033]/60 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex items-center gap-4 hover:border-[#0099CC] hover:bg-[#0099CC]/10 transition-all cursor-pointer group"
-        >
-          <div className="w-12 h-12 rounded-xl bg-[#0099CC]/10 flex items-center justify-center border border-[#0099CC]/30 shrink-0 group-hover:scale-110 transition-transform">
-            <Users className="text-[#0099CC]" size={24} />
-          </div>
-          <div>
-            <div className="text-2xl font-black text-white">{loading ? '...' : displayStats.leads}</div>
-            <div className="text-[11px] text-white/50 uppercase tracking-wider font-bold">Leads Registrados</div>
-          </div>
-        </div>
-        )}
-
-        {location.pathname.includes('/agenda') && (
-        <div 
-          onClick={() => document.getElementById('agenda-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-          className="bg-[#152033]/60 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex items-center gap-4 hover:border-[#0099CC] hover:bg-[#0099CC]/10 transition-all cursor-pointer group"
-        >
-          <div className="w-12 h-12 rounded-xl bg-[#0099CC]/10 flex items-center justify-center border border-[#0099CC]/30 shrink-0 group-hover:scale-110 transition-transform">
-            <Calendar className="text-[#0099CC]" size={24} />
-          </div>
-          <div>
-            <div className="text-2xl font-black text-white">{loading ? '...' : displayStats.appointments}</div>
-            <div className="text-[11px] text-white/50 uppercase tracking-wider font-bold">Citas en Periodo</div>
-          </div>
-        </div>
-        )}
-
-        {!location.pathname.includes('/agenda') && (
-        <div 
-          onClick={() => document.getElementById('leads-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-          className="bg-[#152033]/60 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex items-center gap-4 hover:border-[#0099CC]/50 transition-colors cursor-pointer group"
-        >
-          <div className="w-12 h-12 rounded-xl bg-[#0099CC]/10 flex items-center justify-center border border-[#0099CC]/30 shrink-0 group-hover:scale-110 transition-transform">
-            <Clock className="text-[#0099CC]" size={24} />
-          </div>
-          <div>
-            <div className="text-2xl font-black text-white">{loading ? '...' : displayStats.active}</div>
-            <div className="text-[11px] text-white/50 uppercase tracking-wider font-bold">Trámites Pendientes</div>
-          </div>
-        </div>
-        )}
-      </div>
-
-      {/* ── Main Content Grid ────────────────────────────────────────── */}
-      <div className="px-8 grid grid-cols-1 lg:grid-cols-3 gap-6 pb-12">
+    <div className="h-full w-full flex bg-[#0A0F1C] overflow-hidden text-white font-sans relative">
+      
+      {/* Contenido Principal */}
+      <div className={`flex-1 flex flex-col transition-all duration-300 ${selectedLead ? 'pr-[400px]' : ''}`}>
         
-        {/* Left Col: Agenda / Leads */}
-        <div className="lg:col-span-2 space-y-6 flex flex-col">
-          
-          {/* Citas / Agenda */}
-          {location.pathname.includes('/agenda') && (
-          <div id="agenda-section" className="bg-[#152033]/40 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex flex-col h-[650px]">
-            <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#0099CC]/10">
-              <h2 className="text-sm font-bold text-white flex items-center gap-2 uppercase tracking-widest">
-                <Calendar size={16} className="text-[#0099CC]" />
-                Agenda de Citas
-              </h2>
-              <button onClick={fetchData} className="text-[#0099CC]/60 hover:text-[#0099CC] transition-colors">
-                <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
-              </button>
-            </div>
-
-            <div className="flex-1 custom-scrollbar">
-              <BigCalendar
-                localizer={localizer}
-                events={calendarEvents}
-                startAccessor="start"
-                endAccessor="end"
-                view={calendarView}
-                onView={setCalendarView}
-                date={calendarDate}
-                onNavigate={setCalendarDate}
-                selectable={true}
-                onSelectSlot={(slotInfo) => {
-                  setSelectedDate(slotInfo.start);
-                  setFilterMode('day');
-                  document.getElementById('leads-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }}
-                onSelectEvent={(event) => {
-                  setSelectedDate(event.start);
-                  setFilterMode('day');
-                  document.getElementById('leads-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }}
-                messages={{
-                  next: "Sig",
-                  previous: "Ant",
-                  today: "Hoy",
-                  month: "Mes",
-                  week: "Semana",
-                  day: "Día",
-                  agenda: "Agenda",
-                  date: "Fecha",
-                  time: "Hora",
-                  event: "Evento",
-                  noEventsInRange: "No hay citas en este periodo."
-                }}
-                style={{ height: '400px', color: 'white' }}
-                className="custom-calendar-theme text-xs"
-              />
-            </div>
-          </div>
-          )}
-
-          {/* Lista de Leads */}
-          {!location.pathname.includes('/agenda') && (
-          <div id="leads-section" className="bg-[#152033]/40 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex flex-col h-[650px]">
-            <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#0099CC]/10">
-              <h2 className="text-sm font-bold text-white flex items-center gap-2 uppercase tracking-widest">
-                <MessageSquare size={16} className="text-[#0099CC]" />
-                Actividad de Leads {filterMode === 'week' ? `(Semana del ${format(startOfWeek(selectedDate, { weekStartsOn: 1 }), 'dd MMM', { locale: es })})` : filterMode === 'day' && selectedDate ? `(${format(selectedDate, 'dd MMM', { locale: es })})` : ''}
-              </h2>
-              <button onClick={fetchData} className="text-[#0099CC]/60 hover:text-[#0099CC] transition-colors">
-                <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
-              </button>
-            </div>
-
-          <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
-            {loading ? (
-              <div className="h-full flex items-center justify-center text-white/20">Cargando leads...</div>
-            ) : filteredLeads.length === 0 ? (
-              <div className="h-full flex items-center justify-center text-white/30 text-sm">
-                {filterMode !== 'all' ? "No hay conversaciones registradas para este periodo." : "No hay prospectos registrados aún."}
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {filteredLeads.map((lead, idx) => {
-                  const phoneClean = lead.numero_contacto ? lead.numero_contacto.split('@')[0] : 'Desconocido';
-                  
-                  return (
-                    <div 
-                      key={idx} 
-                      onClick={() => setSelectedLead(lead)}
-                      className="flex items-center justify-between p-4 rounded-xl bg-black/20 border border-white/5 hover:border-[#0099CC]/30 hover:bg-[#0099CC]/5 transition-colors cursor-pointer group"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-[#0099CC]/10 flex items-center justify-center text-[#0099CC] border border-[#0099CC]/20 shrink-0 group-hover:scale-110 transition-transform">
-                          <User size={20} />
-                        </div>
-                        <div className="min-w-0">
-                          <div className="text-sm font-bold text-white truncate group-hover:text-[#0099CC] transition-colors">{phoneClean}</div>
-                          <div className="text-[11px] text-[#0099CC] truncate uppercase tracking-widest font-bold flex items-center gap-1">
-                            <MessageSquare size={10} />
-                            Ver mensajes
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex flex-col items-end shrink-0">
-                        <span className="text-[10px] text-white/30 font-mono tracking-widest">{lead.ultima_interaccion ? new Date(lead.ultima_interaccion).toLocaleDateString('es-MX', {day: '2-digit', month: 'short', hour: '2-digit', minute:'2-digit'}) : 'Reciente'}</span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </div>
-        )}
-        </div>
-
-        {/* Right Col: Bot Status */}
-        <div className="bg-[#152033]/40 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex flex-col h-[650px]">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-sm font-bold text-white flex items-center gap-2 uppercase tracking-widest">
-              <Bot size={16} className="text-[#0099CC]" />
-              WhatsApp Bot
-            </h2>
-            <button onClick={fetchData} className="text-[#0099CC]/60 hover:text-[#0099CC] transition-colors">
-              <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
-            </button>
-          </div>
-
-          <div className="flex-1 flex flex-col items-center justify-center text-center space-y-6">
-            {botStatus === 'CONNECTED' ? (
-              <div className="px-6 py-2 rounded-full bg-green-500/10 border border-green-500/30 text-green-400 text-xs font-black tracking-widest uppercase flex items-center gap-2 shadow-[0_0_15px_rgba(34,197,94,0.1)]">
-                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-                Bot Activo
-              </div>
-            ) : (
-              <div className="px-6 py-2 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-black tracking-widest uppercase flex items-center gap-2">
-                <AlertCircle size={14} />
-                Bot Inactivo
-              </div>
-            )}
-
-            <p className="text-sm text-white/50 leading-relaxed px-4">
-              El bot de WhatsApp está {botStatus === 'CONNECTED' ? 'conectado y atendiendo leads en automático.' : 'desconectado. Requiere escaneo QR.'}
-            </p>
-
-            <button
-              onClick={() => navigate('/admin/bot')}
-              className="w-full mt-4 py-3 rounded-xl border border-[#0099CC]/30 text-[#0099CC] text-xs font-bold uppercase tracking-wider hover:bg-[#0099CC] hover:text-white transition-all flex items-center justify-center gap-2"
-            >
-              Abrir Monitor de Bot
-              <ChevronRight size={16} />
-            </button>
-          </div>
-        </div>
-
-      </div>
-
-      {/* Modal de Detalles del Lead */}
-      {selectedLead && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-[#152033] border border-[#0099CC]/30 rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in zoom-in-95">
-            {/* Modal Header */}
-            <div className="px-6 py-4 border-b border-[#0099CC]/20 flex items-center justify-between bg-black/20">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-[#0099CC]/20 flex items-center justify-center text-[#0099CC] border border-[#0099CC]/30 shrink-0">
-                  <User size={24} />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold text-white">{selectedLead.numero_contacto ? selectedLead.numero_contacto.split('@')[0] : 'Desconocido'}</h3>
-                  <p className="text-xs text-[#0099CC] font-bold uppercase tracking-widest">
-                    PROSPECTO
-                  </p>
-                </div>
-              </div>
-              <button onClick={() => setSelectedLead(null)} className="p-2 text-white/50 hover:text-white hover:bg-white/10 rounded-full transition-colors">
-                <X size={20} />
-              </button>
-            </div>
-
-            {/* Modal Body (Chat History) */}
-            <div className="flex-1 overflow-y-auto p-6 bg-[#0a0f18] custom-scrollbar">
-              {loadingMessages ? (
-                <div className="flex flex-col items-center justify-center h-full text-[#0099CC] space-y-4">
-                  <RefreshCw size={32} className="animate-spin opacity-50" />
-                  <p className="text-xs font-bold uppercase tracking-widest animate-pulse">Cargando mensajes...</p>
-                </div>
-              ) : leadMessages.length > 0 ? (
-                <div className="space-y-4">
-                  <div className="text-center mb-6">
-                    <span className="bg-[#152033] text-white/40 text-[10px] px-3 py-1 rounded-full uppercase tracking-widest font-bold">Inicio de la conversación</span>
-                  </div>
-                  {leadMessages.map((msg, i) => {
-                    const isBot = msg.role === 'assistant' || msg.role === 'system';
-                    if (msg.role === 'system') return null; // Ocultar mensajes de sistema internos
-                    const textoMensaje = msg.content || msg.contenido || '';
-                    return (
-                      <div key={i} className={`flex w-full ${isBot ? 'justify-start' : 'justify-end'}`}>
-                        <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${isBot ? 'bg-[#152033] border border-[#0099CC]/20 text-white/90 rounded-tl-sm' : 'bg-[#0099CC] text-white rounded-tr-sm shadow-md'}`}>
-                          <div className="text-[10px] font-black uppercase tracking-widest mb-1 opacity-50 flex items-center gap-1">
-                            {isBot ? <><Bot size={10} /> Asistente IA</> : <><User size={10} /> Cliente</>}
-                          </div>
-                          <p className="text-sm whitespace-pre-wrap leading-relaxed">{textoMensaje}</p>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center h-full text-white/30 space-y-3">
-                  <MessageSquare size={40} className="opacity-20" />
-                  <p className="text-sm font-semibold tracking-wide">Aún no hay historial de chat registrado.</p>
-                </div>
-              )}
+        {/* Header Superior */}
+        <div className="px-8 pt-8 pb-4 shrink-0 flex items-center justify-between border-b border-white/5 bg-[#152033]/50 backdrop-blur-md">
+          <div className="flex items-center gap-4">
+            <div>
+              <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
+                Accrual CRM
+              </h1>
+              <p className="text-sm text-[#0099CC] mt-1 font-semibold tracking-wider">
+                Pipeline y seguimiento de ventas
+              </p>
             </div>
             
-            {/* Modal Footer */}
-            <div className="p-4 bg-black/20 border-t border-[#0099CC]/20 text-center">
-               <p className="text-[10px] text-white/40 uppercase tracking-widest font-semibold">
-                  Última interacción: {selectedLead.ultima_interaccion ? new Date(selectedLead.ultima_interaccion).toLocaleString('es-MX') : 'Desconocida'}
-               </p>
+            {/* Badge Status Bot */}
+            <div className={`ml-4 px-3 py-1 rounded-full text-[10px] font-bold uppercase flex items-center gap-2 border ${botStatus === 'CONNECTED' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'}`}>
+               <Bot size={12} />
+               {botStatus === 'CONNECTED' ? 'Bot En Línea' : 'Bot Offline'}
             </div>
           </div>
-        </div>
-        )}
-      {/* End Modal */}
 
-      </>
-      ) : (
-        <div className="flex-1 overflow-y-auto">
-          <GodStatsPage />
+          <div className="flex bg-[#111111] border border-white/10 p-1 rounded-lg">
+            <button 
+              onClick={() => setActiveTab('crm')}
+              className={`px-4 py-2 rounded-md text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'crm' ? 'bg-[#0099CC] text-white shadow-lg shadow-[#0099CC]/20' : 'text-neutral-500 hover:text-white hover:bg-white/5'}`}
+            >
+              <Users size={14} className="inline mr-2" /> Pipeline
+            </button>
+            <button 
+              onClick={() => setActiveTab('agenda')}
+              className={`px-4 py-2 rounded-md text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'agenda' ? 'bg-[#0099CC] text-white shadow-lg shadow-[#0099CC]/20' : 'text-neutral-500 hover:text-white hover:bg-white/5'}`}
+            >
+              <CalendarIcon size={14} className="inline mr-2" /> Agenda
+            </button>
+            <button 
+              onClick={() => setActiveTab('stats')}
+              className={`px-4 py-2 rounded-md text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'stats' ? 'bg-[#0099CC] text-white shadow-lg shadow-[#0099CC]/20' : 'text-neutral-500 hover:text-white hover:bg-white/5'}`}
+            >
+              <ChartBar size={14} className="inline mr-2" /> Stats
+            </button>
+          </div>
         </div>
-      )}
+
+        {error && (
+          <div className="mx-8 mt-4 flex items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3 text-xs text-red-300">
+            <AlertCircle size={16} />
+            <span>Error: {error}</span>
+          </div>
+        )}
+
+        <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+          
+          {/* TAB: PIPELINE / KANBAN */}
+          {activeTab === 'crm' && (
+            <div className="flex gap-6 h-full overflow-x-auto pb-4 custom-scrollbar">
+              {STAGES.map(stage => {
+                // Si la etapa_embudo es null o vacía, se considera 'NUEVO'
+                const stageLeads = filteredLeads.filter(l => {
+                    const lStage = l.etapa_embudo || 'NUEVO';
+                    return lStage === stage.id;
+                });
+
+                return (
+                  <div key={stage.id} className="flex-none w-[320px] flex flex-col bg-[#152033]/30 rounded-2xl border border-white/5 overflow-hidden h-full">
+                    <div className={`p-4 border-b flex justify-between items-center ${stage.color}`}>
+                      <h3 className="font-bold text-sm tracking-wide uppercase">{stage.label}</h3>
+                      <span className="text-xs font-bold bg-black/20 px-2 py-1 rounded-md">{stageLeads.length}</span>
+                    </div>
+                    
+                    <div className="flex-1 overflow-y-auto p-3 space-y-3 custom-scrollbar">
+                      {stageLeads.length === 0 ? (
+                        <div className="text-center text-white/20 text-xs py-8 font-medium">Vacío</div>
+                      ) : (
+                        stageLeads.map((lead, idx) => (
+                          <div 
+                            key={idx} 
+                            onClick={() => setSelectedLead(lead)}
+                            className="bg-[#1C2842] border border-white/5 p-4 rounded-xl hover:border-[#0099CC]/50 cursor-pointer transition-all shadow-lg hover:shadow-[#0099CC]/10 group relative"
+                          >
+                            <div className="flex items-start justify-between mb-2">
+                                <div className="font-bold text-sm text-white truncate max-w-[200px]">
+                                  {lead.numero_contacto.split('@')[0]}
+                                </div>
+                                <MessageSquare size={14} className="text-[#0099CC] opacity-50 group-hover:opacity-100 transition-opacity" />
+                            </div>
+                            
+                            <div className="flex items-center gap-1 text-[10px] text-white/40 mb-3">
+                                <Clock size={10} />
+                                {format(new Date(lead.ultima_interaccion), "d MMM, hh:mm a", { locale: es })}
+                            </div>
+
+                            {/* Acciones Rápidas para Mover */}
+                            <div className="pt-3 border-t border-white/5 flex gap-1 justify-between" onClick={e => e.stopPropagation()}>
+                                <select 
+                                    className="bg-black/20 text-xs text-white/70 border border-white/10 rounded px-2 py-1 outline-none w-full appearance-none cursor-pointer hover:bg-black/40"
+                                    value={lead.etapa_embudo || 'NUEVO'}
+                                    onChange={(e) => updateLeadStage(lead.numero_contacto, e.target.value)}
+                                >
+                                    {STAGES.map(s => <option key={s.id} value={s.id} className="bg-[#1C2842] text-white">{s.label}</option>)}
+                                </select>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* TAB: AGENDA */}
+          {activeTab === 'agenda' && (
+            <div className="h-full bg-[#152033]/60 border border-white/5 rounded-2xl p-6 backdrop-blur-sm">
+                <BigCalendar
+                  localizer={localizer}
+                  events={calendarEvents}
+                  startAccessor="start"
+                  endAccessor="end"
+                  style={{ height: '100%', color: 'white' }}
+                  view={calendarView}
+                  onView={setCalendarView}
+                  date={calendarDate}
+                  onNavigate={setCalendarDate}
+                  messages={{
+                    next: "Sig",
+                    previous: "Ant",
+                    today: "Hoy",
+                    month: "Mes",
+                    week: "Semana",
+                    day: "Día"
+                  }}
+                  className="custom-calendar-dark"
+                />
+            </div>
+          )}
+
+          {/* TAB: STATS */}
+          {activeTab === 'stats' && (
+             <div className="h-full">
+                <GodStatsPage />
+             </div>
+          )}
+
+        </div>
+      </div>
+
+      {/* ── OFFCANVAS CHAT PANEL (Estilo WhatsApp) ── */}
+      <div className={`fixed top-0 right-0 h-full w-[400px] bg-[#0A0F1C] border-l border-white/10 shadow-2xl transform transition-transform duration-300 ease-in-out z-50 flex flex-col ${selectedLead ? 'translate-x-0' : 'translate-x-full'}`}>
+        
+        {selectedLead && (
+        <>
+            {/* Cabecera del Chat */}
+            <div className="h-[70px] bg-[#1C2842] border-b border-white/5 flex items-center justify-between px-6 shrink-0 shadow-md">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#0099CC] to-blue-600 flex items-center justify-center shadow-inner">
+                        <User size={20} className="text-white" />
+                    </div>
+                    <div>
+                        <div className="font-bold text-sm text-white tracking-wide">
+                            {selectedLead.numero_contacto.split('@')[0]}
+                        </div>
+                        <div className="text-[10px] text-[#0099CC] font-bold uppercase tracking-wider flex items-center gap-1">
+                            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                            {selectedLead.etapa_embudo || 'NUEVO'}
+                        </div>
+                    </div>
+                </div>
+                <button 
+                    onClick={() => setSelectedLead(null)}
+                    className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-red-500/20 hover:text-red-400 transition-colors text-white/50"
+                >
+                    <X size={16} />
+                </button>
+            </div>
+
+            {/* Contenedor de Mensajes (El WhatsApp) */}
+            <div className="flex-1 overflow-y-auto p-6 bg-[#0A0F1C] custom-scrollbar flex flex-col gap-4 relative">
+                {/* Fondo tipo WhatsApp web (opcional si tienes patrón, aquí usamos un color sólido oscuro) */}
+                <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'url(https://i.pinimg.com/736x/8c/98/99/8c98994518b575bfd8c949e91d20548b.jpg)', backgroundSize: 'cover' }}></div>
+                
+                <div className="flex justify-center mb-4">
+                    <div className="bg-[#1C2842] text-white/40 text-[10px] px-3 py-1 rounded-lg uppercase tracking-wider font-bold">
+                        Inicio de la conversación
+                    </div>
+                </div>
+
+                {loadingMessages ? (
+                    <div className="flex justify-center items-center h-full">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0099CC]"></div>
+                    </div>
+                ) : leadMessages.length === 0 ? (
+                    <div className="text-center text-white/30 text-xs mt-10">
+                        <MessageSquare size={32} className="mx-auto mb-2 opacity-20" />
+                        No hay mensajes registrados
+                    </div>
+                ) : (
+                    leadMessages.map((msg, idx) => {
+                        const isBot = msg.role === 'assistant';
+                        return (
+                            <div key={idx} className={`flex ${isBot ? 'justify-start' : 'justify-end'} z-10`}>
+                                <div className={`max-w-[85%] rounded-2xl px-4 py-3 shadow-sm ${isBot ? 'bg-[#1C2842] text-white rounded-tl-sm' : 'bg-[#005c4b] text-[#e9edef] rounded-tr-sm'}`}>
+                                    <div className="text-[13px] leading-relaxed whitespace-pre-wrap font-medium">
+                                        {msg.contenido}
+                                    </div>
+                                    <div className={`text-[9px] mt-2 flex items-center gap-1 ${isBot ? 'text-white/30 justify-start' : 'text-white/40 justify-end'}`}>
+                                        {isBot ? <Bot size={10} /> : <User size={10} />}
+                                        {isBot ? 'Bot Accrual' : 'Cliente'}
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })
+                )}
+            </div>
+
+            {/* Input Fake (Opcional visual) */}
+            <div className="h-[60px] bg-[#1C2842] shrink-0 border-t border-white/5 flex items-center px-4 gap-3">
+                <div className="flex-1 bg-[#2A3958] rounded-full h-10 px-4 flex items-center text-white/30 text-xs">
+                    El Bot está gestionando esta conversación...
+                </div>
+                <button className="w-10 h-10 rounded-full bg-[#0099CC]/20 flex items-center justify-center text-[#0099CC] opacity-50 cursor-not-allowed">
+                    <Send size={16} />
+                </button>
+            </div>
+        </>
+        )}
+      </div>
+
     </div>
   );
 }
