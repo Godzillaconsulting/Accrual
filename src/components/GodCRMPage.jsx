@@ -393,12 +393,12 @@ export default function GodCRMPage() {
                       className="flex items-center justify-between p-4 rounded-xl bg-black/20 border border-white/5 hover:border-[#0099CC]/30 hover:bg-[#0099CC]/5 transition-colors cursor-pointer group"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-[#0099CC]/10 flex items-center justify-center text-[#0099CC] font-black text-sm border border-[#0099CC]/20 shrink-0 group-hover:scale-110 transition-transform">
-                          {phoneClean.length > 2 ? phoneClean.slice(-2) : '??'}
+                        <div className="w-10 h-10 rounded-full bg-[#0099CC]/10 flex items-center justify-center text-[#0099CC] border border-[#0099CC]/20 shrink-0 group-hover:scale-110 transition-transform">
+                          <User size={20} />
                         </div>
                         <div className="min-w-0">
                           <div className="text-sm font-bold text-white truncate group-hover:text-[#0099CC] transition-colors">{phoneClean}</div>
-                          <div className="text-[11px] text-white/40 truncate uppercase tracking-widest font-bold flex items-center gap-1">
+                          <div className="text-[11px] text-[#0099CC] truncate uppercase tracking-widest font-bold flex items-center gap-1">
                             <MessageSquare size={10} />
                             Ver mensajes
                           </div>
@@ -465,13 +465,13 @@ export default function GodCRMPage() {
             {/* Modal Header */}
             <div className="px-6 py-4 border-b border-[#0099CC]/20 flex items-center justify-between bg-black/20">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-[#0099CC]/20 flex items-center justify-center text-[#0099CC] font-black text-lg border border-[#0099CC]/30 shrink-0">
-                  {selectedLead.numero_contacto ? String(selectedLead.numero_contacto.split('@')[0]).slice(-2) : '??'}
+                <div className="w-12 h-12 rounded-full bg-[#0099CC]/20 flex items-center justify-center text-[#0099CC] border border-[#0099CC]/30 shrink-0">
+                  <User size={24} />
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-white">{selectedLead.numero_contacto ? selectedLead.numero_contacto.split('@')[0] : 'Desconocido'}</h3>
                   <p className="text-xs text-[#0099CC] font-bold uppercase tracking-widest">
-                    {(typeof selectedLead.etapa_embudo === 'object' ? 'LEAD' : (selectedLead.etapa_embudo || 'Lead')).replace(/_/g, ' ')}
+                    PROSPECTO
                   </p>
                 </div>
               </div>
