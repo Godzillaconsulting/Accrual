@@ -81,8 +81,10 @@ export default function GodCRMPage() {
     const fetchMessages = async () => {
       setLoadingMessages(true);
       try {
-        const phone = selectedLead.numero_contacto.split('@')[0];
-        const res = await fetch(`/api/crm/leads/${phone}/messages`, { headers: authHeaders() });
+        // Mandamos el ID completo codificado (ej. con @lid o @s.whatsapp.net) 
+        // para que el backend en memoria lo encuentre directo sin necesidad de reiniciar el servidor
+        const fullPhoneId = encodeURIComponent(selectedLead.numero_contacto);
+        const res = await fetch(`/api/crm/leads/${fullPhoneId}/messages`, { headers: authHeaders() });
         const data = await res.json();
         if (data.success) {
           setLeadMessages(data.messages || []);
