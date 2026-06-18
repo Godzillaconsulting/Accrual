@@ -161,13 +161,21 @@ export default function GodCRMPage() {
     <div className="h-full w-full flex flex-col bg-transparent overflow-y-auto custom-scrollbar">
       {/* ── Header ───────────────────────────────────────────────────── */}
       <div className="px-8 pt-8 pb-4 shrink-0 flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
-            Hola, GodZilla 👋
-          </h1>
-          <p className="text-sm text-[#0099CC] mt-1 font-semibold tracking-wider">
-            Resumen de prospectos y operaciones de la firma
-          </p>
+        <div className="flex items-center gap-4">
+          <div>
+            <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
+              Hola, GodZilla 👋
+            </h1>
+            <p className="text-sm text-[#0099CC] mt-1 font-semibold tracking-wider">
+              Resumen de prospectos y operaciones de la firma
+            </p>
+          </div>
+          
+          <div className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 border shadow-lg cursor-pointer hover:opacity-80 transition-opacity ${botStatus === 'CONNECTED' ? 'bg-green-500/10 text-green-400 border-green-500/30 shadow-green-500/10' : 'bg-red-500/10 text-red-400 border-red-500/30 shadow-red-500/10'}`} onClick={() => navigate('/admin/bot')} title="Ir al panel del Bot">
+            <Bot size={12} />
+            {botStatus === 'CONNECTED' ? 'Bot Online' : 'Bot Offline'}
+            {botStatus === 'CONNECTED' && <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse ml-1"></span>}
+          </div>
         </div>
         {!location.pathname.includes('/agenda') && (
         <div className="flex bg-[#111111] border border-[#0099CC]/30 p-1 rounded-lg">
@@ -302,10 +310,10 @@ export default function GodCRMPage() {
       </div>
 
       {/* ── Main Content Grid ────────────────────────────────────────── */}
-      <div className="px-8 grid grid-cols-1 lg:grid-cols-3 gap-6 pb-12">
+      <div className="px-8 flex flex-col gap-6 pb-12">
         
         {/* Left Col: Agenda / Leads */}
-        <div className="lg:col-span-2 space-y-6 flex flex-col">
+        <div className="w-full space-y-6 flex flex-col">
           
           {/* Citas / Agenda */}
           {location.pathname.includes('/agenda') && (
@@ -417,44 +425,6 @@ export default function GodCRMPage() {
         )}
         </div>
 
-        {/* Right Col: Bot Status */}
-        <div className="bg-[#152033]/40 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex flex-col h-[650px]">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-sm font-bold text-white flex items-center gap-2 uppercase tracking-widest">
-              <Bot size={16} className="text-[#0099CC]" />
-              WhatsApp Bot
-            </h2>
-            <button onClick={fetchData} className="text-[#0099CC]/60 hover:text-[#0099CC] transition-colors">
-              <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
-            </button>
-          </div>
-
-          <div className="flex-1 flex flex-col items-center justify-center text-center space-y-6">
-            {botStatus === 'CONNECTED' ? (
-              <div className="px-6 py-2 rounded-full bg-green-500/10 border border-green-500/30 text-green-400 text-xs font-black tracking-widest uppercase flex items-center gap-2 shadow-[0_0_15px_rgba(34,197,94,0.1)]">
-                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-                Bot Activo
-              </div>
-            ) : (
-              <div className="px-6 py-2 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-black tracking-widest uppercase flex items-center gap-2">
-                <AlertCircle size={14} />
-                Bot Inactivo
-              </div>
-            )}
-
-            <p className="text-sm text-white/50 leading-relaxed px-4">
-              El bot de WhatsApp está {botStatus === 'CONNECTED' ? 'conectado y atendiendo leads en automático.' : 'desconectado. Requiere escaneo QR.'}
-            </p>
-
-            <button
-              onClick={() => navigate('/admin/bot')}
-              className="w-full mt-4 py-3 rounded-xl border border-[#0099CC]/30 text-[#0099CC] text-xs font-bold uppercase tracking-wider hover:bg-[#0099CC] hover:text-white transition-all flex items-center justify-center gap-2"
-            >
-              Abrir Monitor de Bot
-              <ChevronRight size={16} />
-            </button>
-          </div>
-        </div>
 
       </div>
 
