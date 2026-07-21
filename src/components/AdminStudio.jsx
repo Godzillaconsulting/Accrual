@@ -645,54 +645,51 @@ export default function AdminStudio() {
   </div>
 
     {canSeePanelMaestro && (
-        <button onClick={() => { navigate('/admin/master'); }}
-        className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='panel_maestro' ?'bg-[#0b242c] text-white border-[#0099cc]/20' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
-        <LayoutDashboard size={14} className="mr-3" /> Panel Maestro Web
-        </button>
+        <div className="mt-4">
+            <div className="text-[10px] font-black tracking-widest text-[#0099CC] uppercase px-3 mb-1.5 flex items-center gap-1.5">
+                <LayoutDashboard size={12} /> Gestión Web
+            </div>
+            <button onClick={() => { navigate('/admin/master'); }}
+            className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='panel_maestro' ?'bg-[#0b242c] text-white border-[#0099cc]/40' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
+            <LayoutDashboard size={14} className="mr-2.5 text-[#00D0B0]" /> Panel Maestro Web
+            </button>
+        </div>
     )}
 
-    {(canSeeDBEstudio || canSeeSqlAtaques) && (
-        <>
-            <div className="text-[10px] font-semibold tracking-widest text-neutral-600 uppercase px-3 mt-6 mb-2">
-                Seguridad & IT
+    {canSeeSqlAtaques && (
+        <div className="mt-4">
+            <div className="text-[10px] font-black tracking-widest text-[#0099CC] uppercase px-3 mb-1.5 flex items-center gap-1.5">
+                <ShieldAlert size={12} /> Seguridad & IT
             </div>
-            {canSeeDBEstudio && (
-                <button onClick={() => { navigate('/admin/db'); }}
-                className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='db_estudio' ?'bg-[#0b242c] text-white border-[#0099cc]/20' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
-                <Database size={14} className="mr-3" /> DB Studio
-                </button>
-            )}
-            {canSeeSqlAtaques && (
-                <button onClick={() => { navigate('/admin/sql'); }}
-                className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='sql_ataques' ?'bg-[#0b242c] text-white border-[#0099cc]/20' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
-                <ShieldAlert size={14} className="mr-3" /> Ataques SQL
-                </button>
-            )}
-        </>
+            <button onClick={() => { navigate('/admin/sql'); }}
+            className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='sql_ataques' ?'bg-[#0b242c] text-white border-[#0099cc]/40' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
+            <ShieldAlert size={14} className="mr-2.5 text-rose-400" /> Ataques SQL
+            </button>
+        </div>
     )}
 
     {isGod && (
-        <>
-            <div className="text-[10px] font-semibold tracking-widest text-neutral-600 uppercase px-3 mt-6 mb-2">
-                Inteligencia
+        <div className="mt-4">
+            <div className="text-[10px] font-black tracking-widest text-[#0099CC] uppercase px-3 mb-1.5 flex items-center gap-1.5">
+                <Bot size={12} /> Inteligencia & CRM
             </div>
-            <button onClick={() => { navigate('/admin/crm'); }}
-            className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='crm' ?'bg-[#0b242c] text-white border-[#0099cc]/20' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
-            <MessageCircle size={14} className="mr-3" /> CRM / Leads
-            </button>
-            <button onClick={() => { navigate('/admin/bot'); }}
-            className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='bot' ?'bg-[#0b242c] text-white border-[#0099cc]/20' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
-            <Bot size={14} className="mr-3" /> Bot Monitor
-            </button>
+            <div className="space-y-1">
+                <button onClick={() => { navigate('/admin/crm'); }}
+                className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='crm' ?'bg-[#0b242c] text-white border-[#0099cc]/40' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
+                <MessageCircle size={14} className="mr-2.5 text-[#00D0B0]" /> CRM / Leads
+                </button>
 
-            <div className="text-[10px] font-semibold tracking-widest text-neutral-600 uppercase px-3 mt-6 mb-2">
-                Agenda
+                <button onClick={() => { navigate('/admin/bot'); }}
+                className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='bot' ?'bg-[#0b242c] text-white border-[#0099cc]/40' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
+                <Bot size={14} className="mr-2.5 text-[#00D0B0]" /> Bot Monitor
+                </button>
+
+                <button onClick={() => { navigate('/admin/agenda'); }}
+                className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='agenda' ?'bg-[#0b242c] text-[#00D0B0] border-[#0099cc]/40 font-bold' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
+                <Calendar size={14} className="mr-2.5 text-[#00D0B0]" /> Citas y Calendario
+                </button>
             </div>
-            <button onClick={() => { navigate('/admin/agenda'); }}
-            className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='agenda' ?'bg-[#0b242c] text-white border-[#0099cc]/20' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
-            <Calendar size={14} className="mr-3" /> Citas y Calendario
-            </button>
-        </>
+        </div>
     )}
     </div>
 
@@ -756,8 +753,6 @@ export default function AdminStudio() {
       <AutomationFlow />
   ) : activeSection === 'ai-planner' ? (
       <AIContentPlanner adminProfile={adminProfile} />
-  ) : activeSection === 'db_studio' ? (
-      <DBStudioPanel adminProfile={adminProfile} />
   ) : activeSection === 'ceo_estudio' ? (
       <CeoEstudioPanel adminProfile={adminProfile} />
   ) : activeSection === 'panel_maestro' ? (
