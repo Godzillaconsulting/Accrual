@@ -737,7 +737,7 @@ export default function AdminStudio() {
   </div>
  {isAnalyticsMode ? (
  <AnalyticsDashboard />
- ) : activeSection ==='home' ? (
+ ) : (activeSection === 'home' && !selectedNodeId) ? (
  <MasterDashboard adminProfile={adminProfile} />
  ) : activeSection ==='profile' ? (
  <AdminProfile profile={adminProfile} onProfileUpdate={setAdminProfile} />
