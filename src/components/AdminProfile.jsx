@@ -1,10 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+    User, Lock, Upload, CheckSquare, ShieldAlert, CheckCircle2, 
+    AlertTriangle, FileText, Plus, ChevronDown, Check, ExternalLink, 
+    Briefcase, Clock, Sparkles, Shield, Activity, X, Bug, Camera 
+} from 'lucide-react';
 
 const API = '';
 
 export default function AdminProfile({ profile, onProfileUpdate }) {
-    const [subTab, setSubTab] = useState('personal'); // 'personal' | 'team'
+    const [subTab, setSubTab] = useState('personal'); // 'personal' | 'tasks' | 'alerts'
     const [saving, setSaving] = useState(false);
+    const fileInputRef = useRef(null);
     
     // --- Estado Personal ---
     const [username, setUsername] = useState(profile?.username || '');
@@ -25,7 +31,6 @@ export default function AdminProfile({ profile, onProfileUpdate }) {
             const res = await fetch(`${API}/api/studio/tasks`, { headers: { Authorization: `Bearer ${token}` } });
             const data = await res.json();
             if (data.tasks) {
-                // Mapear de Postgres a la estructura UI
                 const liveTasks = data.tasks.map(t => ({
                     id: t.id,
                     title: t.title,
@@ -50,7 +55,6 @@ export default function AdminProfile({ profile, onProfileUpdate }) {
         if(!tsk) return;
         const newStatus = tsk.done ? 'PENDING' : 'APPROVED';
         
-        // Optimistic UI
         setAllTasks(prev => prev.map(t => t.id === id ? { ...t, done: !t.done } : t));
         setMyTasks(prev => prev.map(t => t.id === id ? { ...t, done: !t.done } : t));
         if (selectedTask && selectedTask.id === id) setSelectedTask(prev => ({...prev, done: !prev.done}));
@@ -103,15 +107,12 @@ export default function AdminProfile({ profile, onProfileUpdate }) {
         }
     }, [subTab, isIT]);
 
-
-
     useEffect(() => {
         if (profile) {
             setUsername(profile.username);
             setPhotoUrl(profile.photo_url || '');
         }
     }, [profile]);
-
 
     const canManageUsers = profile?.is_superadmin || profile?.role === 'admin' || profile?.role === 'god' || ['jareg', 'oscar', 'accrual_admin', 'dani', 'godzilla'].includes(profile?.username?.toLowerCase());
 
@@ -156,7 +157,7 @@ export default function AdminProfile({ profile, onProfileUpdate }) {
 
     const handleSavePersonal = async (e) => {
         e.preventDefault();
-        if(!window.confirm("⚠️ ¿Estás totalmente seguro de aplicar los cambios a tu perfil maestro en la base de datos?")) return;
+        if(!window.confirm("¿Estás seguro de aplicar los cambios a tu perfil en la base de datos?")) return;
         
         setSaving(true);
         setPersonalMsg({ text: '', type: '' });
@@ -191,7 +192,7 @@ export default function AdminProfile({ profile, onProfileUpdate }) {
         if (!file) return;
         
         setSaving(true);
-        setPersonalMsg({ text: 'Subiendo foto a la bóveda. No cierres...', type: '' });
+        setPersonalMsg({ text: 'Subiendo imagen a la bóveda encriptada...', type: 'info' });
         
         try {
             const formData = new FormData();
@@ -200,16 +201,16 @@ export default function AdminProfile({ profile, onProfileUpdate }) {
             const token = localStorage.getItem('adminToken');
             const res = await fetch(`${API}/api/media/upload`, {
                 method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` }, // REQUISITO DE SEGURIDAD
+                headers: { 'Authorization': `Bearer ${token}` },
                 body: formData
             });
             const data = await res.json();
             
             if (data.success) {
                 setPhotoUrl(data.url);
-                setPersonalMsg({ text: 'Foto incrustada exitosamente. PRESIONA GUARDAR CAMBIOS.', type: 'success' });
+                setPersonalMsg({ text: 'Foto actualizada correctamente. Recuerda presionar "Guardar Cambios".', type: 'success' });
             } else {
-                setPersonalMsg({ text: data.error || 'Fallo de subida de seguridad.', type: 'error' });
+                setPersonalMsg({ text: data.error || 'Falló la subida de la imagen.', type: 'error' });
             }
         } catch (err) {
             setPersonalMsg({ text: 'Falló la subida (Conexión)', type: 'error' });
@@ -217,104 +218,173 @@ export default function AdminProfile({ profile, onProfileUpdate }) {
         setSaving(false);
     };
 
-
-
-    if (!profile) return <div className="p-10 flex justify-center"><p className="text-white">Cargando perfil...</p></div>;
+    if (!profile) return <div className="p-10 flex justify-center"><p className="text-white font-medium">Cargando perfil...</p></div>;
 
     return (
-        <div className="flex-1 flex flex-col bg-[#233657] overflow-y-auto">
+        <div className="flex-1 flex flex-col bg-[#0b1320] text-slate-200 overflow-y-auto min-h-screen">
             
-            {/* Cabecera / Pestañas */}
-            <div className="border-b border-neutral-800 bg-[#0d0d0d] px-8 pt-6 pb-0 flex gap-6">
+            {/* Navigation Tabs Header */}
+            <div className="border-b border-slate-800/80 bg-[#080d16] px-4 md:px-8 pt-4 pb-0 flex gap-2 md:gap-6 overflow-x-auto whitespace-nowrap scrollbar-none sticky top-0 z-20 backdrop-blur-md">
                 <button 
                     onClick={() => setSubTab('personal')}
-                    className={`pb-4 text-sm font-bold border-b-2 transition-colors ${subTab === 'personal' ? 'border-[#0099CC] text-white' : 'border-transparent text-neutral-500 hover:text-gray-300'}`}
+                    className={`pb-4 px-2 text-xs md:text-sm font-semibold border-b-2 transition-all flex items-center gap-2 ${
+                        subTab === 'personal' ? 'border-[#00D0B0] text-white font-bold' : 'border-transparent text-slate-400 hover:text-slate-200'
+                    }`}
                 >
-                    Mi Perfil Personal
+                    <User size={16} className={subTab === 'personal' ? 'text-[#00D0B0]' : 'text-slate-400'} />
+                    <span>Mi Perfil Personal</span>
                 </button>
+
                 <button 
                     onClick={() => setSubTab('tasks')}
-                    className={`pb-4 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 ${subTab === 'tasks' ? 'border-sky-500 text-white' : 'border-transparent text-neutral-500 hover:text-gray-300'}`}
+                    className={`pb-4 px-2 text-xs md:text-sm font-semibold border-b-2 transition-all flex items-center gap-2 ${
+                        subTab === 'tasks' ? 'border-sky-400 text-white font-bold' : 'border-transparent text-slate-400 hover:text-slate-200'
+                    }`}
                 >
-                    ✅ Mis Tareas
+                    <CheckSquare size={16} className={subTab === 'tasks' ? 'text-sky-400' : 'text-slate-400'} />
+                    <span>Mis Tareas</span>
                 </button>
+
                 {canManageUsers && (
                     <button 
                         onClick={() => setSubTab('alerts')}
-                        className={`pb-4 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 ${subTab === 'alerts' ? 'border-rose-500 text-white' : 'border-transparent text-neutral-500 hover:text-gray-300'}`}
+                        className={`pb-4 px-2 text-xs md:text-sm font-semibold border-b-2 transition-all flex items-center gap-2 ${
+                            subTab === 'alerts' ? 'border-rose-500 text-white font-bold' : 'border-transparent text-slate-400 hover:text-slate-200'
+                        }`}
                     >
-                        🚨 Alertas (Seguridad)
+                        <ShieldAlert size={16} className={subTab === 'alerts' ? 'text-rose-500' : 'text-slate-400'} />
+                        <span>Alertas (Seguridad)</span>
                     </button>
                 )}
             </div>
 
-            <div className="p-8 max-w-5xl mx-auto w-full">
+            {/* Content Body */}
+            <div className="p-4 md:p-8 max-w-6xl mx-auto w-full space-y-8">
+                
+                {/* SUBTAB: PERSONAL PROFILE */}
                 {subTab === 'personal' && (
-                    <div className="animate-in fade-in space-y-8">
+                    <div className="animate-in fade-in space-y-6">
                         <div>
-                            <h2 className="text-2xl font-black text-white">Configuración de Perfil</h2>
-                            <p className="text-sm text-neutral-400 mt-1">Edita tus credenciales de acceso al Admin Studio.</p>
+                            <h2 className="text-xl md:text-2xl font-black text-white flex items-center gap-2">
+                                <Sparkles className="w-6 h-6 text-[#00D0B0]" />
+                                Configuración de Perfil
+                            </h2>
+                            <p className="text-xs md:text-sm text-slate-400 mt-1">Edita tus credenciales de acceso y preferencias del Admin Studio.</p>
                         </div>
 
-                        <form onSubmit={handleSavePersonal} className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-6 md:p-8 space-y-6 form-shadow">
+                        <form onSubmit={handleSavePersonal} className="bg-[#111827]/80 border border-slate-800 rounded-2xl p-4 md:p-8 space-y-6 shadow-2xl backdrop-blur-xl">
                             
-                            {/* Avatar Display */}
-                            <div className="flex items-center gap-6">
-                                <div className="w-24 h-24 rounded-full bg-neutral-800 border-2 border-neutral-700 flex items-center justify-center overflow-hidden shrink-0 shadow-xl">
-                                    {photoUrl ? (
-                                        <img src={photoUrl} alt="Avatar" className="w-full h-full object-cover" />
-                                    ) : (
-                                        <span className="text-4xl">💼</span>
-                                    )}
+                            {/* Avatar Display & Custom Upload */}
+                            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 pb-6 border-b border-slate-800">
+                                <div className="relative group">
+                                    <div className="w-24 h-24 rounded-2xl bg-slate-800 border-2 border-slate-700 flex items-center justify-center overflow-hidden shrink-0 shadow-lg group-hover:border-[#00D0B0] transition-colors">
+                                        {photoUrl ? (
+                                            <img src={photoUrl} alt="Avatar" className="w-full h-full object-cover" />
+                                        ) : (
+                                            <User className="w-10 h-10 text-slate-500" />
+                                        )}
+                                    </div>
+                                    <button 
+                                        type="button"
+                                        onClick={() => fileInputRef.current?.click()}
+                                        className="absolute -bottom-2 -right-2 p-2 bg-[#00D0B0] hover:bg-teal-400 text-slate-950 rounded-xl shadow-lg transition-transform hover:scale-110"
+                                        title="Cambiar imagen de perfil"
+                                    >
+                                        <Camera className="w-4 h-4 font-bold" />
+                                    </button>
                                 </div>
-                                <div className="flex-1 space-y-2">
-                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Foto de Perfil Oficial</label>
+
+                                <div className="flex-1 text-center sm:text-left space-y-2">
+                                    <label className="text-xs font-bold text-slate-300 uppercase tracking-wider block">
+                                        Foto de Perfil Oficial
+                                    </label>
                                     <input 
+                                        ref={fileInputRef}
                                         type="file" 
                                         accept="image/*"
                                         onChange={handlePhotoUpload}
                                         disabled={saving}
-                                        className="w-full bg-[#152033] border border-neutral-700 rounded-xl px-4 py-2.5 text-white text-sm focus:border-[#0099CC] focus:ring-1 focus:ring-[#0099CC] outline-none transition file:mr-4 file:py-1 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-neutral-800 file:text-white hover:file:bg-neutral-700 file:cursor-pointer disabled:opacity-50"
+                                        className="hidden"
                                     />
-                                    <p className="text-[10px] text-neutral-500">Selecciona una imagen de tu computadora. Se subirá automáticamente y será encriptada.</p>
+                                    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => fileInputRef.current?.click()}
+                                            disabled={saving}
+                                            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition disabled:opacity-50"
+                                        >
+                                            <Upload className="w-4 h-4 text-[#00D0B0]" />
+                                            Subir nueva foto
+                                        </button>
+                                        {photoUrl && (
+                                            <button
+                                                type="button"
+                                                onClick={() => setPhotoUrl('')}
+                                                className="px-3 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 rounded-xl text-xs font-semibold transition"
+                                            >
+                                                Remover foto
+                                            </button>
+                                        )}
+                                    </div>
+                                    <p className="text-[11px] text-slate-400 mt-1">
+                                        Formatos recomendados: JPG, PNG o WebP. Se cifrará y guardará automáticamente.
+                                    </p>
                                 </div>
                             </div>
 
+                            {/* Form Input Fields */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Nombre / Usuario</label>
+                                    <label className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                                        <User className="w-3.5 h-3.5 text-[#00D0B0]" />
+                                        Nombre / Usuario
+                                    </label>
                                     <input 
                                         type="text" 
                                         required
                                         value={username} 
                                         onChange={e => setUsername(e.target.value)}
-                                        className="w-full bg-[#152033] border border-neutral-700 rounded-xl px-4 py-3 text-white text-sm focus:border-[#0099CC] outline-none transition"
+                                        placeholder="Nombre de usuario"
+                                        className="w-full bg-[#1e293b]/70 border border-slate-700/80 rounded-xl px-4 py-3 text-white text-sm focus:border-[#00D0B0] focus:ring-2 focus:ring-[#00D0B0]/20 outline-none transition placeholder-slate-500"
                                     />
                                 </div>
+
                                 <div className="space-y-2">
-                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Nueva Contraseña</label>
+                                    <label className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                                        <Lock className="w-3.5 h-3.5 text-[#00D0B0]" />
+                                        Nueva Contraseña
+                                    </label>
                                     <input 
                                         type="password" 
                                         value={password} 
                                         onChange={e => setPassword(e.target.value)}
                                         placeholder="••••••••"
-                                        className="w-full bg-[#152033] border border-neutral-700 rounded-xl px-4 py-3 text-white text-sm focus:border-[#0099CC] outline-none transition"
+                                        className="w-full bg-[#1e293b]/70 border border-slate-700/80 rounded-xl px-4 py-3 text-white text-sm focus:border-[#00D0B0] focus:ring-2 focus:ring-[#00D0B0]/20 outline-none transition placeholder-slate-500"
                                     />
-                                    <p className="text-[10px] text-neutral-500">Déjalo en blanco para mantener la contraseña actual.</p>
+                                    <p className="text-[11px] text-slate-400">Déjalo en blanco para mantener la contraseña actual.</p>
                                 </div>
                             </div>
 
+                            {/* Status Notification Message */}
                             {personalMsg.text && (
-                                <div className={`p-4 rounded-xl text-sm font-bold border ${personalMsg.type === 'success' ? 'bg-green-500/10 text-green-400 border-green-500/30' : 'bg-blue-500/10 text-blue-400 border-blue-500/30'}`}>
-                                    {personalMsg.text}
+                                <div className={`p-4 rounded-xl text-xs md:text-sm font-semibold border flex items-center gap-3 ${
+                                    personalMsg.type === 'success' 
+                                        ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' 
+                                        : personalMsg.type === 'error'
+                                        ? 'bg-rose-500/10 text-rose-400 border-rose-500/30'
+                                        : 'bg-sky-500/10 text-sky-400 border-sky-500/30'
+                                }`}>
+                                    {personalMsg.type === 'success' ? <CheckCircle2 className="w-5 h-5 shrink-0" /> : <AlertTriangle className="w-5 h-5 shrink-0" />}
+                                    <span>{personalMsg.text}</span>
                                 </div>
                             )}
 
+                            {/* Submit Button */}
                             <div className="pt-4 flex justify-end">
                                 <button 
                                     type="submit" 
                                     disabled={saving}
-                                    className="bg-[#0099CC] hover:bg-blue-600 text-white px-8 py-3 rounded-full font-black text-sm transition shadow-[0_4px_15px_rgba(0,153,204,0.4)] disabled:opacity-50"
+                                    className="w-full sm:w-auto bg-[#00D0B0] hover:bg-teal-400 text-slate-950 px-8 py-3 rounded-xl font-bold text-sm transition shadow-lg shadow-[#00D0B0]/20 disabled:opacity-50 flex items-center justify-center gap-2"
                                 >
                                     {saving ? 'Guardando...' : 'Guardar Cambios'}
                                 </button>
@@ -323,30 +393,36 @@ export default function AdminProfile({ profile, onProfileUpdate }) {
                     </div>
                 )}
 
+                {/* SUBTAB: SECURITY ALERTS */}
                 {subTab === 'alerts' && canManageUsers && (
                     <div className="animate-in fade-in space-y-6">
                         <div>
-                            <h2 className="text-2xl font-black text-rose-500">Alertas de Seguridad</h2>
-                            <p className="text-sm text-neutral-400 mt-1">Historial de accesos fallidos y violaciones de seguridad.</p>
+                            <h2 className="text-xl md:text-2xl font-black text-rose-400 flex items-center gap-2">
+                                <ShieldAlert className="w-6 h-6 text-rose-500" />
+                                Alertas de Seguridad
+                            </h2>
+                            <p className="text-xs md:text-sm text-slate-400 mt-1">Historial de accesos fallidos y violaciones de seguridad registradas.</p>
                         </div>
                         
                         {securityAlerts.length === 0 ? (
-                            <div className="mt-8 bg-green-950/20 border border-green-500/30 rounded-2xl p-6 text-center animate-in fade-in shadow-[0_0_20px_rgba(34,197,94,0.1)]">
-                                <span className="text-2xl mb-2 block">✅</span>
-                                <p className="text-green-500 text-sm font-bold uppercase tracking-widest">Sin amenazas o intrusiones registradas</p>
+                            <div className="bg-emerald-950/20 border border-emerald-500/30 rounded-2xl p-6 text-center animate-in fade-in shadow-xl flex flex-col items-center gap-3">
+                                <Shield className="w-12 h-12 text-emerald-400" />
+                                <p className="text-emerald-400 text-sm font-bold uppercase tracking-wider">Sistema Seguro · Sin amenazas registradas</p>
                             </div>
                         ) : (
-                            <div className="mt-8 bg-rose-950/20 border border-rose-500/30 rounded-2xl overflow-hidden shadow-[0_0_20px_rgba(244,63,94,0.15)] animate-in fade-in slide-in-from-bottom-4">
-                                <div className="px-6 py-4 border-b border-rose-900/30 bg-rose-500/10 flex items-center justify-between">
+                            <div className="bg-slate-900/90 border border-rose-500/30 rounded-2xl overflow-hidden shadow-2xl animate-in fade-in">
+                                <div className="px-6 py-4 border-b border-rose-900/40 bg-rose-500/10 flex items-center justify-between">
                                     <div className="flex items-center gap-3">
-                                        <span className="text-xl">🚨</span>
-                                        <h3 className="text-sm font-bold text-rose-500 uppercase tracking-widest">Registro de Amenazas de Seguridad</h3>
+                                        <ShieldAlert className="w-5 h-5 text-rose-400" />
+                                        <h3 className="text-xs md:text-sm font-bold text-rose-400 uppercase tracking-wider">Registro de Eventos Críticos</h3>
                                     </div>
-                                    <span className="text-xs font-black text-rose-500 bg-rose-500/10 px-2 py-1 rounded border border-rose-500/20">{securityAlerts.length} Eventos</span>
+                                    <span className="text-xs font-bold text-rose-400 bg-rose-500/20 px-3 py-1 rounded-full border border-rose-500/30">
+                                        {securityAlerts.length} Eventos
+                                    </span>
                                 </div>
                                 <div className="overflow-x-auto">
-                                    <table className="w-full text-left text-sm whitespace-nowrap">
-                                        <thead className="bg-[#233657] text-xs text-rose-400 font-black uppercase">
+                                    <table className="w-full text-left text-sm whitespace-nowrap min-w-[600px]">
+                                        <thead className="bg-slate-950 text-xs text-rose-300 font-bold uppercase">
                                             <tr>
                                                 <th className="px-6 py-4 border-b border-rose-900/30">Fecha / Hora</th>
                                                 <th className="px-6 py-4 border-b border-rose-900/30">Acción Detectada</th>
@@ -354,13 +430,13 @@ export default function AdminProfile({ profile, onProfileUpdate }) {
                                                 <th className="px-6 py-4 border-b border-rose-900/30">Usuario Relacionado</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-rose-900/20">
+                                        <tbody className="divide-y divide-slate-800/60">
                                             {securityAlerts.map(alert => (
-                                                <tr key={alert.id} className="hover:bg-rose-900/10 transition">
-                                                    <td className="px-6 py-3 text-neutral-400 text-xs font-mono">{new Date(alert.created_at).toLocaleString('es-MX')}</td>
-                                                    <td className="px-6 py-3 text-rose-500 font-black text-[10px] uppercase tracking-widest">{alert.action}</td>
-                                                    <td className="px-6 py-3 font-mono text-xs text-rose-300 max-w-[300px] truncate" title={JSON.stringify(alert.details)}>{JSON.stringify(alert.details)}</td>
-                                                    <td className="px-6 py-3 text-gray-300 font-bold">{alert.details?.username || 'Desconocido'}</td>
+                                                <tr key={alert.id} className="hover:bg-rose-950/20 transition">
+                                                    <td className="px-6 py-3 text-slate-400 text-xs font-mono">{new Date(alert.created_at).toLocaleString('es-MX')}</td>
+                                                    <td className="px-6 py-3 text-rose-400 font-bold text-xs uppercase tracking-wider">{alert.action}</td>
+                                                    <td className="px-6 py-3 font-mono text-xs text-rose-200 max-w-[300px] truncate" title={JSON.stringify(alert.details)}>{JSON.stringify(alert.details)}</td>
+                                                    <td className="px-6 py-3 text-slate-200 font-medium">{alert.details?.username || 'Desconocido'}</td>
                                                 </tr>
                                             ))}
                                         </tbody>
@@ -369,33 +445,35 @@ export default function AdminProfile({ profile, onProfileUpdate }) {
                             </div>
                         )}
 
-                        {/* Registro de Cambios (Changelog) */}
+                        {/* Changelogs Table */}
                         {canManageUsers && changelogs.length > 0 && (
-                            <div className="mt-8 bg-purple-950/20 border border-purple-500/30 rounded-2xl overflow-hidden shadow-[0_0_20px_rgba(168,85,247,0.15)] animate-in fade-in slide-in-from-bottom-4">
-                                <div className="px-6 py-4 border-b border-purple-900/30 bg-[#a855f7]/10 flex items-center justify-between">
+                            <div className="bg-slate-900/90 border border-purple-500/30 rounded-2xl overflow-hidden shadow-2xl animate-in fade-in">
+                                <div className="px-6 py-4 border-b border-purple-900/40 bg-purple-500/10 flex items-center justify-between">
                                     <div className="flex items-center gap-3">
-                                        <span className="text-xl">📜</span>
-                                        <h3 className="text-sm font-bold text-purple-500 uppercase tracking-widest">Auditoría: Cambios en el Sistema</h3>
+                                        <FileText className="w-5 h-5 text-purple-400" />
+                                        <h3 className="text-xs md:text-sm font-bold text-purple-300 uppercase tracking-wider">Auditoría: Cambios en el Sistema</h3>
                                     </div>
-                                    <span className="text-xs font-black text-purple-400 bg-purple-500/10 px-2 py-1 rounded border border-purple-500/20">{changelogs.length} Commits Recientes</span>
+                                    <span className="text-xs font-bold text-purple-300 bg-purple-500/20 px-3 py-1 rounded-full border border-purple-500/30">
+                                        {changelogs.length} Commits
+                                    </span>
                                 </div>
                                 <div className="overflow-x-auto">
-                                    <table className="w-full text-left text-sm whitespace-nowrap">
-                                        <thead className="bg-[#233657] text-xs text-purple-500 font-black uppercase">
+                                    <table className="w-full text-left text-sm whitespace-nowrap min-w-[600px]">
+                                        <thead className="bg-slate-950 text-xs text-purple-300 font-bold uppercase">
                                             <tr>
                                                 <th className="px-6 py-4 border-b border-purple-900/30">Fecha</th>
-                                                <th className="px-6 py-4 border-b border-purple-900/30">Autor (Quién)</th>
+                                                <th className="px-6 py-4 border-b border-purple-900/30">Autor</th>
                                                 <th className="px-6 py-4 border-b border-purple-900/30">Hash</th>
                                                 <th className="px-6 py-4 border-b border-purple-900/30 w-full">Descripción del Cambio</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-purple-900/20">
+                                        <tbody className="divide-y divide-slate-800/60">
                                             {changelogs.map(log => (
-                                                <tr key={log.hash} className="hover:bg-purple-900/10 transition">
-                                                    <td className="px-6 py-3 text-neutral-400 text-xs font-mono">{log.date}</td>
+                                                <tr key={log.hash} className="hover:bg-purple-950/20 transition">
+                                                    <td className="px-6 py-3 text-slate-400 text-xs font-mono">{log.date}</td>
                                                     <td className="px-6 py-3 font-mono text-purple-300 font-bold">{log.author}</td>
-                                                    <td className="px-6 py-3 font-mono text-[10px] text-gray-500">{log.hash}</td>
-                                                    <td className="px-6 py-3 text-gray-300 text-xs whitespace-normal">{log.message}</td>
+                                                    <td className="px-6 py-3 font-mono text-xs text-slate-500">{log.hash}</td>
+                                                    <td className="px-6 py-3 text-slate-300 text-xs whitespace-normal">{log.message}</td>
                                                 </tr>
                                             ))}
                                         </tbody>
@@ -405,181 +483,206 @@ export default function AdminProfile({ profile, onProfileUpdate }) {
                         )}
                     </div>
                 )}
+
+                {/* SUBTAB: TASKS BOARD */}
                 {subTab === 'tasks' && (
-                    <>
-                    <div className="animate-in fade-in space-y-4 flex flex-col">
+                    <div className="animate-in fade-in space-y-6">
                         <div>
-                            <h2 className="text-2xl font-black text-white">Tablero de Tareas</h2>
-                            <p className="text-sm text-neutral-400 mt-1">Distribución y gestión detallada tipo Asana.</p>
+                            <h2 className="text-xl md:text-2xl font-black text-white flex items-center gap-2">
+                                <CheckSquare className="w-6 h-6 text-sky-400" />
+                                Tablero de Tareas
+                            </h2>
+                            <p className="text-xs md:text-sm text-slate-400 mt-1">Gestión responsiva y asignación directa de actividades.</p>
                         </div>
                         
-                        <div className="flex bg-[#233657] border border-neutral-800 rounded-2xl overflow-hidden h-[65vh] min-h-[500px] font-sans shadow-lg">
-                            {/* PANE IZQUIERDO: LISTA */}
-                            <div className="w-1/2 md:w-5/12 border-r border-neutral-800 flex flex-col bg-[#233657]">
-                                {/* Toolbar Top Left */}
-                                <div className="flex items-center px-4 py-3 border-b border-neutral-800 shrink-0">
-                                    <button onClick={() => alert('Próximamente: Crear tarea desde aquí')} className="bg-[#0099CC] hover:bg-blue-700 text-white rounded-md px-4 py-1.5 text-xs font-bold flex items-center shadow-md transition-all uppercase tracking-widest">
-                                        <span className="mr-1 text-sm">+</span> Add Task
-
+                        <div className="flex flex-col md:flex-row bg-[#111827] border border-slate-800 rounded-2xl overflow-hidden min-h-[500px] shadow-2xl">
+                            
+                            {/* Left Pane: Task List */}
+                            <div className="w-full md:w-5/12 border-b md:border-b-0 md:border-r border-slate-800 flex flex-col bg-[#0f172a]/60">
+                                <div className="flex items-center justify-between px-4 py-3 border-b border-slate-800 shrink-0 bg-slate-900/40">
+                                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                                        <CheckSquare className="w-4 h-4 text-sky-400" /> Tareas Asignadas
+                                    </span>
+                                    <button 
+                                        onClick={() => alert('Función de agregar tarea rápida disponible próximamente')}
+                                        className="bg-sky-500 hover:bg-sky-400 text-slate-950 rounded-lg px-3 py-1 text-xs font-bold flex items-center gap-1 transition shadow-md"
+                                    >
+                                        <Plus className="w-3.5 h-3.5" /> Agregar
                                     </button>
                                 </div>
-                                <div className="flex-1 overflow-y-auto custom-scrollbar">
-                                    {/* Section Header */}
-                                    <div className="px-4 py-3 flex items-center text-xs font-black uppercase tracking-widest text-neutral-500 mt-2 cursor-pointer hover:text-white transition">
-                                        <span className="mr-2 text-[10px]">▼</span> My Tasks
-                                    </div>
-                                    <div className="flex flex-col mt-1">
-                                        {myTasks.length === 0 ? (
-                                           <p className="text-neutral-500 text-sm text-center py-6 font-bold uppercase tracking-widest">No hay tareas asignadas</p>
-                                        ) : myTasks.map(task => (
-                                            <div 
-                                                key={task.id} 
-                                                onClick={() => setSelectedTask(task)}
-                                                className={`flex items-center border-b border-neutral-800/50 px-4 py-2.5 cursor-pointer hover:bg-neutral-900 transition-colors ${selectedTask?.id === task.id ? 'bg-neutral-900 border-l-2 border-l-[#0099CC]' : 'border-l-2 border-l-transparent'}`}
+
+                                <div className="flex-1 overflow-y-auto max-h-[350px] md:max-h-[550px] divide-y divide-slate-800/50">
+                                    {myTasks.length === 0 ? (
+                                        <div className="text-slate-500 text-xs md:text-sm text-center py-10 font-bold uppercase tracking-wider flex flex-col items-center gap-2">
+                                            <CheckCircle2 className="w-8 h-8 text-slate-700" />
+                                            <span>No tienes tareas pendientes</span>
+                                        </div>
+                                    ) : myTasks.map(task => (
+                                        <div 
+                                            key={task.id} 
+                                            onClick={() => setSelectedTask(task)}
+                                            className={`flex items-center px-4 py-3 cursor-pointer hover:bg-slate-800/50 transition-colors ${
+                                                selectedTask?.id === task.id ? 'bg-slate-800/80 border-l-4 border-l-[#00D0B0]' : 'border-l-4 border-l-transparent'
+                                            }`}
+                                        >
+                                            <button
+                                                type="button"
+                                                onClick={(e) => { e.stopPropagation(); toggleTask(task.id); }}
+                                                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mr-3 shrink-0 transition-all ${
+                                                    task.done ? 'bg-emerald-500 border-emerald-500 text-slate-950 shadow-md' : 'border-slate-600 hover:border-sky-400'
+                                                }`}
                                             >
-                                                <div 
-                                                    onClick={(e) => { e.stopPropagation(); toggleTask(task.id); }}
-                                                    className={`flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center mr-3 cursor-pointer transition-all ${task.done ? 'bg-[#25c862] border-[#25c862] text-black shadow-[0_0_10px_rgba(37,200,98,0.5)]' : 'border-neutral-600 hover:border-[#0099CC]'}`}
-                                                >
-                                                    {task.done && <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4"><polyline points="20 6 9 17 4 12"/></svg>}
-                                                </div>
-                                                <div className={`flex-1 text-sm font-bold truncate ${task.done ? 'text-neutral-600 line-through' : 'text-gray-200'}`}>{task.title}</div>
-                                                
-                                                <div className="w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center text-[10px] font-black text-blue-500 mr-3 shrink-0 uppercase border border-blue-500/30" title={task.asignadoA}>
-                                                    {task.asignadoA?.[0] || '?'}
-                                                </div>
-                                                
-                                                <div className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 w-20 text-right truncate">
-                                                    {task.deadline}
-                                                </div>
+                                                {task.done && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                                            </button>
+
+                                            <div className={`flex-1 text-xs md:text-sm font-semibold truncate mr-2 ${task.done ? 'text-slate-500 line-through' : 'text-slate-200'}`}>
+                                                {task.title}
                                             </div>
-                                        ))}
-                                    </div>
+                                            
+                                            <div className="text-[10px] font-mono text-slate-400 shrink-0 bg-slate-800 px-2 py-0.5 rounded border border-slate-700">
+                                                {task.deadline}
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                             
-                            {/* PANE DERECHO: DETALLES */}
-                            <div className="w-1/2 md:w-7/12 flex flex-col bg-[#0a0a0a]">
+                            {/* Right Pane: Details Pane */}
+                            <div className="w-full md:w-7/12 flex flex-col bg-[#090d16] p-4 md:p-6">
                                 {selectedTask ? (
-                                    <div className="flex-1 flex flex-col overflow-hidden">
-                                        {/* Top Action Bar */}
-                                        <div className="flex items-center justify-between px-6 py-3 border-b border-neutral-800 shrink-0">
-                                            <div className="flex items-center space-x-3 text-xs">
+                                    <div className="flex-1 flex flex-col justify-between space-y-6">
+                                        <div>
+                                            <div className="flex items-center justify-between pb-4 border-b border-slate-800 mb-4">
                                                 <button 
                                                     onClick={() => {
                                                         toggleTask(selectedTask.id);
                                                         setSelectedTask({...selectedTask, done: !selectedTask.done});
                                                     }}
-                                                    className={`border rounded-lg px-4 py-1.5 font-bold uppercase tracking-widest flex items-center transition-all ${selectedTask.done ? 'bg-[#25c862]/10 border-[#25c862]/30 text-[#25c862]' : 'border-neutral-700 hover:border-neutral-500 text-neutral-400 hover:text-white'}`}
+                                                    className={`px-4 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 border transition ${
+                                                        selectedTask.done 
+                                                            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' 
+                                                            : 'bg-slate-800 text-slate-300 border-slate-700 hover:border-slate-600'
+                                                    }`}
                                                 >
-                                                    <span className={`mr-2 ${selectedTask.done ? 'text-[#25c862]':'text-neutral-500'}`}>✓</span> {selectedTask.done ? 'Completed' : 'Mark complete'}
+                                                    <Check className="w-4 h-4" />
+                                                    <span>{selectedTask.done ? 'Completado' : 'Marcar como Completada'}</span>
                                                 </button>
-                                            </div>
-                                        </div>
-                                        
-                                        <div className="flex-1 overflow-y-auto px-8 py-8 custom-scrollbar">
-                                            <div className="mb-8">
-                                                <h1 className={`text-3xl font-black outline-none w-full bg-transparent ${selectedTask.done ? 'text-neutral-600 line-through' : 'text-white'}`}>
-                                                    {selectedTask.title}
-                                                </h1>
-                                            </div>
-                                            
-                                            <div className="flex flex-col space-y-6 mb-8">
-                                                <div className="flex items-center">
-                                                    <div className="w-32 text-xs font-black uppercase tracking-widest text-neutral-500">Asignado a</div>
-                                                    <div className="flex items-center text-sm font-bold text-gray-300">
-                                                        <div className="w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center text-[10px] text-blue-500 border border-blue-500/30 uppercase mr-3">
-                                                            {selectedTask.asignadoA?.[0] || '?'}
-                                                        </div>
-                                                        {selectedTask.asignadoA || 'Sin Asignar'}
-                                                    </div>
-                                                </div>
-                                                <div className="flex items-center">
-                                                    <div className="w-32 text-xs font-black uppercase tracking-widest text-neutral-500">Cuándo</div>
-                                                    <div className="flex items-center text-sm font-bold text-rose-500 bg-rose-500/10 px-3 py-1 rounded border border-rose-500/20 uppercase tracking-widest">
-                                                        {selectedTask.deadline}
-                                                    </div>
-                                                </div>
-                                                <div className="flex flex-col mt-6 gap-6">
-                                                    <div>
-                                                        <div className="text-[10px] font-black text-rose-500 mb-2 uppercase tracking-widest">¿Para qué?</div>
-                                                        <div className="text-sm font-medium text-gray-300 bg-[#0d0d0d] p-4 rounded-xl border border-neutral-800 shadow-inner">
-                                                            {selectedTask.why || 'Objetivo no especificado'}
-                                                        </div>
-                                                    </div>
-                                                    <div>
-                                                        <div className="text-[10px] font-black text-rose-500 mb-2 uppercase tracking-widest">Referencias</div>
-                                                        <div className="text-sm font-medium text-gray-300 bg-[#0d0d0d] p-4 rounded-xl border border-neutral-800 break-all shadow-inner">
-                                                            {selectedTask.references ? <a href={selectedTask.references} target="_blank" rel="noreferrer" className="text-blue-400 hover:text-blue-300 underline underline-offset-2">{selectedTask.references}</a> : <span className="text-neutral-600 italic">Ninguna referencia visual adjunta.</span>}
-                                                        </div>
-                                                    </div>
-                                                    <div>
-                                                        <div className="text-[10px] font-black text-rose-500 mb-2 uppercase tracking-widest">Comentarios / Brief Técnico</div>
-                                                        <div className="text-sm font-medium text-gray-300 flex-1 bg-[#152033] p-4 rounded-xl border border-neutral-800 min-h-[100px] whitespace-pre-wrap shadow-inner leading-relaxed">
-                                                            {selectedTask.comments || <span className="text-neutral-600 italic">Sin instrucciones extra. Guíate con el "Qué" y "Para qué".</span>}
-                                                        </div>
-                                                    </div>
-                                                </div>
+
+                                                <span className="text-[10px] font-mono text-slate-400 bg-slate-800 px-2.5 py-1 rounded border border-slate-700">
+                                                    ID: #{selectedTask.id}
+                                                </span>
                                             </div>
 
+                                            <h1 className={`text-lg md:text-2xl font-black mb-4 ${selectedTask.done ? 'text-slate-500 line-through' : 'text-white'}`}>
+                                                {selectedTask.title}
+                                            </h1>
+
+                                            <div className="space-y-4 text-xs md:text-sm">
+                                                <div className="flex items-center gap-4">
+                                                    <span className="w-24 text-slate-400 font-bold uppercase text-[10px] tracking-wider">Asignado a:</span>
+                                                    <span className="text-slate-200 font-semibold bg-slate-800/80 px-3 py-1 rounded-lg border border-slate-700">
+                                                        {selectedTask.asignadoA}
+                                                    </span>
+                                                </div>
+
+                                                <div className="flex items-center gap-4">
+                                                    <span className="w-24 text-slate-400 font-bold uppercase text-[10px] tracking-wider">Fecha límite:</span>
+                                                    <span className="text-rose-400 font-bold bg-rose-500/10 px-3 py-1 rounded-lg border border-rose-500/20">
+                                                        {selectedTask.deadline}
+                                                    </span>
+                                                </div>
+
+                                                <div className="pt-2">
+                                                    <span className="text-slate-400 font-bold uppercase text-[10px] tracking-wider block mb-1">Objetivo:</span>
+                                                    <div className="p-3 bg-slate-900 border border-slate-800 rounded-xl text-slate-300 leading-relaxed">
+                                                        {selectedTask.why}
+                                                    </div>
+                                                </div>
+
+                                                {selectedTask.references && (
+                                                    <div>
+                                                        <span className="text-slate-400 font-bold uppercase text-[10px] tracking-wider block mb-1">Referencia Visual:</span>
+                                                        <a 
+                                                            href={selectedTask.references} 
+                                                            target="_blank" 
+                                                            rel="noreferrer"
+                                                            className="text-[#00D0B0] hover:underline flex items-center gap-1 text-xs break-all"
+                                                        >
+                                                            <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                                                            {selectedTask.references}
+                                                        </a>
+                                                    </div>
+                                                )}
+
+                                                {selectedTask.comments && (
+                                                    <div>
+                                                        <span className="text-slate-400 font-bold uppercase text-[10px] tracking-wider block mb-1">Brief Técnico:</span>
+                                                        <div className="p-3 bg-slate-900/90 border border-slate-800 rounded-xl text-slate-300 whitespace-pre-wrap font-mono text-xs">
+                                                            {selectedTask.comments}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="flex-1 flex flex-col items-center justify-center text-neutral-600 font-sans">
-                                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="mb-4 text-neutral-800"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                                        <p className="text-sm font-bold uppercase tracking-widest">Selecciona una tarea para ver el brief</p>
+                                    <div className="flex-1 flex flex-col items-center justify-center text-slate-500 py-12">
+                                        <FileText className="w-12 h-12 mb-3 text-slate-700" />
+                                        <p className="text-xs md:text-sm font-bold uppercase tracking-wider">Selecciona una tarea para consultar sus detalles</p>
                                     </div>
                                 )}
                             </div>
                         </div>
-                    </div>
-                    {isIT && (
-                        <div className="mt-12 animate-in fade-in space-y-4 flex flex-col pt-8 border-t border-neutral-800">
-                            <div>
-                                <h2 className="text-2xl font-black text-rose-500">🚨 IT Bugs & Sugerencias</h2>
-                                <p className="text-sm text-neutral-400 mt-1">Reportes del sistema. Tablero exclusivo de JareG y Dani.</p>
-                            </div>
-                            
-                            <div className="flex flex-col gap-3">
-                                {itBugs.map(bug => (
-                                    <div key={bug.id} className={`bg-[#0a0a0a] border ${bug.resolved ? 'border-green-500/30 opacity-60' : 'border-rose-500/30'} p-4 rounded-xl flex gap-4 items-start shadow-md`}>
-                                        <div onClick={() => resolveBug(bug.id, bug.resolved)} className={`mt-1 cursor-pointer w-6 h-6 rounded border flex items-center justify-center shrink-0 transition-colors ${bug.resolved ? 'bg-green-500 border-green-500 text-black' : 'border-neutral-500 hover:border-rose-500 bg-[#111]'}`}>
-                                            {bug.resolved && <span className="text-[14px] font-black leading-none pb-0.5">✓</span>}
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-3 mb-1.5 flex-wrap">
-                                                <span className={`text-[9px] uppercase tracking-widest font-black px-2 py-0.5 rounded border ${bug.priority === 'urgente' ? 'bg-rose-500/10 text-rose-500 border-rose-500/30' : bug.priority === 'media' ? 'bg-amber-500/10 text-amber-500 border-amber-500/30' : 'bg-blue-500/10 text-blue-400 border-blue-500/30'}`}>
-                                                    {bug.priority}
-                                                </span>
-                                                <span className="text-[10px] text-neutral-500 font-bold uppercase tracking-widest">
-                                                    Reportado por: <span className="text-white">{bug.reporter_username || '?'}</span>
-                                                </span>
-                                                <span className="text-[10px] text-neutral-500 font-mono truncate max-w-[200px]">
-                                                    {bug.path_url || '/'}
-                                                </span>
-                                            </div>
-                                            <p className={`text-sm font-medium ${bug.resolved ? 'text-neutral-500 line-through' : 'text-gray-200'}`}>
-                                                {bug.description}
-                                            </p>
-                                        </div>
-                                        {bug.screenshot_url && (
-                                            <div className="w-24 h-24 shrink-0 rounded-lg overflow-hidden border border-neutral-700 hover:border-rose-500 transition-colors cursor-pointer" onClick={() => window.open(bug.screenshot_url, '_blank')}>
-                                                <img src={bug.screenshot_url} alt="screenshot" className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
-                                            </div>
-                                        )}
-                                    </div>
-                                ))}
-                                {itBugs.length === 0 && (
-                                    <div className="border border-dashed border-neutral-700 bg-neutral-900/30 rounded-xl p-8 text-center">
-                                        <p className="text-neutral-500 text-sm font-bold uppercase tracking-widest">No hay bugs reportados en este momento</p>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    )}
-                    </>
-                )}
 
+                        {/* IT Bugs & Suggestions section */}
+                        {isIT && (
+                            <div className="pt-8 border-t border-slate-800 space-y-4">
+                                <div>
+                                    <h2 className="text-lg md:text-xl font-black text-rose-400 flex items-center gap-2">
+                                        <Bug className="w-5 h-5 text-rose-500" />
+                                        Reportes de Bugs e IT
+                                    </h2>
+                                    <p className="text-xs text-slate-400 mt-0.5">Gestión interna de retroalimentación y resolución de incidentes.</p>
+                                </div>
+
+                                <div className="space-y-3">
+                                    {itBugs.map(bug => (
+                                        <div key={bug.id} className={`bg-[#0f172a] border ${bug.resolved ? 'border-emerald-500/30 opacity-60' : 'border-rose-500/30'} p-4 rounded-xl flex flex-col sm:flex-row gap-4 items-start shadow-md`}>
+                                            <button 
+                                                onClick={() => resolveBug(bug.id, bug.resolved)} 
+                                                className={`mt-1 w-6 h-6 rounded border flex items-center justify-center shrink-0 transition-colors ${
+                                                    bug.resolved ? 'bg-emerald-500 border-emerald-500 text-slate-950' : 'border-slate-600 hover:border-rose-500 bg-slate-900'
+                                                }`}
+                                            >
+                                                {bug.resolved && <Check className="w-4 h-4 stroke-[3]" />}
+                                            </button>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                                    <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded border ${
+                                                        bug.priority === 'urgente' ? 'bg-rose-500/10 text-rose-400 border-rose-500/30' : bug.priority === 'media' ? 'bg-amber-500/10 text-amber-400 border-amber-500/30' : 'bg-sky-500/10 text-sky-400 border-sky-500/30'
+                                                    }`}>
+                                                        {bug.priority}
+                                                    </span>
+                                                    <span className="text-[11px] text-slate-400 font-medium">
+                                                        Por: <strong className="text-slate-200">{bug.reporter_username || '?'}</strong>
+                                                    </span>
+                                                </div>
+                                                <p className={`text-xs md:text-sm font-medium ${bug.resolved ? 'text-slate-500 line-through' : 'text-slate-200'}`}>
+                                                    {bug.description}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {itBugs.length === 0 && (
+                                        <div className="border border-dashed border-slate-800 bg-slate-900/40 rounded-xl p-6 text-center">
+                                            <p className="text-slate-500 text-xs font-bold uppercase tracking-wider">No existen bugs ni reportes pendientes</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
 
             </div>
         </div>

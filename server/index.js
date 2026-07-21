@@ -725,8 +725,8 @@ app.get('/api/crm/leads/:phone/messages', authenticateJWT, requireGod, async (re
     try {
         const { phone } = req.params;
         const result = await pool.query(
-            "SELECT contexto_ia FROM wa_workflow_states WHERE numero_contacto = $1 OR numero_contacto = $2",
-            [phone, `${phone}@c.us`]
+            "SELECT contexto_ia FROM wa_workflow_states WHERE numero_contacto = $1 OR numero_contacto = $2 OR numero_contacto = $3 OR numero_contacto = $4",
+            [phone, `${phone}@c.us`, `${phone}@s.whatsapp.net`, `${phone}@lid`]
         );
         if (result.rows.length === 0) return res.json({ success: true, messages: [] });
         

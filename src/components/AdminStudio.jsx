@@ -1,6 +1,24 @@
 import React, { useState, useEffect, useMemo } from'react';
-import { MousePointerClick, LayoutDashboard, Database, ShieldAlert, Ban, ChartBar, MessageCircle, Bot, User, LogOut, Lightbulb, Eye, Calendar } from 'lucide-react';
+import { 
+  MousePointerClick, LayoutDashboard, Database, ShieldAlert, Ban, ChartBar, 
+  MessageCircle, Bot, User, LogOut, Lightbulb, Eye, Calendar, Home, Target, 
+  Package, MessageSquare, Building2, Zap, BarChart3, FileText, Activity, 
+  FileCheck, Users, Laptop, TrendingUp, Scale, ShieldCheck, Search, 
+  BookOpen, Receipt, GraduationCap, AlertTriangle, File 
+} from 'lucide-react';
 import { useSiteData } from'../context/SiteContext';
+
+const sectionIconMap = {
+  Home, Target, Package, MessageSquare, Building2, Zap, BarChart3, Calendar, FileText,
+  Activity, FileCheck, Users, Laptop, TrendingUp, Scale, ShieldCheck, Lightbulb, Search,
+  BookOpen, Receipt, GraduationCap, AlertTriangle, File
+};
+
+function SectionIcon({ iconName }) {
+  if (!iconName) return null;
+  const IconComp = sectionIconMap[iconName] || FileText;
+  return <IconComp size={13} className="mr-2 text-[#0099CC] shrink-0" />;
+}
 import StudioPreview from'./StudioPreview';
 import MediaPicker from'./MediaPicker';
 import NewsletterPanel from './NewsletterPanel';
@@ -610,6 +628,7 @@ export default function AdminStudio() {
               isSelected ? 'bg-[#0b242c] border-[#0099cc]/20' : 'hover:bg-[#0b242c]/50'
               }`}
               >
+              <SectionIcon iconName={meta?.icon} />
               <div className="min-w-0 flex-1 flex justify-between items-center">
                 <span className={`text-xs font-semibold truncate transition-colors duration-300 ${isSelected ? 'text-white' : 'text-neutral-400'}`}>
                 {meta?.label || node.id}

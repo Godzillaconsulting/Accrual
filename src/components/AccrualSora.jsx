@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
+import { Camera, Video, Dices, Download, Maximize2 } from 'lucide-react';
 import './AccrualSora.css';
 
 export default function AccrualSora() {
@@ -207,15 +208,15 @@ export default function AccrualSora() {
                 <div className="mode-selector" style={{display: 'flex', gap: '10px', background: '#111', padding: '5px', borderRadius: '8px', boxShadow: 'inset 0 2px 5px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.4)', border: '1px solid #333'}}>
                     <button 
                         onClick={() => setMode('photo')} 
-                        style={{padding: '8px 20px', borderRadius: '4px', border: 'none', fontWeight: '900', cursor: 'pointer', background: mode === 'photo' ? 'linear-gradient(180deg, #ffaa00 0%, #d68700 100%)' : 'transparent', color: mode === 'photo' ? '#111' : '#888', boxShadow: mode === 'photo' ? '0 0 10px rgba(255,170,0,0.5)' : 'none', transition: '0.3s'}}
+                        style={{padding: '8px 20px', borderRadius: '4px', border: 'none', fontWeight: '900', cursor: 'pointer', background: mode === 'photo' ? 'linear-gradient(180deg, #ffaa00 0%, #d68700 100%)' : 'transparent', color: mode === 'photo' ? '#111' : '#888', boxShadow: mode === 'photo' ? '0 0 10px rgba(255,170,0,0.5)' : 'none', transition: '0.3s', display: 'flex', alignItems: 'center', gap: '6px'}}
                     >
-                        📸 MODO FOTO
+                        <Camera size={16} /> MODO FOTO
                     </button>
                     <button 
                         onClick={() => setMode('video')} 
-                        style={{padding: '8px 20px', borderRadius: '4px', border: 'none', fontWeight: '900', cursor: 'pointer', background: mode === 'video' ? 'linear-gradient(180deg, #ffaa00 0%, #d68700 100%)' : 'transparent', color: mode === 'video' ? '#111' : '#888', boxShadow: mode === 'video' ? '0 0 10px rgba(255,170,0,0.5)' : 'none', transition: '0.3s'}}
+                        style={{padding: '8px 20px', borderRadius: '4px', border: 'none', fontWeight: '900', cursor: 'pointer', background: mode === 'video' ? 'linear-gradient(180deg, #ffaa00 0%, #d68700 100%)' : 'transparent', color: mode === 'video' ? '#111' : '#888', boxShadow: mode === 'video' ? '0 0 10px rgba(255,170,0,0.5)' : 'none', transition: '0.3s', display: 'flex', alignItems: 'center', gap: '6px'}}
                     >
-                        🎥 MODO VIDEO
+                        <Video size={16} /> MODO VIDEO
                     </button>
                 </div>
 
@@ -277,7 +278,7 @@ export default function AccrualSora() {
                         <label>Semilla (Seed)</label>
                         <div className="seed-input-wrapper">
                             <input type="number" className="sora-input" value={seed} onChange={(e)=>setSeed(e.target.value)} />
-                            <button className="btn-icon" onClick={()=>setSeed(-1)}>🎲</button>
+                            <button className="btn-icon" onClick={()=>setSeed(-1)} title="Semilla Aleatoria"><Dices size={16} /></button>
                         </div>
                         <small>-1 para aleatorio.</small>
                     </div>

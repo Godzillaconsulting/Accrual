@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar as CalendarIcon, Wand2, Loader2, Send, Download, ChevronDown, ChevronUp } from 'lucide-react';
+import { Calendar as CalendarIcon, Wand2, Loader2, Send, Download, ChevronDown, ChevronUp, Target, Mic, Image, Video, Bot, CheckCircle2 } from 'lucide-react';
 
 // ─── Columnas exactas del Sheets ──────────────────────────────────────────────
 const SCENE_COLUMNS = [1, 2, 3, 4, 5];
@@ -87,24 +87,30 @@ function DayCard({ day, idx, canEdit, onSendToCalendar }) {
                         return (
                             <div key={n} className={`rounded-xl p-4 border mt-3 ${isCTA ? 'bg-emerald-950/20 border-emerald-500/20' : 'bg-[#152033]/40 border-neutral-800/50'}`}>
                                 <div className="flex items-center gap-2 mb-3">
-                                    <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${isCTA ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-neutral-800 text-neutral-400'}`}>
-                                        {isCTA ? '🎯 Escena 5 — CTA' : `Escena ${n}`}
+                                    <span className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full flex items-center gap-1 ${isCTA ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-neutral-800 text-neutral-400'}`}>
+                                        {isCTA ? <><Target className="w-3 h-3 text-emerald-400" /> Escena 5 — CTA</> : `Escena ${n}`}
                                     </span>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                                     {/* Narración */}
                                     <div className="space-y-1">
-                                        <span className="text-[9px] text-emerald-400 font-bold uppercase tracking-widest block">🎙 Narración (TTS)</span>
+                                        <span className="text-[9px] text-emerald-400 font-bold uppercase tracking-widest flex items-center gap-1">
+                                            <Mic className="w-3 h-3 text-emerald-400" /> Narración (TTS)
+                                        </span>
                                         <p className="text-sm text-neutral-200 leading-relaxed">{narr}</p>
                                     </div>
                                     {/* Visual Prompt */}
                                     <div className="space-y-1">
-                                        <span className="text-[9px] text-blue-400 font-bold uppercase tracking-widest block">🖼 Visual Prompt</span>
+                                        <span className="text-[9px] text-blue-400 font-bold uppercase tracking-widest flex items-center gap-1">
+                                            <Image className="w-3 h-3 text-blue-400" /> Visual Prompt
+                                        </span>
                                         <p className="text-xs text-neutral-400 font-mono leading-relaxed">{vis}</p>
                                     </div>
                                     {/* Video Motion Prompt */}
                                     <div className="space-y-1">
-                                        <span className="text-[9px] text-fuchsia-400 font-bold uppercase tracking-widest block">🎬 Video Motion Prompt</span>
+                                        <span className="text-[9px] text-fuchsia-400 font-bold uppercase tracking-widest flex items-center gap-1">
+                                            <Video className="w-3 h-3 text-fuchsia-400" /> Video Motion Prompt
+                                        </span>
                                         <p className="text-xs text-neutral-400 font-mono leading-relaxed">{vid}</p>
                                     </div>
                                 </div>
@@ -188,7 +194,7 @@ export default function AIContentPlanner({ adminProfile }) {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                 body: JSON.stringify({
-                    title: `🤖 ${day['Tema']}`,
+                    title: `${day['Tema']}`,
                     platform: 'ALL',
                     status: 'warning',
                     caption: captions,
@@ -199,7 +205,7 @@ export default function AIContentPlanner({ adminProfile }) {
                 }),
             });
             const data = await res.json();
-            if (data.success) alert(`✅ Día ${day.dia} "${day['Tema']}" enviado al Calendario de Contenido.`);
+            if (data.success) alert(`Día ${day.dia} "${day['Tema']}" enviado al Calendario de Contenido.`);
             else alert(data.error || 'Error enviando al calendario.');
         } catch (err) {
             console.error(err);
