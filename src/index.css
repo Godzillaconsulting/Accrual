@@ -22,6 +22,19 @@
     font-feature-settings: "cv11", "ss01";
   }
 
+  select, select option {
+    background-color: #08090C !important;
+    color: #FFFFFF !important;
+  }
+
+  input, textarea {
+    color: #FFFFFF !important;
+  }
+
+  input::placeholder, textarea::placeholder {
+    color: #888888 !important;
+  }
+
   .liquid-glass {
     background: rgba(12, 16, 26, 0.65);
     backdrop-filter: blur(20px);

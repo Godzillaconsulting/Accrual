@@ -767,7 +767,7 @@ export default function AdminStudio() {
       <GodCRMPage />
   ) : activeSection === 'stats' ? (
       <GodStatsPage />
-  ) : activeSection === 'bot' ? (
+) : activeSection === 'bot' ? (
       <GodBotMonitor />
   ) : (<>
 
@@ -794,34 +794,25 @@ export default function AdminStudio() {
  )}
 
  <div className="flex items-center gap-3">
- <button onClick={() => setShowPreview(p => !p)}
- className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-300 border ${
- showPreview ?'bg-white text-black border-white' :'bg-transparent text-neutral-400 hover:text-white border-white/20'
- }`}>
- {showPreview ?'Ocultar Preview' :'Mostrar Preview'}
- </button>
- 
- { /* ── Botón Guardar (Bloqueable por Presence) ── */ }
- <button onClick={handleSave} 
- disabled={saving || !selectedNodeId || !isRecursosValid || isCM || (activePresences[selectedNodeId] && activePresences[selectedNodeId].user !== adminProfile?.username)}
- className={`group px-5 py-2 text-xs font-black rounded-xl transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 shadow-md active:scale-95 disabled:opacity-50 disabled:hover:scale-100 disabled:hover:translate-y-0 border relative ${
-     hasUnsavedChanges 
-         ? 'bg-[#0099CC]/20 text-[#0099CC] border-[#0099CC] hover:bg-[#0099CC] hover:text-white shadow-[0_0_15px_rgba(0,153,204,0.4)] hover:shadow-[0_0_20px_rgba(0,153,204,0.6)]' 
-         : 'bg-white hover:bg-gray-100 text-[#0099CC] border-[#0099CC]/50'
- }`}>
- {hasUnsavedChanges && <span className="absolute -top-1 -right-1 flex h-3 w-3"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0099CC] opacity-75"></span><span className="relative inline-flex rounded-full h-3 w-3 bg-[#0099CC]"></span></span>}
- {saving ? '...' : (
-    <span className="flex items-center justify-center gap-1.5">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-300"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-        Guardar borrador
-    </span>
- )}
- </button>
- <button onClick={() => setShowPublishModal(true)} disabled={!selectedNodeId || !isRecursosValid || isCM}
- className="group px-6 py-2 flex items-center justify-center gap-1.5 bg-gradient-to-r from-[#0099CC] to-[#006699] hover:from-white hover:to-gray-200 text-white hover:text-[#0099CC] text-xs font-black rounded-xl transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 shadow-[0_4px_15px_rgba(0,153,204,0.4)] hover:shadow-[0_8px_25px_rgba(255,255,255,0.7)] border border-blue-900/30 hover:border-[#0099CC] active:scale-95 disabled:opacity-50 disabled:hover:scale-100 disabled:hover:translate-y-0">
-    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-300"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-    Actualizar cambios
- </button>
+  <button onClick={() => setShowPreview(p => !p)}
+  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 border ${
+  showPreview ?'bg-white/10 text-white border-white/20 hover:bg-white/20' :'bg-transparent text-neutral-400 hover:text-white border-white/10'
+  }`}>
+  {showPreview ?'Ocultar Preview' :'Mostrar Preview'}
+  </button>
+  
+  <button onClick={handleSave} 
+  disabled={saving || !selectedNodeId || !isRecursosValid || isCM || (activePresences[selectedNodeId] && activePresences[selectedNodeId].user !== adminProfile?.username)}
+  className="px-5 py-2 text-xs font-black rounded-xl transition-all duration-300 bg-[#00E5FF]/10 text-[#00E5FF] hover:bg-[#00E5FF] hover:text-[#040508] border border-[#00E5FF]/40 flex items-center justify-center gap-1.5 disabled:opacity-50">
+     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+     Guardar borrador
+  </button>
+
+  <button onClick={() => setShowPublishModal(true)} disabled={!selectedNodeId || !isRecursosValid || isCM}
+  className="px-5 py-2 bg-[#00E5FF] text-[#040508] hover:bg-white text-xs font-black rounded-xl transition-all duration-300 shadow-[0_0_15px_rgba(0,229,255,0.3)] flex items-center gap-2 disabled:opacity-50">
+     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+     Actualizar cambios
+  </button>
  </div>
  </div>
 
