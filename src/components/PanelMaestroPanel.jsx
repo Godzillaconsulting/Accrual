@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Crown, Users, Smartphone, Eye, UserPlus, Shield, User } from 'lucide-react';
 
 const API = '';
 
