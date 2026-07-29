@@ -47,7 +47,6 @@ import NoiseOverlay from './components/trionn/NoiseOverlay';
 function App() {
     return (
         <>
-            <TrionnPreloader />
             <CanvasGlow />
             <NoiseOverlay />
             <CustomCursor />
