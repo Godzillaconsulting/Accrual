@@ -244,7 +244,7 @@ export default function LeadMagnetsPanel() {
                             </div>
 
                             {/* Cuerpo del correo */}
-                            <div className="space-y-1.5 bg-neutral-900 p-4 rounded-2xl border border-neutral-800">
+                            <div className="space-y-1.5 bg-[var(--bg-card)] p-4 rounded-[calc(var(--fs)*0.875)] border-[0.1px] border-[rgba(65,65,65,0.51)]">
                                 <label className="text-[10px] font-bold text-neutral-500 uppercase flex justify-between">
                                     <span>📝 Mensaje</span>
                                     <span className="text-neutral-600">El botón de descarga se insertará abajo</span>

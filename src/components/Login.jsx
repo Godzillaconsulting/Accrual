@@ -188,7 +188,7 @@ const Login = () => {
                             </p>
                         </div>
                         {lockCountdown > 0 && (
-                            <div className="bg-[#152033]/60 border border-blue-900/30 rounded-2xl px-8 py-4 text-center">
+                            <div className="bg-[var(--bg-card)] border-[0.1px] border-[rgba(65,65,65,0.51)] rounded-[calc(var(--fs)*0.875)] px-8 py-4 text-center">
                                 <p className="text-xs text-neutral-500 font-bold mb-2 uppercase">Desbloqueo en:</p>
                                 <p className="text-4xl font-black text-[#0099CC] tabular-nums">{formatTime(lockCountdown)}</p>
                             </div>
@@ -298,7 +298,7 @@ const Login = () => {
                             <button
                                 type="submit"
                                 disabled={loading || isLocked}
-                                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#00bcd4] to-[#18ffff] hover:scale-105 text-slate-900 py-3.5 rounded-xl font-black transition-all shadow-[0_0_20px_rgba(0,188,212,0.4)] hover:shadow-[0_0_30px_rgba(24,255,255,0.6)] mt-4 disabled:opacity-60 disabled:cursor-not-allowed"
+                                className="w-full flex items-center justify-center gap-2 bg-[var(--accent-cyan)] text-[var(--bg-obsidian)] py-3.5 rounded-sm font-black transition-all hover:bg-white mt-4 disabled:opacity-60 disabled:cursor-not-allowed"
                             >
                                 {loading
                                     ? <><Loader size={18} className="animate-spin" /> Verificando...</>

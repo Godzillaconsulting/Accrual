@@ -58,9 +58,9 @@ const LandingCorporativo = () => {
                         <Globe className="w-4 h-4" /> ESTATUS CORPORATIVO COMPROBADO
                     </div>
                     
-                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-black mb-8 leading-tight tracking-tight text-white drop-shadow-2xl">
+                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-black mb-8 leading-tight tracking-tight text-[var(--text-main)]">
                         Estrategia Binacional de Élite: <br/>
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-300 to-white">Sincronización Fiscal México-USA.</span>
+                        <span className="text-[var(--text-muted)]">Sincronización Fiscal México-USA.</span>
                     </h1>
                     
                     <p className="text-xl md:text-2xl font-light leading-relaxed max-w-4xl mb-12 opacity-90 text-gray-400">
@@ -97,7 +97,7 @@ const LandingCorporativo = () => {
                         <img loading="lazy"  
                             src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80" 
                             alt="Corporativo Global Edificios" 
-                            className="rounded-[3rem] relative z-10 w-full h-full object-cover shadow-2xl transition-transform transform group-hover:-translate-y-2"
+                            className="relative z-10 w-full h-full object-cover transition-transform transform group-hover:-translate-y-2"
                         />
                     </div>
                 </div>

@@ -45,14 +45,14 @@ const Hero = () => {
                     />
                 )}
                 {/* Overlay for readability */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/40 shadow-inner"></div>
+                <div className="absolute inset-0 bg-black/40"></div>
             </div>
 
             {/* Hero Content */}
             <div className="w-full max-w-7xl px-8 flex flex-col relative z-10 h-full justify-center pt-20">
                 <div className="w-full flex flex-col items-start text-left animate-fade-in py-10">
                     <h1
-                        className="text-3xl md:text-4xl lg:text-5xl font-black text-[#D0D0DA] mb-6 leading-tight tracking-tight uppercase max-w-none drop-shadow-2xl"
+                        className="text-3xl md:text-4xl lg:text-5xl font-black text-[var(--text-main)] mb-6 leading-tight tracking-tight uppercase max-w-none"
                         dangerouslySetInnerHTML={{ __html: data.heroTitle1 || 'Ingeniería Fiscal y Patrimonial <br /> para la Frontera Norte' }}
                     />
 
