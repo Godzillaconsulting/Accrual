@@ -241,36 +241,37 @@ export default function PanelMaestroPanel({ adminProfile }) {
     const cmsCount = users.filter(u => u.role === 'cm').length;
 
     return (
-        <div className="flex-1 flex flex-col p-6 md:p-10 bg-gradient-to-br from-black via-neutral-950 to-amber-950/20 text-white overflow-y-auto">
-            <div className="mb-8 border-b border-amber-500/30 pb-6 flex items-center justify-between">
+        <div className="flex-1 flex flex-col p-6 md:p-10 bg-[#040508] text-white overflow-y-auto">
+            <div className="mb-8 border-b border-[rgba(65,65,65,0.51)] pb-6 flex items-center justify-between">
                 <div>
-                    <h2 className="text-3xl font-black tracking-widest text-[#fbbf24] drop-shadow-[0_0_15px_rgba(251,191,36,0.5)] flex items-center gap-3">
-                        <span>👑</span> PANEL MAESTRO DE EQUIPO
+                    <h2 className="text-2xl font-black tracking-tight text-white flex items-center gap-3">
+                        <Crown size={24} className="text-[#00E5FF]" /> PANEL MAESTRO DE EQUIPO
                     </h2>
-                    <p className="text-sm text-amber-200/50 mt-2 tracking-wide">Visión General Ejecutiva y Control de Operaciones.</p>
+                    <p className="text-xs text-neutral-400 mt-2 tracking-wide">Visión General Ejecutiva y Control de Operaciones.</p>
                 </div>
                 <button
                     onClick={() => setShowCreate(!showCreate)}
-                    className="bg-amber-500 hover:bg-amber-400 text-black px-6 py-2.5 rounded-full font-black text-xs transition shadow-[0_4px_15px_rgba(245,158,11,0.3)] hidden md:block"
+                    className="bg-[#00E5FF] hover:bg-white text-[#040508] px-6 py-2.5 rounded-full font-black text-xs transition-all shadow-[0_0_15px_rgba(0,229,255,0.3)] hidden md:flex items-center gap-2"
                 >
-                    {showCreate ? 'Cancelar Edición' : '➕ Añadir Nuevo Usuario'}
+                    <UserPlus size={16} />
+                    {showCreate ? 'Cancelar Edición' : 'Añadir Nuevo Usuario'}
                 </button>
             </div>
 
             {/* Métricas Reales Dinámicas */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                 {[
-                    { label: 'Cuentas Activas', value: users.length, icon: '👥' },
-                    { label: 'Super Administradores', value: superAdminsCount, icon: '👑' },
-                    { label: 'Community Managers', value: cmsCount, icon: '📱' },
-                    { label: 'Acciones Auditadas', value: logs.length, icon: '👁️' },
-                ].map(stat => (
-                    <div key={stat.label} className="bg-neutral-900/50 backdrop-blur-md border border-amber-500/20 p-5 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:border-amber-500/50 transition-colors">
+                    { label: 'Cuentas Activas', value: users.length, Icon: Users },
+                    { label: 'Super Administradores', value: superAdminsCount, Icon: Crown },
+                    { label: 'Community Managers', value: cmsCount, Icon: Smartphone },
+                    { label: 'Acciones Auditadas', value: logs.length, Icon: Eye },
+                ].map(({ label, value, Icon }) => (
+                    <div key={label} className="bg-[#08090C]/80 backdrop-blur-xl border border-[rgba(65,65,65,0.51)] p-5 rounded-2xl shadow-lg hover:border-[#00E5FF]/40 transition-colors">
                         <div className="flex justify-between items-start mb-2">
-                            <span className="text-2xl">{stat.icon}</span>
+                            <Icon size={20} className="text-[#00E5FF]" />
                         </div>
-                        <p className="text-[10px] text-amber-100/60 font-bold uppercase tracking-widest">{stat.label}</p>
-                        <p className="text-3xl font-black mt-1 text-white">{loadingTeam ? '-' : stat.value}</p>
+                        <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest">{label}</p>
+                        <p className="text-3xl font-black mt-1 text-white">{loadingTeam ? '-' : value}</p>
                     </div>
                 ))}
             </div>
@@ -283,54 +284,55 @@ export default function PanelMaestroPanel({ adminProfile }) {
                     {/* Botón en Mobile */}
                     <button
                         onClick={() => setShowCreate(!showCreate)}
-                        className="w-full mb-4 bg-amber-500 hover:bg-amber-400 text-black px-6 py-3 rounded-xl font-black text-xs transition shadow-[0_4px_15px_rgba(245,158,11,0.3)] md:hidden"
+                        className="w-full mb-4 bg-[#00E5FF] hover:bg-white text-[#040508] px-6 py-3 rounded-xl font-black text-xs transition shadow-lg md:hidden flex items-center justify-center gap-2"
                     >
-                        {showCreate ? 'Cerrar Panel' : '➕ Añadir Nuevo Usuario'}
+                        <UserPlus size={16} />
+                        {showCreate ? 'Cerrar Panel' : 'Añadir Nuevo Usuario'}
                     </button>
 
                     {showCreate && (
-                        <form onSubmit={handleCreateUser} className="bg-neutral-900/80 backdrop-blur-xl border border-amber-500/40 rounded-2xl p-6 relative overflow-hidden animate-in fade-in slide-in-from-top-4 shadow-2xl">
-                            <div className="absolute top-0 right-0 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-                            <h3 className="text-sm font-black text-amber-400 mb-4 uppercase tracking-widest flex items-center gap-2"><span>🛡️</span> Registrar Operario</h3>
+                        <form onSubmit={handleCreateUser} className="bg-[#08090C]/90 backdrop-blur-xl border border-[rgba(65,65,65,0.51)] rounded-2xl p-6 relative overflow-hidden animate-in fade-in slide-in-from-top-4 shadow-2xl">
+                            <div className="absolute top-0 right-0 w-40 h-40 bg-[#00E5FF]/5 rounded-full blur-3xl pointer-events-none" />
+                            <h3 className="text-sm font-black text-[#00E5FF] mb-4 uppercase tracking-widest flex items-center gap-2">Registrar Operario</h3>
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                                 <div className="space-y-1">
                                     <label className="text-[10px] font-bold text-neutral-400 uppercase">Nombre / Usuario</label>
-                                    <input type="text" required value={newUsername} onChange={e => setNewUsername(e.target.value)} className="w-full bg-[#152033] border border-neutral-700 rounded-lg px-3 py-2.5 text-white text-sm outline-none focus:border-amber-500 shadow-inner" />
+                                    <input type="text" required value={newUsername} onChange={e => setNewUsername(e.target.value)} className="w-full bg-[#040508] border border-white/10 rounded-lg px-3 py-2.5 text-white text-sm outline-none focus:border-[#00E5FF]" />
                                 </div>
                                 <div className="space-y-1">
                                     <label className="text-[10px] font-bold text-neutral-400 uppercase">Contraseña</label>
-                                    <input type="text" required value={newPassword} onChange={e => setNewPassword(e.target.value)} className="w-full bg-[#152033] border border-neutral-700 rounded-lg px-3 py-2.5 text-white text-sm outline-none focus:border-amber-500 shadow-inner" />
+                                    <input type="text" required value={newPassword} onChange={e => setNewPassword(e.target.value)} className="w-full bg-[#040508] border border-white/10 rounded-lg px-3 py-2.5 text-white text-sm outline-none focus:border-[#00E5FF]" />
                                 </div>
                                 <div className="space-y-1">
                                     <label className="text-[10px] font-bold text-neutral-400 uppercase">Jerarquía Autorizada</label>
-                                    <select value={newRole} onChange={e => setNewRole(e.target.value)} className="w-full bg-[#152033] border border-neutral-700 rounded-lg px-3 py-2.5 text-white text-sm outline-none focus:border-amber-500 appearance-none cursor-pointer shadow-inner">
-                                        <option value="superadmin">👑 SuperAdmin</option>
-                                        <option value="admin">📝 Editor/Admin</option>
-                                        <option value="cm">📱 Community Manager</option>
+                                    <select value={newRole} onChange={e => setNewRole(e.target.value)} className="w-full bg-[#040508] border border-white/10 rounded-lg px-3 py-2.5 text-white text-sm outline-none focus:border-[#00E5FF] appearance-none cursor-pointer">
+                                        <option value="superadmin">SuperAdmin</option>
+                                        <option value="admin">Editor / Admin</option>
+                                        <option value="cm">Community Manager</option>
                                     </select>
                                 </div>
                             </div>
 
-                            <div className="border-t border-neutral-800 pt-5 mt-2 flex flex-col md:flex-row items-start md:items-end justify-between gap-4">
+                            <div className="border-t border-white/10 pt-5 mt-2 flex flex-col md:flex-row items-start md:items-end justify-between gap-4">
                                 <div className="flex flex-col gap-1 w-full md:w-1/2">
-                                    <label className="text-[10px] font-black text-rose-500 uppercase tracking-widest">Protocolo de Seguridad: Ingresa tu Pass Maestra</label>
-                                    <input type="password" required value={masterPass} onChange={e => setMasterPass(e.target.value)} placeholder="Firma de autorización..." className="w-full bg-[#152033] border border-rose-500/40 rounded-lg px-3 py-2.5 text-white text-sm outline-none focus:border-rose-500 focus:shadow-[0_0_10px_rgba(244,63,94,0.3)] transition-all" />
+                                    <label className="text-[10px] font-black text-rose-400 uppercase tracking-widest">Protocolo de Seguridad: Ingresa tu Pass Maestra</label>
+                                    <input type="password" required value={masterPass} onChange={e => setMasterPass(e.target.value)} placeholder="Firma de autorización..." className="w-full bg-[#040508] border border-rose-500/40 rounded-lg px-3 py-2.5 text-white text-sm outline-none focus:border-rose-500 transition-all" />
                                 </div>
-                                <button type="submit" disabled={loadingTeam} className="w-full md:w-auto bg-amber-500 text-black px-8 py-3 rounded-xl font-black text-sm hover:scale-105 transition shadow-lg active:scale-95 disabled:opacity-50">Autenticar y Crear</button>
+                                <button type="submit" disabled={loadingTeam} className="w-full md:w-auto bg-[#00E5FF] text-[#040508] px-8 py-3 rounded-full font-black text-xs hover:bg-white transition shadow-lg disabled:opacity-50 uppercase tracking-wider">Autenticar y Crear</button>
                             </div>
                         </form>
                     )}
 
-                    <div className="bg-neutral-900/40 backdrop-blur-md border border-neutral-800 rounded-2xl overflow-hidden shadow-xl">
-                        <div className="px-6 py-4 border-b border-neutral-800 bg-[#0d0d0d] flex items-center justify-between">
-                            <h3 className="text-sm font-bold text-gray-300 tracking-widest uppercase">Directorio de Usuarios Activos</h3>
-                            <div className="text-[10px] font-bold text-neutral-500 bg-neutral-800/50 px-2.5 py-1 rounded-full uppercase border border-neutral-700/50">Base de Datos Viva</div>
+                    <div className="bg-[#08090C]/80 backdrop-blur-xl border border-[rgba(65,65,65,0.51)] rounded-2xl overflow-hidden shadow-xl">
+                        <div className="px-6 py-4 border-b border-white/10 bg-white/5 flex items-center justify-between">
+                            <h3 className="text-xs font-black text-white tracking-widest uppercase">Directorio de Usuarios Activos</h3>
+                            <div className="text-[10px] font-bold text-neutral-400 bg-white/5 px-3 py-1 rounded-full uppercase border border-white/10">Base de Datos Viva</div>
                         </div>
-                        {loadingTeam && users.length === 0 ? <p className="p-8 text-neutral-500 text-center text-sm font-bold tracking-widest uppercase">Sincronizando registros...</p> : (
+                        {loadingTeam && users.length === 0 ? <p className="p-8 text-neutral-400 text-center text-xs font-bold tracking-widest uppercase">Sincronizando registros...</p> : (
                             <div className="overflow-x-auto">
-                                <table className="w-full text-left text-sm">
-                                    <thead className="bg-[#0a0a0a] text-[10px] text-amber-500/60 uppercase font-black tracking-widest">
+                                <table className="w-full text-left text-xs">
+                                    <thead className="bg-black/40 text-[10px] text-neutral-400 uppercase font-black tracking-widest border-b border-white/10">
                                         <tr>
                                             <th className="px-6 py-4">ID / Operario</th>
                                             <th className="px-6 py-4">Nivel de Acceso</th>
@@ -338,12 +340,12 @@ export default function PanelMaestroPanel({ adminProfile }) {
                                             <th className="px-6 py-4 text-right">Controles de Fuerza</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-neutral-800/60 font-medium">
+                                    <tbody className="divide-y divide-white/5 font-medium">
                                         {users.map(u => (
-                                            <tr key={u.id} className="hover:bg-neutral-800/20 transition-colors group">
+                                            <tr key={u.id} className="hover:bg-white/5 transition-colors group">
                                                 <td className="px-6 py-4 flex items-center gap-4">
-                                                    <div className="w-10 h-10 rounded-full bg-[#152033] border border-neutral-800 overflow-hidden shrink-0 shadow-inner">
-                                                        {u.photo_url ? <img src={u.photo_url} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex justify-center items-center text-sm bg-neutral-900">💼</div>}
+                                                    <div className="w-9 h-9 rounded-full bg-white/5 border border-white/10 overflow-hidden shrink-0 flex justify-center items-center">
+                                                        {u.photo_url ? <img src={u.photo_url} alt="" className="w-full h-full object-cover" /> : <User size={16} className="text-neutral-400" />}
                                                     </div>
                                                     <div>
                                                         <span className="font-black text-white block text-sm">{u.username}</span>
@@ -352,29 +354,29 @@ export default function PanelMaestroPanel({ adminProfile }) {
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     {u.username === 'JareG' && adminProfile?.id !== 2 ? (
-                                                        <span className="text-amber-500 font-bold bg-amber-500/10 px-3 py-1.5 rounded text-[10px] uppercase w-[120px] inline-flex items-center justify-center shrink-0 border border-amber-500/30"><span className="text-xs mr-1 leading-none">👑</span> Fundador</span>
+                                                        <span className="text-[#00E5FF] font-bold bg-[#00E5FF]/10 px-3 py-1 rounded-full text-[10px] uppercase inline-flex items-center justify-center border border-[#00E5FF]/30">Fundador</span>
                                                     ) : (
                                                         <select
                                                             value={u.role || (u.is_superadmin ? 'superadmin' : 'admin')}
                                                             onChange={(e) => handleUpdateRole(u.id, u.username, u.role || (u.is_superadmin ? 'superadmin' : 'admin'), e.target.value)}
                                                             disabled={u.id === adminProfile?.id || (u.username === 'JareG' && adminProfile?.id !== 2)}
-                                                            className={`text-[10px] font-bold px-2.5 py-1.5 rounded uppercase outline-none cursor-pointer border transition shadow-sm ${u.role === 'superadmin' || u.is_superadmin ? 'bg-amber-500/10 text-amber-500 border-amber-500/30 focus:border-amber-400' : (u.role === 'cm' ? 'bg-sky-500/10 text-sky-400 border-sky-500/30 focus:border-sky-400' : 'bg-[#152033] text-gray-300 border-neutral-700 hover:border-neutral-500 focus:border-neutral-500')}`}
+                                                            className="text-[10px] font-bold px-2.5 py-1.5 rounded-full uppercase outline-none cursor-pointer border transition bg-[#040508] text-neutral-300 border-white/10 focus:border-[#00E5FF]"
                                                         >
-                                                            <option value="superadmin">👑 SuperAdmin</option>
-                                                            <option value="admin">📝 Editor Admin</option>
-                                                            <option value="cm">📱 CM</option>
+                                                            <option value="superadmin">SuperAdmin</option>
+                                                            <option value="admin">Editor Admin</option>
+                                                            <option value="cm">CM</option>
                                                         </select>
                                                     )}
                                                 </td>
                                                 <td className="px-6 py-4 text-center">
-                                                    <span className="inline-flex items-center gap-1.5 bg-green-500/10 border border-green-500/30 px-3 py-1 rounded-full text-green-500 font-black text-[10px] uppercase tracking-widest shadow-[0_0_10px_rgba(34,197,94,0.1)]">
-                                                        <span className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_5px_rgba(34,197,94,0.8)] animate-pulse"></span> Activo
+                                                    <span className="inline-flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 rounded-full text-emerald-400 font-black text-[10px] uppercase tracking-widest">
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Activo
                                                     </span>
                                                 </td>
                                                 <td className="px-6 py-4 text-right space-x-2">
-                                                    <button onClick={() => handleResetPassword(u.id, u.username)} className="px-3 py-1.5 bg-[#152033] hover:bg-neutral-800 border border-neutral-800 hover:border-blue-500 text-blue-400 rounded-lg font-bold text-[10px] uppercase tracking-widest transition shadow-sm">Reset Pass</button>
+                                                    <button onClick={() => handleResetPassword(u.id, u.username)} className="px-3 py-1.5 bg-white/5 hover:bg-white/15 border border-white/10 text-neutral-300 rounded-lg font-bold text-[10px] uppercase tracking-widest transition">Reset Pass</button>
                                                     {u.id !== adminProfile?.id && (u.username !== 'JareG' || adminProfile?.id === 2) && usernameStr !== 'dani' && (
-                                                        <button onClick={() => handleDeleteUser(u.id)} className="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500 border border-rose-500/30 hover:border-rose-500 text-rose-500 hover:text-white rounded-lg font-bold text-[10px] uppercase tracking-widest transition shadow-sm">Eliminar</button>
+                                                        <button onClick={() => handleDeleteUser(u.id)} className="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500 border border-rose-500/30 text-rose-400 hover:text-white rounded-lg font-bold text-[10px] uppercase tracking-widest transition">Eliminar</button>
                                                     )}
                                                 </td>
                                             </tr>
@@ -389,27 +391,24 @@ export default function PanelMaestroPanel({ adminProfile }) {
                 </div>
 
                 {/* Logs de Auditoría */}
-                <div className="bg-neutral-900/60 backdrop-blur-xl border border-neutral-800 rounded-2xl overflow-hidden flex flex-col h-[600px] shadow-2xl">
-                    <div className="px-6 py-5 border-b border-neutral-800 bg-[#0d0d0d] flex items-center justify-between sticky top-0 shrink-0">
-                        <h3 className="text-sm font-black text-amber-500 uppercase tracking-widest flex items-center gap-2"><span>🛡️</span> Radar de Auditoría</h3>
-                        <div className="px-2 py-0.5 bg-amber-500/10 text-amber-500 border border-amber-500/30 rounded text-[10px] font-black">{logs.length} Eventos</div>
+                <div className="bg-[#08090C]/80 backdrop-blur-xl border border-[rgba(65,65,65,0.51)] rounded-2xl overflow-hidden flex flex-col h-[600px] shadow-2xl">
+                    <div className="px-6 py-5 border-b border-white/10 bg-white/5 flex items-center justify-between sticky top-0 shrink-0">
+                        <h3 className="text-xs font-black text-white uppercase tracking-widest flex items-center gap-2">
+                            <Eye size={16} className="text-[#00E5FF]" /> Radar de Auditoría
+                        </h3>
+                        <div className="px-2.5 py-0.5 bg-[#00E5FF]/10 text-[#00E5FF] border border-[#00E5FF]/30 rounded-full text-[10px] font-black">{logs.length} Eventos</div>
                     </div>
                     <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-                        {logs.length === 0 ? <p className="text-center py-10 text-neutral-600 text-sm font-bold uppercase tracking-widest">Registros limpios.</p> : (
-                            <div className="space-y-3 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-neutral-800 before:to-transparent">
+                        {logs.length === 0 ? <p className="text-center py-10 text-neutral-500 text-xs font-bold uppercase tracking-widest">Registros limpios.</p> : (
+                            <div className="space-y-3 relative">
                                 {logs.map(l => (
-                                    <div key={l.id} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                                        <div className="flex items-center justify-center w-6 h-6 rounded-full border border-neutral-700 bg-[#0a0a0a] text-neutral-400 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 relative z-10 text-[9px] group-hover:border-amber-500 transition-colors">
-                                            ●
+                                    <div key={l.id} className="p-3 rounded-xl bg-white/5 border border-white/5 hover:border-[#00E5FF]/30 transition-colors">
+                                        <div className="flex items-center justify-between mb-1">
+                                            <span className="font-black text-white text-[11px] truncate block pr-2">{l.username || 'System'}</span>
+                                            <time className="text-[9px] uppercase tracking-widest font-mono text-neutral-500 shrink-0">{new Date(l.created_at).toLocaleString('es-MX', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</time>
                                         </div>
-                                        <div className="w-[calc(100%-2rem)] md:w-[calc(50%-1.5rem)] p-3 rounded-xl bg-[#152033] border border-neutral-800 shadow-sm group-hover:border-neutral-600 transition-colors">
-                                            <div className="flex items-center justify-between mb-1">
-                                                <span className="font-black text-amber-100 text-[11px] truncate block pr-2">{l.username || 'System'}</span>
-                                                <time className="text-[9px] uppercase tracking-widest font-mono text-neutral-500 shrink-0">{new Date(l.created_at).toLocaleString('es-MX', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</time>
-                                            </div>
-                                            <div className="text-[10px] font-bold text-cyan-400/80 uppercase tracking-wider mb-1">{l.action}</div>
-                                            <div className="text-[10px] font-medium text-neutral-400 line-clamp-2 break-all">{JSON.stringify(l.details)}</div>
-                                        </div>
+                                        <div className="text-[10px] font-bold text-[#00E5FF] uppercase tracking-wider mb-1">{l.action}</div>
+                                        <div className="text-[10px] font-medium text-neutral-400 line-clamp-2 break-all">{JSON.stringify(l.details)}</div>
                                     </div>
                                 ))}
                             </div>

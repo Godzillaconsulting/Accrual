@@ -1,50 +1,61 @@
 import React from 'react';
-import { ShieldAlert, ShieldCheck, Lock } from 'lucide-react';
+import { ShieldCheck, Lock, ShieldAlert, ExternalLink } from 'lucide-react';
 
 export default function SqlAtaquesPanel() {
   return (
-    <div className="flex-1 flex flex-col p-6 bg-[#152033] text-blue-500 font-mono overflow-y-auto">
-      <div className="mb-6 flex justify-between items-end border-b border-blue-900/50 pb-4">
+    <div className="flex-1 flex flex-col p-6 md:p-10 bg-[#040508] text-white overflow-y-auto">
+      <div className="mb-8 border-b border-[rgba(65,65,65,0.51)] pb-6 flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-black tracking-widest text-emerald-500 drop-shadow-[0_0_15px_rgba(16,185,129,0.8)] flex items-center gap-2">
-            <span className="animate-pulse"><ShieldCheck size={28} /></span> RED PROTEGIDA
+          <h2 className="text-xl font-black tracking-tight text-white flex items-center gap-3">
+            <ShieldCheck size={24} className="text-[#00E5FF]" /> Red Protegida & WAF
           </h2>
-          <p className="text-xs text-blue-400 mt-1 uppercase tracking-widest">WAF Delegado a Cloudflare Zero Trust</p>
+          <p className="text-xs text-neutral-400 mt-2 font-medium">
+            Seguridad perimetral y túnel cifrado enrutado a través de Cloudflare Zero Trust.
+          </p>
         </div>
         <div className="flex gap-2">
-          <span className="px-3 py-1 bg-emerald-900/40 border border-emerald-500/50 rounded text-xs font-bold text-emerald-400">ESTADO: SEGURO</span>
+          <span className="px-3 py-1 bg-[#00E5FF]/10 border border-[#00E5FF]/30 rounded-full text-[10px] font-bold text-[#00E5FF] uppercase tracking-widest">
+            ESTADO: PROTEGIDO
+          </span>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div className="bg-neutral-900 border border-emerald-900/50 p-6 rounded-xl flex flex-col justify-center items-center shadow-[inset_0_0_20px_rgba(16,185,129,0.05)]">
-          <Lock size={48} className="text-emerald-500 mb-4 opacity-50" />
-          <p className="text-sm font-bold text-white mb-2 uppercase tracking-widest">Túnel Encriptado</p>
-          <p className="text-xs text-blue-400 text-center max-w-sm">
-            Todo el tráfico hacia la Base de Datos y la API está siendo filtrado por Cloudflare Zero Trust en la capa de red exterior.
+        <div className="bg-[#08090C]/80 border border-[rgba(65,65,65,0.51)] backdrop-blur-xl p-6 rounded-2xl flex flex-col justify-center items-center hover:border-[#00E5FF]/40 transition-colors shadow-lg">
+          <Lock size={40} className="text-[#00E5FF] mb-4 opacity-80" />
+          <p className="text-sm font-extrabold text-white mb-2 uppercase tracking-wider">Túnel Encriptado SSL/TLS</p>
+          <p className="text-xs text-neutral-400 text-center max-w-sm leading-relaxed">
+            Todo el tráfico hacia la Base de Datos y la API de Accrual está cifrado y filtrado en la capa de red.
           </p>
         </div>
-        <div className="bg-neutral-900 border border-emerald-900/50 p-6 rounded-xl flex flex-col justify-center items-center shadow-[inset_0_0_20px_rgba(16,185,129,0.05)]">
-          <ShieldAlert size={48} className="text-blue-500 mb-4 opacity-50" />
-           <p className="text-sm font-bold text-white mb-2 uppercase tracking-widest">Prevención de Inyecciones</p>
-          <p className="text-xs text-blue-400 text-center max-w-sm">
-            Los intentos de inyección SQL, XSS y ataques DDoS son bloqueados automáticamente antes de alcanzar este servidor.
+        <div className="bg-[#08090C]/80 border border-[rgba(65,65,65,0.51)] backdrop-blur-xl p-6 rounded-2xl flex flex-col justify-center items-center hover:border-[#00E5FF]/40 transition-colors shadow-lg">
+          <ShieldAlert size={40} className="text-[#00E5FF] mb-4 opacity-80" />
+          <p className="text-sm font-extrabold text-white mb-2 uppercase tracking-wider">Prevención de Inyecciones</p>
+          <p className="text-xs text-neutral-400 text-center max-w-sm leading-relaxed">
+            Los intentos de inyección SQL, manipulaciones XSS y ataques de denegación de servicio son mitigation-locked.
           </p>
         </div>
       </div>
 
-      <div className="flex-1 bg-[#152033]/60 border border-blue-900/30 rounded-xl overflow-hidden flex flex-col relative min-h-[300px]">
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.03)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none opacity-20"></div>
-        <div className="p-3 border-b border-blue-900/50 bg-blue-900/10 flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <p className="text-xs font-bold text-emerald-500 tracking-widest">TRÁFICO LIMPIO GARANTIZADO</p>
+      <div className="flex-1 bg-[#08090C]/80 border border-[rgba(65,65,65,0.51)] backdrop-blur-xl rounded-2xl overflow-hidden flex flex-col min-h-[280px]">
+        <div className="p-4 border-b border-[rgba(65,65,65,0.51)] bg-white/5 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-[#00E5FF] animate-ping" />
+            <p className="text-xs font-black text-[#00E5FF] tracking-widest uppercase">Tráfico Limpio Garantizado</p>
+          </div>
+          <span className="text-[10px] text-neutral-500 font-mono">ENCRIPTACIÓN 256-BIT</span>
         </div>
-        <div className="flex-1 flex flex-col items-center justify-center p-8 space-y-4">
-          <p className="text-neutral-500 text-sm italic font-medium uppercase tracking-widest text-center">
-            El sistema de protección perimetral no reporta amenazas internas. <br/>Para ver el registro detallado de IPs bloqueadas, consulta tu panel de Cloudflare.
+        <div className="flex-1 flex flex-col items-center justify-center p-8 space-y-4 text-center">
+          <p className="text-neutral-400 text-xs font-medium uppercase tracking-widest max-w-md leading-relaxed">
+            El sistema de protección perimetral no reporta amenazas o vulnerabilidades activas en el core.
           </p>
-          <a href="https://dash.cloudflare.com/" target="_blank" rel="noreferrer" className="px-4 py-2 border border-blue-500/50 text-blue-400 hover:bg-blue-500/10 rounded font-bold text-xs uppercase tracking-widest transition-colors">
-            Ir a Cloudflare Dashboard
+          <a
+            href="https://dash.cloudflare.com/"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#00E5FF] text-[#040508] hover:bg-white rounded-full font-black text-xs uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(0,229,255,0.2)]"
+          >
+            Cloudflare Dashboard <ExternalLink size={14} />
           </a>
         </div>
       </div>
