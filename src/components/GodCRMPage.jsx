@@ -205,22 +205,22 @@ export default function GodCRMPage() {
       {/* ── Top Stats Row ────────────────────────────────────────────── */}
       {activeTab === 'crm' ? (
       <>
-      <div className="px-8 flex items-center justify-between mb-4">
-        <div className="flex bg-[#152033]/60 border border-[#0099CC]/20 rounded-xl p-1 backdrop-blur-sm items-center">
+      <div className="px-8 flex flex-wrap items-center justify-between gap-4 mb-6">
+        <div className="flex flex-wrap items-center gap-2 bg-[#08090C]/80 border border-[rgba(65,65,65,0.51)] rounded-2xl p-2 backdrop-blur-xl">
           <button 
             onClick={() => { setSelectedDate(new Date()); setFilterMode('day'); }} 
-            className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors ${filterMode === 'day' && selectedDate && isSameDay(selectedDate, new Date()) ? 'bg-[#0099CC] text-white' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
+            className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${filterMode === 'day' && selectedDate && isSameDay(selectedDate, new Date()) ? 'bg-[#00E5FF] text-[#040508] shadow-[0_0_15px_rgba(0,229,255,0.3)]' : 'text-neutral-400 hover:text-white hover:bg-white/5'}`}
           >
             Hoy
           </button>
           
-          <div className="border-l border-white/10 pl-2 flex items-center gap-2">
-            <div className="flex flex-col relative" title="Escoger Día Específico">
-              <span className="text-[9px] text-white/30 uppercase font-bold absolute -top-3 left-1">Día</span>
+          <div className="flex items-center gap-3 border-l border-white/10 pl-3">
+            <div className="flex flex-col gap-0.5">
+              <span className="text-[9px] text-neutral-400 font-bold uppercase tracking-wider">Filtrar Día</span>
               <input 
                 type="date"
                 style={{ colorScheme: 'dark' }}
-                className={`bg-transparent text-xs outline-none cursor-pointer p-1 rounded transition-colors ${filterMode === 'day' && selectedDate && !isSameDay(selectedDate, new Date()) ? 'text-white bg-[#0099CC]/20' : 'text-white/50 hover:text-white'}`}
+                className={`bg-[#040508] border border-white/10 text-xs outline-none cursor-pointer px-3 py-1.5 rounded-lg transition-all ${filterMode === 'day' && selectedDate && !isSameDay(selectedDate, new Date()) ? 'text-[#00E5FF] border-[#00E5FF]/40' : 'text-neutral-300 hover:border-white/20'}`}
                 onChange={(e) => {
                   if (e.target.value) {
                     setSelectedDate(new Date(e.target.value + 'T12:00:00'));
@@ -230,17 +230,17 @@ export default function GodCRMPage() {
               />
             </div>
 
-            <div className="flex flex-col relative border-l border-white/5 pl-2" title="Escoger Semana del Año">
-              <span className="text-[9px] text-white/30 uppercase font-bold absolute -top-3 left-3">Semana</span>
+            <div className="flex flex-col gap-0.5">
+              <span className="text-[9px] text-neutral-400 font-bold uppercase tracking-wider">Filtrar Semana</span>
               <input 
                 type="week"
                 style={{ colorScheme: 'dark' }}
-                className={`bg-transparent text-xs outline-none cursor-pointer p-1 rounded transition-colors ${filterMode === 'week' ? 'text-white bg-[#0099CC]/20' : 'text-white/50 hover:text-white'}`}
+                className={`bg-[#040508] border border-white/10 text-xs outline-none cursor-pointer px-3 py-1.5 rounded-lg transition-all ${filterMode === 'week' ? 'text-[#00E5FF] border-[#00E5FF]/40' : 'text-neutral-300 hover:border-white/20'}`}
                 onChange={(e) => {
                   if (e.target.value) {
-                    const [y, w] = e.target.value.split('-W');
-                    const date = new Date(y, 0, 1 + (w - 1) * 7);
-                    setSelectedDate(date);
+                    const [year, week] = e.target.value.split('-W');
+                    const simple = new Date(parseInt(year), 0, 1 + (parseInt(week) - 1) * 7);
+                    setSelectedDate(simple);
                     setFilterMode('week');
                   }
                 }}
@@ -249,10 +249,10 @@ export default function GodCRMPage() {
           </div>
 
           <button 
-            onClick={() => { setSelectedDate(null); setFilterMode('all'); }} 
-            className={`ml-2 px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors border-l border-white/10 ${filterMode === 'all' ? 'bg-[#0099CC] text-white' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
+            onClick={() => setFilterMode('all')} 
+            className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all border ${filterMode === 'all' ? 'bg-[#00E5FF] text-[#040508] border-[#00E5FF] shadow-[0_0_15px_rgba(0,229,255,0.3)]' : 'bg-transparent text-neutral-400 border-white/10 hover:text-white hover:bg-white/5'}`}
           >
-            Todo el tiempo
+            Todo el Tiempo
           </button>
         </div>
         {filterMode !== 'all' && selectedDate && (

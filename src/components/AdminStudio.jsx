@@ -567,171 +567,171 @@ export default function AdminStudio() {
  )}
 
  {/* ██ COL 1: SECCIONES ████████████████████████████████████████████████ */}
- <div className={`relative z-10 transition-all duration-300 flex flex-col border-r border-[#0099cc]/20 bg-[#081a20] ${isSidebarOpen ? 'w-[250px] min-w-[250px]' : 'w-0 min-w-0 overflow-hidden opacity-0 pointer-events-none'}`}>
-  <div className="px-6 pt-6 pb-6 border-b border-[#0099cc]/20 flex flex-col gap-4">
-  <div className="flex items-center gap-3">
-  <div className="w-8 h-8 rounded bg-[#0099CC] flex items-center justify-center text-white font-black text-sm">AC</div>
-  <div>
-    <h1 className="text-sm font-bold text-white tracking-wide">Accrual OS</h1>
-    <p className="text-[9px] font-medium text-neutral-500 uppercase tracking-widest">Admin Workspace</p>
-  </div>
-  </div>
-  </div>
+  <div className={`relative z-10 transition-all duration-300 flex flex-col border-r border-[rgba(65,65,65,0.51)] bg-[#040508]/90 backdrop-blur-2xl ${isSidebarOpen ? 'w-[250px] min-w-[250px]' : 'w-0 min-w-0 overflow-hidden opacity-0 pointer-events-none'}`}>
+   <div className="px-6 pt-6 pb-6 border-b border-white/5 flex flex-col gap-4">
+   <div className="flex items-center gap-3">
+   <div className="w-8 h-8 rounded-lg bg-[#00E5FF] flex items-center justify-center text-[#040508] font-black text-sm shadow-[0_0_15px_rgba(0,229,255,0.4)]">AC</div>
+   <div>
+     <h1 className="text-sm font-black text-white tracking-wide">Accrual OS</h1>
+     <p className="text-[9px] font-bold text-[#00E5FF] uppercase tracking-widest">Admin Workspace</p>
+   </div>
+   </div>
+   </div>
 
-  <div className="flex-1 overflow-y-auto flex flex-col custom-scrollbar px-3 py-4">
-     <div className="space-y-6 shrink-0">
-   {[
-     {
-       title: "Sitio Principal",
-       filter: (n, tag) => tag === 'SITIO PRINCIPAL'
-     },
-     {
-       title: "Quiénes Somos",
-       filter: (n, tag) => tag === 'QUIÉNES SOMOS'
-     },
-     {
-       title: "Servicios",
-       filter: (n, tag) => tag === 'SERVICIOS'
-     },
-     {
-       title: "Artículos",
-       filter: (n, tag) => tag === 'ARTÍCULOS'
-     }
-   ].map((group, gIdx) => {
-     const groupNodes = sortedNodes.filter(n => {
-        const meta = PAGE_SECTIONS.find(s => s.id === n.id);
-        return group.filter(n, meta?.tag);
-     });
-     
-     if (groupNodes.length === 0) return null;
+   <div className="flex-1 overflow-y-auto flex flex-col custom-scrollbar px-3 py-4">
+      <div className="space-y-6 shrink-0">
+    {[
+      {
+        title: "Sitio Principal",
+        filter: (n, tag) => tag === 'SITIO PRINCIPAL'
+      },
+      {
+        title: "Quiénes Somos",
+        filter: (n, tag) => tag === 'QUIÉNES SOMOS'
+      },
+      {
+        title: "Servicios",
+        filter: (n, tag) => tag === 'SERVICIOS'
+      },
+      {
+        title: "Artículos",
+        filter: (n, tag) => tag === 'ARTÍCULOS'
+      }
+    ].map((group, gIdx) => {
+      const groupNodes = sortedNodes.filter(n => {
+         const meta = PAGE_SECTIONS.find(s => s.id === n.id);
+         return group.filter(n, meta?.tag);
+      });
+      
+      if (groupNodes.length === 0) return null;
 
-     return (
-       <div key={gIdx} className="space-y-1 mb-4">
-          <p onClick={() => setCollapsedGroups(p => ({ ...p, [gIdx]: !p[gIdx] }))}
-             className={`px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-widest mb-2 flex items-center justify-between cursor-pointer border transition-all group ${
-               !collapsedGroups[gIdx] ? 'bg-white text-[#0099CC] border-[#0099CC]/30' : 'border-transparent text-[#0099CC]/60 hover:bg-[#0b242c] hover:text-[#0099CC] hover:border-[#0099cc]/20'
-             }`}>
-              <span>{group.title}</span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" 
-                   className={`transition-transform duration-300 ${!collapsedGroups[gIdx] ? 'text-[#0099CC] -rotate-180' : 'text-[#0099CC]/40 group-hover:text-[#0099CC] rotate-0'}`}>
-                <polyline points="6 9 12 15 18 9"></polyline>
-              </svg>
-          </p>
-          
-          <div className={`space-y-1 overflow-hidden transition-all duration-300 ${!collapsedGroups[gIdx] ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
-           {groupNodes.map((node) => {
-              const meta = PAGE_SECTIONS.find(s => s.id === node.id);
-              const isSelected = selectedNodeId === node.id;
-              return (
-              <button key={node.id} onClick={() => handleSelectSection(node)}
-              className={`w-full text-left px-3 py-2 rounded-lg transition-all duration-300 flex items-center border border-transparent ${
-              isSelected ? 'bg-[#0b242c] border-[#0099cc]/20' : 'hover:bg-[#0b242c]/50'
-              }`}
-              >
-              <SectionIcon iconName={meta?.icon} />
-              <div className="min-w-0 flex-1 flex justify-between items-center">
-                <span className={`text-xs font-semibold truncate transition-colors duration-300 ${isSelected ? 'text-white' : 'text-neutral-400'}`}>
-                {meta?.label || node.id}
-                </span>
-                {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-[#0099CC]"></span>}
-              </div>
-              </button>
-              );
-           })}
+      return (
+        <div key={gIdx} className="space-y-1 mb-4">
+           <p onClick={() => setCollapsedGroups(p => ({ ...p, [gIdx]: !p[gIdx] }))}
+              className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest mb-2 flex items-center justify-between cursor-pointer border transition-all group ${
+                !collapsedGroups[gIdx] ? 'bg-white/10 text-white border-white/10' : 'border-transparent text-neutral-400 hover:bg-white/5 hover:text-white'
+              }`}>
+               <span>{group.title}</span>
+               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" 
+                    className={`transition-transform duration-300 ${!collapsedGroups[gIdx] ? 'text-[#00E5FF] -rotate-180' : 'text-neutral-500 group-hover:text-white rotate-0'}`}>
+                 <polyline points="6 9 12 15 18 9"></polyline>
+               </svg>
+           </p>
+           
+           <div className={`space-y-1 overflow-hidden transition-all duration-300 ${!collapsedGroups[gIdx] ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+            {groupNodes.map((node) => {
+               const meta = PAGE_SECTIONS.find(s => s.id === node.id);
+               const isSelected = selectedNodeId === node.id;
+               return (
+               <button key={node.id} onClick={() => handleSelectSection(node)}
+               className={`w-full text-left px-3 py-2 rounded-lg transition-all duration-300 flex items-center border ${
+               isSelected ? 'bg-[#00E5FF]/10 text-white border-[#00E5FF]/30' : 'border-transparent text-neutral-400 hover:bg-white/5 hover:text-white'
+               }`}
+               >
+               <SectionIcon iconName={meta?.icon} />
+               <div className="min-w-0 flex-1 flex justify-between items-center">
+                 <span className={`text-xs font-semibold truncate transition-colors duration-300 ${isSelected ? 'text-white' : 'text-neutral-400'}`}>
+                 {meta?.label || node.id}
+                 </span>
+                 {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-[#00E5FF]"></span>}
+               </div>
+               </button>
+               );
+            })}
+          </div>
+        </div>
+      );
+    })}
+   </div>
+
+     {canSeePanelMaestro && (
+         <div className="mt-4">
+             <div className="text-[10px] font-black tracking-widest text-[#00E5FF] uppercase px-3 mb-1.5 flex items-center gap-1.5">
+                 <LayoutDashboard size={12} /> Gestión Web
+             </div>
+             <button onClick={() => { navigate('/admin/master'); }}
+             className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='panel_maestro' ?'bg-[#00E5FF]/10 text-white border-[#00E5FF]/30' :'text-neutral-400 border-transparent hover:text-white hover:bg-white/5' }`}>
+             <LayoutDashboard size={14} className="mr-2.5 text-[#00E5FF]" /> Panel Maestro Web
+             </button>
          </div>
-       </div>
-     );
-   })}
-  </div>
+     )}
 
-    {canSeePanelMaestro && (
-        <div className="mt-4">
-            <div className="text-[10px] font-black tracking-widest text-[#0099CC] uppercase px-3 mb-1.5 flex items-center gap-1.5">
-                <LayoutDashboard size={12} /> Gestión Web
+     {canSeeSqlAtaques && (
+         <div className="mt-4">
+             <div className="text-[10px] font-black tracking-widest text-[#00E5FF] uppercase px-3 mb-1.5 flex items-center gap-1.5">
+                 <ShieldAlert size={12} /> Seguridad & IT
+             </div>
+             <button onClick={() => { navigate('/admin/sql'); }}
+             className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='sql_ataques' ?'bg-[#00E5FF]/10 text-white border-[#00E5FF]/30' :'text-neutral-400 border-transparent hover:text-white hover:bg-white/5' }`}>
+             <ShieldAlert size={14} className="mr-2.5 text-rose-400" /> Ataques SQL
+             </button>
+         </div>
+     )}
+
+     {isGod && (
+         <div className="mt-4">
+             <div className="text-[10px] font-black tracking-widest text-[#00E5FF] uppercase px-3 mb-1.5 flex items-center gap-1.5">
+                 <Bot size={12} /> Inteligencia & CRM
+             </div>
+             <div className="space-y-1">
+                 <button onClick={() => { navigate('/admin/crm'); }}
+                 className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='crm' ?'bg-[#00E5FF]/10 text-white border-[#00E5FF]/30' :'text-neutral-400 border-transparent hover:text-white hover:bg-white/5' }`}>
+                 <MessageCircle size={14} className="mr-2.5 text-[#00E5FF]" /> CRM / Leads
+                 </button>
+
+                 <button onClick={() => { navigate('/admin/bot'); }}
+                 className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='bot' ?'bg-[#00E5FF]/10 text-white border-[#00E5FF]/30' :'text-neutral-400 border-transparent hover:text-white hover:bg-white/5' }`}>
+                 <Bot size={14} className="mr-2.5 text-[#00E5FF]" /> Bot Monitor
+                 </button>
+
+                 <button onClick={() => { navigate('/admin/agenda'); }}
+                 className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='agenda' ?'bg-[#00E5FF]/10 text-[#00E5FF] border-[#00E5FF]/30 font-bold' :'text-neutral-400 border-transparent hover:text-white hover:bg-white/5' }`}>
+                 <Calendar size={14} className="mr-2.5 text-[#00E5FF]" /> Citas y Calendario
+                 </button>
+             </div>
+         </div>
+     )}
+     </div>
+
+     {/* Footer Sidebar Area */}
+     <div className="p-4 border-t border-white/5 shrink-0">
+         <button onClick={() => { navigate('/admin/profile'); }}
+         className={`w-full p-2 flex items-center gap-3 transition-colors rounded-lg border mb-2 ${ activeSection ==='profile' ?'bg-[#00E5FF]/10 border-[#00E5FF]/30' :'border-transparent hover:bg-white/5' }`}>
+            <div className="w-8 h-8 rounded-full bg-white/10 overflow-hidden shrink-0 flex items-center justify-center text-neutral-400">
+                {adminProfile?.photo_url ? <img src={adminProfile.photo_url} className="w-full h-full object-cover"/> : <User size={16} />}
             </div>
-            <button onClick={() => { navigate('/admin/master'); }}
-            className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='panel_maestro' ?'bg-[#0b242c] text-white border-[#0099cc]/40' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
-            <LayoutDashboard size={14} className="mr-2.5 text-[#00D0B0]" /> Panel Maestro Web
-            </button>
-        </div>
-    )}
-
-    {canSeeSqlAtaques && (
-        <div className="mt-4">
-            <div className="text-[10px] font-black tracking-widest text-[#0099CC] uppercase px-3 mb-1.5 flex items-center gap-1.5">
-                <ShieldAlert size={12} /> Seguridad & IT
+            <div className="flex-1 text-left min-w-0">
+                <p className={`text-xs font-semibold truncate transition-colors ${ activeSection ==='profile' ?'text-white' :'text-neutral-400' }`}>{adminProfile?.username || 'Usuario'}</p>
+                <p className={`text-[10px] text-neutral-500 font-medium`}>
+                    {isGod ? 'Master' : isCEO ? 'Admin' : 'Editor'}
+                </p>
             </div>
-            <button onClick={() => { navigate('/admin/sql'); }}
-            className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='sql_ataques' ?'bg-[#0b242c] text-white border-[#0099cc]/40' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
-            <ShieldAlert size={14} className="mr-2.5 text-rose-400" /> Ataques SQL
-            </button>
-        </div>
-    )}
-
-    {isGod && (
-        <div className="mt-4">
-            <div className="text-[10px] font-black tracking-widest text-[#0099CC] uppercase px-3 mb-1.5 flex items-center gap-1.5">
-                <Bot size={12} /> Inteligencia & CRM
-            </div>
-            <div className="space-y-1">
-                <button onClick={() => { navigate('/admin/crm'); }}
-                className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='crm' ?'bg-[#0b242c] text-white border-[#0099cc]/40' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
-                <MessageCircle size={14} className="mr-2.5 text-[#00D0B0]" /> CRM / Leads
-                </button>
-
-                <button onClick={() => { navigate('/admin/bot'); }}
-                className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='bot' ?'bg-[#0b242c] text-white border-[#0099cc]/40' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
-                <Bot size={14} className="mr-2.5 text-[#00D0B0]" /> Bot Monitor
-                </button>
-
-                <button onClick={() => { navigate('/admin/agenda'); }}
-                className={`w-full text-xs py-2 rounded-lg transition-all font-semibold flex items-center justify-start px-3 border ${ activeSection ==='agenda' ?'bg-[#0b242c] text-[#00D0B0] border-[#0099cc]/40 font-bold' :'text-neutral-400 border-transparent hover:text-white hover:bg-[#0b242c]/50' }`}>
-                <Calendar size={14} className="mr-2.5 text-[#00D0B0]" /> Citas y Calendario
-                </button>
-            </div>
-        </div>
-    )}
-    </div>
-
-    {/* Footer Sidebar Area */}
-    <div className="p-4 border-t border-[#0099cc]/20 shrink-0">
-        <button onClick={() => { navigate('/admin/profile'); }}
-        className={`w-full p-2 flex items-center gap-3 transition-colors rounded-lg border mb-2 ${ activeSection ==='profile' ?'bg-[#0b242c] border-[#0099cc]/20' :'border-transparent hover:bg-[#0b242c]/50' }`}>
-           <div className="w-8 h-8 rounded-full bg-neutral-800 overflow-hidden shrink-0 flex items-center justify-center text-neutral-500">
-               {adminProfile?.photo_url ? <img src={adminProfile.photo_url} className="w-full h-full object-cover"/> : <User size={16} />}
-           </div>
-           <div className="flex-1 text-left min-w-0">
-               <p className={`text-xs font-semibold truncate transition-colors ${ activeSection ==='profile' ?'text-white' :'text-neutral-400' }`}>{adminProfile?.username || 'Usuario'}</p>
-               <p className={`text-[10px] text-neutral-600 font-medium`}>
-                   {isGod ? 'Master' : isCEO ? 'Admin' : 'Editor'}
-               </p>
-           </div>
+        </button>
+        
+       <button onClick={() => {
+           const isIT = ['jareg', 'accrual_admin', 'dani', 'oscar'].includes(adminProfile?.username?.toLowerCase());
+           if (isIT) {
+               setIsAnalyticsMode(false);
+               navigate('/admin/bugs');
+               setSelectedNodeId(null);
+           } else {
+               setShowFeedbackModal(true);
+           }
+       }}
+       className={`w-full text-xs flex justify-start items-center gap-3 px-2 py-2 mb-2 rounded-lg transition-all font-semibold border ${activeSection === 'bugs' ? 'bg-[#00E5FF]/10 text-white border-[#00E5FF]/30' : 'text-neutral-400 border-transparent hover:text-white hover:bg-white/5'}`}>
+       <Lightbulb size={14} /> {activeSection === 'bugs' ? 'Monitoreo IT' : 'Sugerencias / Bugs'}
        </button>
-       
-      <button onClick={() => {
-          const isIT = ['jareg', 'accrual_admin', 'dani', 'oscar'].includes(adminProfile?.username?.toLowerCase());
-          if (isIT) {
-              setIsAnalyticsMode(false);
-              navigate('/admin/bugs');
-              setSelectedNodeId(null);
-          } else {
-              setShowFeedbackModal(true);
-          }
-      }}
-      className={`w-full text-xs flex justify-start items-center gap-3 px-2 py-2 mb-2 rounded-lg transition-all font-semibold border ${activeSection === 'bugs' ? 'bg-[#0b242c] text-white border-[#0099cc]/20' : 'text-neutral-500 border-transparent hover:text-white hover:bg-[#0b242c]/50'}`}>
-      <Lightbulb size={14} /> {activeSection === 'bugs' ? 'Monitoreo IT' : 'Sugerencias / Bugs'}
-      </button>
 
-      <button onClick={() => { localStorage.clear(); navigate('/login'); }}
-     className="w-full flex items-center justify-start px-2 gap-3 text-xs text-red-500/80 font-semibold hover:text-red-500 hover:bg-red-500/10 border border-transparent py-2 rounded-lg transition-all">
-     <LogOut size={14} /> Cerrar sesión
-     </button>
-    </div>
-  </div>
-  <div className="flex-1 flex flex-col overflow-hidden relative z-10 bg-[#051014] border-l border-[#0099cc]/20">
-  <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="absolute top-16 left-0 z-50 w-6 h-8 bg-[#0b242c] text-neutral-400 flex items-center justify-center rounded-r-md border border-[#0099cc]/20 border-l-transparent hover:text-[#0099cc] hover:bg-[#051014] transition-all">
-      <span className="text-[10px] font-bold">{isSidebarOpen ? '❮' : '❯'}</span>
-  </button>
+       <button onClick={() => { localStorage.clear(); navigate('/login'); }}
+      className="w-full flex items-center justify-start px-2 gap-3 text-xs text-rose-400 font-semibold hover:text-rose-300 hover:bg-rose-500/10 border border-transparent py-2 rounded-lg transition-all">
+      <LogOut size={14} /> Cerrar sesión
+      </button>
+     </div>
+   </div>
+   <div className="flex-1 flex flex-col overflow-hidden relative z-10 bg-[#040508] border-l border-[rgba(65,65,65,0.51)]">
+   <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="absolute top-16 left-0 z-50 w-6 h-8 bg-[#08090C] text-neutral-400 flex items-center justify-center rounded-r-md border border-[rgba(65,65,65,0.51)] border-l-transparent hover:text-[#00E5FF] hover:bg-white/5 transition-all">
+       <span className="text-[10px] font-bold">{isSidebarOpen ? '❮' : '❯'}</span>
+   </button>
   <div style={{ display: (!isAnalyticsMode && activeSection === 'social_studio') ? 'flex' : 'none', flex: 1, height: '100%', overflow: 'hidden' }}>
       <CockersStudio adminProfile={adminProfile} forceOpenEditor={false} />
   </div>
