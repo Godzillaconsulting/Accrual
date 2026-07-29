@@ -39,9 +39,18 @@ const ErrorBoundary = React.lazy(() => import('./components/ErrorBoundary'));
 import PrivateRoute from './components/PrivateRoute';
 import { Navigate } from 'react-router-dom';
 
+import CustomCursor from './components/trionn/CustomCursor';
+import CanvasGlow from './components/trionn/CanvasGlow';
+import TrionnPreloader from './components/trionn/TrionnPreloader';
+import NoiseOverlay from './components/trionn/NoiseOverlay';
+
 function App() {
     return (
         <>
+            <TrionnPreloader />
+            <CanvasGlow />
+            <NoiseOverlay />
+            <CustomCursor />
             <ScrollToTop />
             <Suspense fallback={<Loader />}>
                 <Routes>
