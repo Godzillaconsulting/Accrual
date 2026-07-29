@@ -178,7 +178,7 @@ export default function AIContentPlanner({ adminProfile }) {
                 alert(data.error || 'Error generando plan');
             }
         } catch (err) {
-            console.error(err);
+            // console.error(err);
             alert('Fallo de conexión con el servidor.');
         }
         setGenerating(false);
@@ -208,7 +208,7 @@ export default function AIContentPlanner({ adminProfile }) {
             if (data.success) alert(`Día ${day.dia} "${day['Tema']}" enviado al Calendario de Contenido.`);
             else alert(data.error || 'Error enviando al calendario.');
         } catch (err) {
-            console.error(err);
+            // console.error(err);
             alert('Fallo de conexión.');
         }
     };

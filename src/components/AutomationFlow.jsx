@@ -69,7 +69,7 @@ export default function AutomationFlow() {
                     setEdges(data.edges || []);
                 }
             } catch (err) {
-                console.error('Error cargando flow:', err);
+                // console.error('Error cargando flow:', err);
             } finally {
                 setIsLoading(false);
             }

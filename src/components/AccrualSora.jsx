@@ -53,7 +53,7 @@ export default function AccrualSora() {
                 setRecipeHistory(historyProxy);
             }
         } catch (e) {
-            console.error("NodeJS Proxy no responde para el historial.", e);
+            // console.error("NodeJS Proxy no responde para el historial.", e);
         }
     };
 

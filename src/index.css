@@ -3,8 +3,22 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --fs: 0.85vw;
+    --bg-obsidian: #040508;
+    --bg-surface: #08090C;
+    --bg-card: #0B0D12;
+    --border-grid: #2F323B;
+    --border-dim: rgba(65,65,65,0.51);
+    --text-main: #FFFFFF;
+    --text-muted: #D8D8D8;
+    --accent-cyan: #00D0B0;
+  }
+
   body {
-    @apply antialiased text-gray-900 bg-[#D0D0DA] overflow-x-hidden;
+    @apply antialiased overflow-x-hidden;
+    background-color: var(--bg-obsidian);
+    color: var(--text-main);
     font-feature-settings: "cv11", "ss01";
   }
 

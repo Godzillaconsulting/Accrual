@@ -6,6 +6,8 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: accrual-api
+    mem_limit: 384m
+    mem_reservation: 192m
     ports:
       - "3002:3002"
     environment:
@@ -16,12 +18,19 @@ services:
       - ./media-uploads:/app/media-uploads
       - ./pgdata:/var/lib/postgresql/data # Placeholder if PG is inside, else just standard
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 384M
 
   accrual-bot:
     build:
       context: .
       dockerfile: Dockerfile.bot
     container_name: accrual-bot
+    mem_limit: 384m
+    mem_reservation: 192m
     ports:
       - "3001:3001"
     environment:
@@ -33,6 +42,11 @@ services:
       - ./media-uploads:/app/media-uploads
       - ./qr_accrual.png:/app/qr_accrual.png
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 384M
 
   accrual-cloudflare-tunnel:
     image: cloudflare/cloudflared:latest
