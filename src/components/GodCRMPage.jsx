@@ -164,9 +164,9 @@ export default function GodCRMPage() {
         <div className="flex items-center gap-4">
           <div>
             <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
-              Hola, GodZilla 👋
+              Hola, GodZilla
             </h1>
-            <p className="text-sm text-[#0099CC] mt-1 font-semibold tracking-wider">
+            <p className="text-sm text-[#00E5FF] mt-1 font-semibold tracking-wider">
               Resumen de prospectos y operaciones de la firma
             </p>
           </div>
@@ -266,7 +266,7 @@ export default function GodCRMPage() {
         {!location.pathname.includes('/agenda') && (
         <div 
           onClick={() => document.getElementById('leads-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-          className="bg-[#152033]/60 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex items-center gap-4 hover:border-[#0099CC] hover:bg-[#0099CC]/10 transition-all cursor-pointer group"
+          className="bg-[#08090C]/80 border border-[rgba(65,65,65,0.51)] backdrop-blur-xl rounded-2xl p-6 flex items-center gap-4 hover:border-[#0099CC] hover:bg-[#0099CC]/10 transition-all cursor-pointer group"
         >
           <div className="w-12 h-12 rounded-xl bg-[#0099CC]/10 flex items-center justify-center border border-[#0099CC]/30 shrink-0 group-hover:scale-110 transition-transform">
             <Users className="text-[#0099CC]" size={24} />
@@ -281,7 +281,7 @@ export default function GodCRMPage() {
         {location.pathname.includes('/agenda') && (
         <div 
           onClick={() => document.getElementById('agenda-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-          className="bg-[#152033]/60 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex items-center gap-4 hover:border-[#0099CC] hover:bg-[#0099CC]/10 transition-all cursor-pointer group"
+          className="bg-[#08090C]/80 border border-[rgba(65,65,65,0.51)] backdrop-blur-xl rounded-2xl p-6 flex items-center gap-4 hover:border-[#0099CC] hover:bg-[#0099CC]/10 transition-all cursor-pointer group"
         >
           <div className="w-12 h-12 rounded-xl bg-[#0099CC]/10 flex items-center justify-center border border-[#0099CC]/30 shrink-0 group-hover:scale-110 transition-transform">
             <Calendar className="text-[#0099CC]" size={24} />
@@ -296,7 +296,7 @@ export default function GodCRMPage() {
         {!location.pathname.includes('/agenda') && (
         <div 
           onClick={() => document.getElementById('leads-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-          className="bg-[#152033]/60 border border-[#0099CC]/20 backdrop-blur-sm rounded-2xl p-6 flex items-center gap-4 hover:border-[#0099CC]/50 transition-colors cursor-pointer group"
+          className="bg-[#08090C]/80 border border-[rgba(65,65,65,0.51)] backdrop-blur-xl rounded-2xl p-6 flex items-center gap-4 hover:border-[#0099CC]/50 transition-colors cursor-pointer group"
         >
           <div className="w-12 h-12 rounded-xl bg-[#0099CC]/10 flex items-center justify-center border border-[#0099CC]/30 shrink-0 group-hover:scale-110 transition-transform">
             <Clock className="text-[#0099CC]" size={24} />

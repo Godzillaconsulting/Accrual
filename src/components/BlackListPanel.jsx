@@ -136,13 +136,13 @@ export default function BlackListPanel({ adminProfile }) {
     };
 
     return (
-        <div className="flex-1 flex flex-col p-6 md:p-10 bg-[#0a0a0a] text-white overflow-y-auto">
-            <div className="mb-8 border-b border-white/5 pb-6 flex items-center justify-between">
+        <div className="flex-1 flex flex-col p-6 md:p-10 bg-[#040508] text-white overflow-y-auto">
+            <div className="mb-8 border-b border-[rgba(65,65,65,0.51)] pb-6 flex items-center justify-between">
                 <div>
-                    <h2 className="text-xl font-bold tracking-tight text-white flex items-center gap-3">
-                        <Ban size={24} className="text-[#0099CC]" /> Black List
+                    <h2 className="text-xl font-black tracking-tight text-white flex items-center gap-3">
+                        <Ban size={24} className="text-[#00E5FF]" /> Red Protegida - Blacklist
                     </h2>
-                    <p className="text-xs text-neutral-500 mt-2 font-medium">Gestión de números bloqueados para el Bot de WhatsApp.</p>
+                    <p className="text-xs text-neutral-400 mt-2 font-medium">Gestión de números bloqueados para el Bot de WhatsApp.</p>
                 </div>
             </div>
 
