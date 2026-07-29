@@ -339,15 +339,26 @@ export default function GodCRMPage() {
                 date={calendarDate}
                 onNavigate={setCalendarDate}
                 selectable={true}
+                dayPropGetter={(date) => {
+                  if (selectedDate && isSameDay(date, selectedDate)) {
+                    return {
+                      className: 'bg-[#00E5FF]/30 border-2 border-[#00E5FF] shadow-[0_0_20px_rgba(0,229,255,0.4)]',
+                      style: {
+                        backgroundColor: 'rgba(0, 229, 255, 0.25)',
+                        outline: '2px solid #00E5FF',
+                        outlineOffset: '-2px'
+                      }
+                    };
+                  }
+                  return {};
+                }}
                 onSelectSlot={(slotInfo) => {
                   setSelectedDate(slotInfo.start);
                   setFilterMode('day');
-                  document.getElementById('leads-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }}
                 onSelectEvent={(event) => {
                   setSelectedDate(event.start);
                   setFilterMode('day');
-                  document.getElementById('leads-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }}
                 messages={{
                   next: "Sig",
@@ -362,7 +373,7 @@ export default function GodCRMPage() {
                   event: "Evento",
                   noEventsInRange: "No hay citas en este periodo."
                 }}
-                style={{ height: '400px', color: 'white' }}
+                style={{ height: '450px', color: 'white' }}
                 className="custom-calendar-theme text-xs"
               />
             </div>
