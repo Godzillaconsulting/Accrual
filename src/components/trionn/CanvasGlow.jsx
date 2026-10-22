@@ -4,11 +4,16 @@ export default function CanvasGlow() {
   const canvasRef = useRef(null);
 
   useEffect(() => {
+    // Disable completely on mobile/touch devices to save CPU and battery
+    const isTouch = window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 768;
+    if (isTouch) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const ctx = canvas.getContext('2d');
     let animationFrameId;
+    let isRunning = false;
 
     let width = (canvas.width = window.innerWidth);
     let height = (canvas.height = window.innerHeight);
@@ -23,17 +28,12 @@ export default function CanvasGlow() {
       height = canvas.height = window.innerHeight;
     };
 
-    const handleMouseMove = (e) => {
-      targetX = e.clientX;
-      targetY = e.clientY;
-    };
-
-    window.addEventListener('resize', handleResize);
-    window.addEventListener('mousemove', handleMouseMove);
-
     const render = () => {
-      mouseX += (targetX - mouseX) * 0.05;
-      mouseY += (targetY - mouseY) * 0.05;
+      const dx = targetX - mouseX;
+      const dy = targetY - mouseY;
+
+      mouseX += dx * 0.08;
+      mouseY += dy * 0.08;
 
       ctx.clearRect(0, 0, width, height);
 
@@ -43,20 +43,38 @@ export default function CanvasGlow() {
         0,
         mouseX,
         mouseY,
-        Math.max(width, height) * 0.4
+        Math.max(width, height) * 0.35
       );
 
-      // Trionn Cyan Accent Glow: #00E5FF with low opacity
-      gradient.addColorStop(0, 'rgba(0, 229, 255, 0.07)');
-      gradient.addColorStop(0.5, 'rgba(0, 208, 176, 0.02)');
+      gradient.addColorStop(0, 'rgba(0, 229, 255, 0.06)');
+      gradient.addColorStop(0.5, 'rgba(0, 208, 176, 0.015)');
       gradient.addColorStop(1, 'rgba(4, 5, 8, 0)');
 
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, width, height);
 
-      animationFrameId = requestAnimationFrame(render);
+      // Stop looping if mouse is settled to save CPU
+      if (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5) {
+        animationFrameId = requestAnimationFrame(render);
+      } else {
+        isRunning = false;
+      }
     };
 
+    const handleMouseMove = (e) => {
+      targetX = e.clientX;
+      targetY = e.clientY;
+      if (!isRunning) {
+        isRunning = true;
+        animationFrameId = requestAnimationFrame(render);
+      }
+    };
+
+    window.addEventListener('resize', handleResize, { passive: true });
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+
+    // Initial render
+    isRunning = true;
     render();
 
     return () => {
@@ -69,7 +87,7 @@ export default function CanvasGlow() {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-0"
+      className="fixed inset-0 pointer-events-none z-0 hidden md:block"
       style={{ opacity: 0.95 }}
     />
   );

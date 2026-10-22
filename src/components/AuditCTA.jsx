@@ -21,12 +21,13 @@ const AuditCTA = () => {
                         />
                     ) : (
                         <video
-                            className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"
+                            className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-110 hidden md:block"
                             src={data.ctaImageUrl || backgroundVideo}
                             autoPlay
                             loop
                             muted
                             playsInline
+                            preload="none"
                         />
                     )}
                     <div className="absolute inset-0 bg-black/10 pointer-events-none"></div>

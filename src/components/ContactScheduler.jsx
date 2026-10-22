@@ -35,12 +35,21 @@ const ContactScheduler = ({ showHeader = false, showMap = true }) => {
     const scrollContainerRef = useRef(null);
 
     useEffect(() => {
-        fetch('https://ipapi.co/json/')
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 1200);
+        fetch('https://ipapi.co/json/', { signal: controller.signal })
             .then(res => res.json())
             .then(data => {
-                if (data.city) setUserCity(data.city);
+                clearTimeout(timeout);
+                if (data && data.city) setUserCity(data.city);
             })
-            .catch(err => console.error('Error fetching location:', err));
+            .catch(() => {
+                // Silently fallback without blocking
+            });
+        return () => {
+            clearTimeout(timeout);
+            controller.abort();
+        };
     }, []);
 
     useEffect(() => {
