@@ -133,13 +133,7 @@ const Footer = () => {
                     </div>
                     <div className="flex flex-col items-center gap-6 mt-4">
                         <p className="text-[10px] tracking-widest opacity-60 text-center">Copyright © 2026 Todos los derechos reservados</p>
-                        <Link 
-                            to="/login"
-                            title="Panel Maestro" 
-                            className="p-4 opacity-20 hover:opacity-100 hover:text-[#00bcd4] hover:scale-110 transition-all cursor-pointer"
-                        >
-                            <Lock size={24} />
-                        </Link>
+                        {/* Secured Admin Portal */}
                     </div>
                 </div>
             </div>

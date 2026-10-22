@@ -117,6 +117,25 @@ const initDB = async () => {
                 created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
             );
 
+            CREATE TABLE IF NOT EXISTS accrual_contact_messages (
+                id SERIAL PRIMARY KEY,
+                nombre VARCHAR(100) NOT NULL,
+                apellidos VARCHAR(100),
+                email VARCHAR(255) NOT NULL,
+                telefono VARCHAR(50),
+                servicio VARCHAR(255),
+                mensaje TEXT,
+                status VARCHAR(50) DEFAULT 'nuevo',
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+            );
+
+            CREATE TABLE IF NOT EXISTS accrual_leads (
+                id SERIAL PRIMARY KEY,
+                email VARCHAR(255) UNIQUE NOT NULL,
+                source VARCHAR(100) DEFAULT 'lead_magnet',
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+            );
+
             CREATE TABLE IF NOT EXISTS wa_blacklist (
                 phone_number VARCHAR(20) PRIMARY KEY,
                 added_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -322,6 +341,77 @@ app.get('/api/public/appointments', async (req, res) => {
         return res.status(200).json(bookedData);
     } catch (error) {
         return res.status(500).json({ error: error.message });
+    }
+});
+
+// === RUTA PÚBLICA DE CONTACTO DIRECTO ===
+app.post('/api/public/contact', publicAppointmentsLimiter, async (req, res) => {
+    try {
+        const sanitize = (str) => {
+            if (typeof str !== 'string') return '';
+            return str.replace(/</g, '&lt;').replace(/>/g, '&gt;').trim();
+        };
+
+        const raw = req.body || {};
+        const nombre = sanitize(raw.nombre);
+        const apellidos = sanitize(raw.apellidos);
+        const email = sanitize(raw.email);
+        const telefono = sanitize(raw.telefono);
+        const servicio = sanitize(raw.servicio);
+        const mensaje = sanitize(raw.mensaje);
+
+        if (!nombre || !email || !mensaje) {
+            return res.status(400).json({ success: false, error: 'Nombre, correo y mensaje son obligatorios.' });
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ success: false, error: 'Correo electrónico inválido.' });
+        }
+
+        if (nombre.length > 100 || apellidos.length > 100 || email.length > 255 || telefono.length > 50) {
+            return res.status(400).json({ success: false, error: 'Campos exceden la longitud permitida.' });
+        }
+
+        const result = await pool.query(
+            `INSERT INTO accrual_contact_messages (nombre, apellidos, email, telefono, servicio, mensaje)
+             VALUES ($1, $2, $3, $4, $5, $6)
+             RETURNING id`,
+            [nombre, apellidos, email, telefono, servicio, mensaje]
+        );
+
+        return res.status(201).json({ success: true, message: 'Mensaje recibido correctamente.', messageId: result.rows[0].id });
+    } catch (err) {
+        console.error('Error al guardar mensaje de contacto:', err);
+        return res.status(500).json({ success: false, error: 'Error interno del servidor.' });
+    }
+});
+
+// === RUTA PÚBLICA DE CAPTURA DE LEADS (Lead Magnet) ===
+app.post('/api/leads', publicAppointmentsLimiter, async (req, res) => {
+    try {
+        const { email } = req.body || {};
+        if (!email || typeof email !== 'string') {
+            return res.status(400).json({ success: false, error: 'Correo electrónico requerido.' });
+        }
+
+        const sanitizedEmail = email.replace(/</g, '&lt;').replace(/>/g, '&gt;').trim().toLowerCase();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(sanitizedEmail) || sanitizedEmail.length > 255) {
+            return res.status(400).json({ success: false, error: 'Correo electrónico inválido.' });
+        }
+
+        await pool.query(
+            `INSERT INTO accrual_leads (email, source)
+             VALUES ($1, 'lead_magnet')
+             ON CONFLICT (email) DO NOTHING`,
+            [sanitizedEmail]
+        );
+
+        return res.status(200).json({ success: true, message: 'Lead registrado exitosamente.' });
+    } catch (err) {
+        console.error('Error al capturar lead:', err);
+        return res.status(500).json({ success: false, error: 'Error interno al procesar solicitud.' });
     }
 });
 
@@ -657,7 +747,7 @@ app.post('/api/whatsapp/status', async (req, res) => {
 });
 
 // Obtener QR de WhatsApp en tiempo real
-app.get('/api/whatsapp/qr', async (req, res) => {
+app.get('/api/whatsapp/qr', authenticateJWT, requireSuperAdmin, async (req, res) => {
     try {
         const result = await pool.query("SELECT qr_status, token_sesion FROM wa_sessions WHERE numero_telefono = 'accrual_bot'");
         if (result.rows.length > 0) {

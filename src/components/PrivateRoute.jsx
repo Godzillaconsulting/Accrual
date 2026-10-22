@@ -38,7 +38,7 @@ export default function PrivateRoute({ children }) {
  }
 
  if (status ==='denied') {
- return <Navigate to="/login" replace />;
+ return <Navigate to="/" replace />;
  }
 
  return children;

@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /cm
+Disallow: /accrual-sora
+
+Sitemap: https://accrual.com.mx/sitemap.xml

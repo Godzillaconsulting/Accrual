@@ -73,16 +73,13 @@ const Navbar = () => {
                     to="/"
                     onClick={handleScrollToTop}
                     onMouseEnter={() => playSound('hover')}
-                    className="flex items-center gap-3 shrink-0"
+                    className="flex items-center shrink-0"
                 >
                     <img
                         src={accrualLogo}
                         alt="Accrual Logo"
                         className="h-9 w-auto object-contain"
                     />
-                    <span className="hidden sm:inline-block text-[10px] font-extrabold tracking-widest text-[#00E5FF] bg-[#00E5FF]/10 border border-[#00E5FF]/30 px-2 py-0.5 rounded-full uppercase">
-                        PRO
-                    </span>
                 </Link>
 
                 {/* Central Pill Navigation Links */}

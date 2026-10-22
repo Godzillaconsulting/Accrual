@@ -1,6 +1,25 @@
 version: "3.8"
 
 services:
+  db:
+    image: postgres:16-alpine
+    container_name: accrual-db
+    environment:
+      - POSTGRES_DB=accrual
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=godzilla2026
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+      - ./database/schema_accrual_v1.sql:/docker-entrypoint-initdb.d/schema_accrual_v1.sql
+    ports:
+      - "5434:5432"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 384M
+
   accrual-api:
     build:
       context: .
@@ -16,8 +35,9 @@ services:
       - .env
     volumes:
       - ./media-uploads:/app/media-uploads
-      - ./pgdata:/var/lib/postgresql/data # Placeholder if PG is inside, else just standard
     restart: unless-stopped
+    depends_on:
+      - db
     deploy:
       resources:
         limits:
@@ -42,6 +62,8 @@ services:
       - ./media-uploads:/app/media-uploads
       - ./qr_accrual.png:/app/qr_accrual.png
     restart: unless-stopped
+    depends_on:
+      - db
     deploy:
       resources:
         limits:

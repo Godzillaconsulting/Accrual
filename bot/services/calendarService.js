@@ -18,7 +18,7 @@ let authClient = null;
 const getAuthClient = async () => {
     if (authClient) return authClient;
     if (!fs.existsSync(CREDENTIALS_PATH)) {
-        throw new Error('credentials.json no encontrado en Accrual/Accrual');
+        throw new Error('credentials.json no encontrado');
     }
     const auth = new google.auth.GoogleAuth({
         keyFile: CREDENTIALS_PATH,

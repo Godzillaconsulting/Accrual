@@ -71,11 +71,12 @@ function App() {
                     <Route path="/soluciones/negocio" element={<LandingPymes />} />
                     <Route path="/soluciones/corporativo" element={<LandingCorporativo />} />
                     
-                    {/* Admin Routes (Dashboard Integrado) */}
-                    <Route path="/login" element={<Login />} />
+                    {/* Admin Routes (Portal Privado Protegido) */}
+                    <Route path="/portal-privado" element={<Login />} />
+                    <Route path="/login" element={<Navigate to="/" replace />} />
                     <Route path="/admin/*" element={<ErrorBoundary><PrivateRoute><AdminStudio /></PrivateRoute></ErrorBoundary>} />
-                    <Route path="/cm" element={<Navigate to="/admin/calendar" replace />} />
-                    <Route path="/studio" element={<Navigate to="/admin/studio" replace />} />
+                    <Route path="/cm" element={<ErrorBoundary><PrivateRoute><AdminStudio /></PrivateRoute></ErrorBoundary>} />
+                    <Route path="/studio" element={<ErrorBoundary><PrivateRoute><AdminStudio /></PrivateRoute></ErrorBoundary>} />
                     <Route path="/accrual-sora" element={<ErrorBoundary><PrivateRoute><AccrualSora /></PrivateRoute></ErrorBoundary>} />
                 </Routes>
             </Suspense>

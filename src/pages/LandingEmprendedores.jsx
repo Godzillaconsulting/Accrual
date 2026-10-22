@@ -68,7 +68,7 @@ const LandingEmprendedores = () => {
                     
                     <button 
                         onClick={handleScrollToContact}
-                        className="bg-white hover:bg-gray-100 text-[#233657] font-black py-5 px-10 rounded-full text-xl md:text-2xl transition-all shadow-[0_0_30px_rgba(255,255,255,0.3)] transform hover:scale-105 hover:shadow-[0_0_50px_rgba(255,255,255,0.5)] decoration-none"
+                        className="bg-white hover:bg-gray-100 text-[#233657] font-black w-full sm:w-auto py-4 sm:py-5 px-6 sm:px-10 rounded-full text-lg sm:text-xl md:text-2xl transition-all shadow-[0_0_30px_rgba(255,255,255,0.3)] transform hover:scale-105 hover:shadow-[0_0_50px_rgba(255,255,255,0.5)] decoration-none"
                     >
                         Blindar mi Crecimiento
                     </button>

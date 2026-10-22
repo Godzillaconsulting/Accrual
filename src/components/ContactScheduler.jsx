@@ -129,22 +129,35 @@ const ContactScheduler = ({ showHeader = false, showMap = true }) => {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (validate()) {
-            console.log('Form submitted:', formData);
-            setShowSuccess(true);
-            setFormData({
-                nombre: '',
-                apellidos: '',
-                email: '',
-                telefono: '',
-                servicio: '',
-                mensaje: ''
-            });
-            setErrors({});
-            // Hide success message after 5 seconds
-            setTimeout(() => setShowSuccess(false), 5000);
+            setIsSubmitting(true);
+            try {
+                const res = await fetch('/api/public/contact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Error al enviar mensaje');
+
+                setShowSuccess(true);
+                setFormData({
+                    nombre: '',
+                    apellidos: '',
+                    email: '',
+                    telefono: '',
+                    servicio: '',
+                    mensaje: ''
+                });
+                setErrors({});
+                setTimeout(() => setShowSuccess(false), 5000);
+            } catch (err) {
+                alert(err.message || 'Error al conectar con el servidor.');
+            } finally {
+                setIsSubmitting(false);
+            }
         }
     };
 

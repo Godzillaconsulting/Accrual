@@ -3,15 +3,22 @@ import 'dotenv/config';
 import { saveAppointmentToDB } from './db.js';
 import { createGoogleCalendarEvent } from './calendar.js';
 
-// Ensure the API key exists
-if (!process.env.GEMINI_API_KEY) {
-    console.warn('WARNING: GEMINI_API_KEY is not defined in the environment.');
-}
+// Godzilla AI Studio (Servidor Local RTX 3090)
+const GODZILLA_BASE_URL = (process.env.OPENAI_BASE_URL || process.env.GODZILLA_API_BASE_URL || 'http://192.168.0.247:8000/v1').replace(/\/+$/, '');
+const GODZILLA_API_KEY = process.env.OPENAI_API_KEY || process.env.GODZILLA_API_KEY || '';
+const GODZILLA_MODEL = process.env.GODZILLA_MODEL || 'qwen2.5:7b';
 
-// Initialize Gemini 2.0 Flash
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'PLACEHOLDER');
-// We use the 2.0-flash model for reasoning and tool-calling
-const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+// Fallback opcional a Gemini si se proporciona GEMINI_API_KEY
+let genAI = null;
+let model = null;
+if (process.env.GEMINI_API_KEY) {
+    try {
+        genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    } catch (e) {
+        console.warn('WARNING: Could not init Gemini fallback:', e.message);
+    }
+}
 
 /**
  * Parses user intent to schedule an appointment.
@@ -49,30 +56,64 @@ Devuelve ÚNICAMENTE un JSON con esta estructura (sin texto extra, sin markdown 
 Si el usuario hace una pregunta general, usa "general_inquiry" y no intentes forzar "schedule_appointment".
 `;
 
-    try {
-        const result = await model.generateContent([
-            { text: systemInstruction },
-            { text: 'User message: ' + userMessage }
-        ]);
+    // 1. Prioridad: Godzilla AI Studio local
+    if (GODZILLA_API_KEY) {
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 60000);
+            const response = await fetch(`${GODZILLA_BASE_URL}/chat/completions`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${GODZILLA_API_KEY}`,
+                    'X-API-Key': GODZILLA_API_KEY,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    model: GODZILLA_MODEL,
+                    messages: [
+                        { role: 'system', content: systemInstruction },
+                        { role: 'user', content: userMessage }
+                    ],
+                    response_format: { type: "json_object" },
+                    temperature: 0.1
+                }),
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
 
-        const responseText = result.response.text();
-        
-        // Try parsing the text as JSON
-        // Find the first '{' and last '}'
-        const startIndex = responseText.indexOf('{');
-        const endIndex = responseText.lastIndexOf('}');
-        
-        if (startIndex !== -1 && endIndex !== -1) {
-            const jsonStr = responseText.substring(startIndex, endIndex + 1);
-            return JSON.parse(jsonStr);
-        } else {
-            console.error('Gemini response was not JSON:', responseText);
-            return { intent: "unknown", data: null, missingFields: [] };
+            if (response.ok) {
+                const data = await response.json();
+                const content = data.choices?.[0]?.message?.content || '{}';
+                return JSON.parse(content);
+            }
+        } catch (localErr) {
+            console.warn('[AI] Falló Godzilla Studio en parseAppointmentIntent, intentando fallback:', localErr.message);
         }
-    } catch (error) {
-        console.error('Error in Gemini parsing:', error);
-        return { intent: "error", error: error.message };
     }
+
+    // 2. Fallback a Gemini si está disponible
+    if (model) {
+        try {
+            const result = await model.generateContent([
+                { text: systemInstruction },
+                { text: 'User message: ' + userMessage }
+            ]);
+
+            const responseText = result.response.text();
+            const startIndex = responseText.indexOf('{');
+            const endIndex = responseText.lastIndexOf('}');
+            
+            if (startIndex !== -1 && endIndex !== -1) {
+                const jsonStr = responseText.substring(startIndex, endIndex + 1);
+                return JSON.parse(jsonStr);
+            }
+        } catch (error) {
+            console.error('Error in Gemini parsing:', error);
+            return { intent: "error", error: error.message };
+        }
+    }
+
+    return { intent: "unknown", data: null, missingFields: [] };
 }
 
 /**
@@ -129,20 +170,63 @@ No uses formato markdown agresivo, prefiere texto legible con viñetas si es nec
         ]
     };
 
-    try {
-        const chat = model.startChat({
-            history: history.map(h => ({
-                role: h.role === 'assistant' ? 'model' : h.role, // "assistant" maps to "model" for Gemini
-                parts: [{ text: h.content }],
-            })),
-            systemInstruction: {
-                parts: [{ text: systemInstruction }],
-                role: "system"
-            },
-            tools: [scheduleTool]
-        });
+    // 1. Prioridad: Godzilla AI Studio local
+    if (GODZILLA_API_KEY) {
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 60000);
 
-        const result = await chat.sendMessage(userMessage);
+            const messages = [{ role: 'system', content: systemInstruction }];
+            for (const h of history) {
+                messages.push({
+                    role: h.role === 'assistant' ? 'assistant' : 'user',
+                    content: h.content || ''
+                });
+            }
+            messages.push({ role: 'user', content: userMessage });
+
+            const response = await fetch(`${GODZILLA_BASE_URL}/chat/completions`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${GODZILLA_API_KEY}`,
+                    'X-API-Key': GODZILLA_API_KEY,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    model: GODZILLA_MODEL,
+                    messages,
+                    temperature: 0.3
+                }),
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+
+            if (response.ok) {
+                const data = await response.json();
+                const reply = data.choices?.[0]?.message?.content?.trim();
+                if (reply) return reply;
+            }
+        } catch (localErr) {
+            console.warn('[AI] Falló Godzilla Studio en generateAccrualBotResponse, intentando fallback:', localErr.message);
+        }
+    }
+
+    // 2. Fallback a Gemini si está disponible
+    if (model) {
+        try {
+            const chat = model.startChat({
+                history: history.map(h => ({
+                    role: h.role === 'assistant' ? 'model' : h.role, // "assistant" maps to "model" for Gemini
+                    parts: [{ text: h.content }],
+                })),
+                systemInstruction: {
+                    parts: [{ text: systemInstruction }],
+                    role: "system"
+                },
+                tools: [scheduleTool]
+            });
+
+            const result = await chat.sendMessage(userMessage);
 
         const call = result.response.functionCalls()?.[0];
         if (call && call.name === "schedule_appointment") {
@@ -182,9 +266,10 @@ No uses formato markdown agresivo, prefiere texto legible con viñetas si es nec
 
         return result.response.text();
 
-    } catch (error) {
-        console.error('Error in Gemini generateAccrualBotResponse:', error);
-        return "Disculpe," +
-               " estoy experimentando interferencias técnicas con mi análisis. Por favor, intente su consulta nuevamente en unos momentos.";
+        } catch (error) {
+            console.error('Error in Gemini generateAccrualBotResponse:', error);
+        }
     }
+
+    return "Disculpe, estoy experimentando interferencias técnicas con mi análisis. Por favor, intente su consulta nuevamente en unos momentos.";
 }

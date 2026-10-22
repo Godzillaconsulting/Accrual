@@ -1,4 +1,4 @@
-﻿node_modules
+node_modules
 dist
 .vercel
 .wwebjs_cache
@@ -6,3 +6,6 @@ credentials.json
 bot_sessions
 .env
 pgdata
+pgdata_backup_recovery
+database/accrual_backup_dump.sql
+*.sql.bak
